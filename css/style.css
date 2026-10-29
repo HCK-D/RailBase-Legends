@@ -773,7 +773,8 @@ main{padding-bottom:var(--nav-h)!important}
 #v-album .seite,#v-konto .seite,#v-mehr .seite{padding-bottom:28px}
 
 /* Seitenwechsel: die hereingleitende Seite bleibt innerhalb der App (nichts steht mehr über den Rand) */
-.handy,main{overflow-x:clip}
+.handy{overflow-x:clip}
+main{overflow:clip} /* auch das kurze Hereingleiten von unten erzeugt keinen Scrollbalken */
 
 #v-start:not([hidden]),#v-packs:not([hidden]),#v-rad:not([hidden]){display:flex;flex-direction:column;box-sizing:border-box;height:var(--frei);min-height:0!important;overflow:hidden}
 
@@ -790,7 +791,10 @@ main{padding-bottom:var(--nav-h)!important}
 #v-packs .karussell li{height:100%;align-content:center}
 #v-packs .karussell img{width:auto!important;max-width:90%;height:clamp(60px,calc(100cqh - 52px),300px)}
 #v-packs .punkte-reihe{margin:8px 0 10px!important}
-#v-packs .ticket{margin-bottom:12px}
+#v-packs .ticket{align-self:center;width:calc(100% - 32px);max-width:440px;box-sizing:border-box;margin:0 auto 12px!important;padding:14px 18px 10px!important}
+/* klein unter dem Knopf: «Keins im Vorrat · Mind. 1 Rare» */
+.tk-vorrat{margin:10px 0 0;text-align:center;color:#5B636B;font:600 13px/1.3 "Source Sans 3",sans-serif;letter-spacing:.03em}
+.tk-vorrat.hat{color:#B3101E}
 
 /* Rad: so gross, wie Breite und Höhe es zulassen */
 #v-rad:not([hidden]){display:flex!important;height:calc(var(--frei) - 24px);margin-top:12px!important;margin-bottom:12px;padding-bottom:16px!important}

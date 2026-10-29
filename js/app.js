@@ -287,21 +287,13 @@ function zeichneTicket() {
   const p = PACKS[app.packIndex];
   const n = vorratVon(p.id);
   const garantie = KARTEN_GARANTIE[p.stufe];
-  $('tk-name').textContent = `${p.titel} Pack`;
-  $('tk-info').textContent = `${KARTEN_PRO_PACK} Karten`;
-  const g = $('tk-garantie');
-  if (garantie) {
-    g.hidden = false;
-    g.querySelector('span').textContent = `Mind. 1 ${seltenheitVon(garantie).name}`;
-    g.title = `Mindestens 1 ${seltenheitVon(garantie).name}-Karte pro Pack`;
-  } else if (p.stufe === 'standard') {
-    g.hidden = false;
-    g.querySelector('span').textContent = 'Gratis alle 24 h';
-  } else {
-    g.hidden = true;
-  }
+  const teile = [n > 0 ? `${n}× im Vorrat` : 'Keins im Vorrat'];
+  if (garantie) teile.push(`Mind. 1 ${seltenheitVon(garantie).name}`);
+  else if (p.stufe === 'standard') teile.push('Gratis alle 24 h');
+  $('tk-vorrat').textContent = teile.join(' · ');
+  $('tk-vorrat').classList.toggle('hat', n > 0);
   $('tk-btn').disabled = n === 0;
-  $('tk-btn-txt').textContent = n > 0 ? 'Pack öffnen' : 'Keins im Vorrat';
+  $('tk-btn').setAttribute('aria-label', `${p.titel} Pack öffnen`);
 }
 
 // ---------- Album ----------
