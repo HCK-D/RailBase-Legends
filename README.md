@@ -18,7 +18,15 @@ Beim ersten Start fragt Windows vielleicht, ob der Zugriff erlaubt ist. Dann nur
 
 ## Was schon da ist
 
-Das Spiel ist fürs Handy gebaut. Am Computer steht es als Handy-Spalte in der Mitte.
+Zuerst wird die Webseite für den Computer fertig gemacht, das Handy kommt später.
+Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
+
+- **308 echte Karten** aus `RailBase_Karten_Seltenheiten.docx` (Stand 29. Oktober 2026):
+  291 Basiskarten aus 8 Bahnen (SBB, BLS, RhB, SOB, Zentralbahn, TPF, MOB, transN),
+  12 Varianten und 5 Special-Karten, in `js/daten/kartenliste.js`
+- Album mit allen 308 Karten: gesammelte farbig mit Anzahl, fehlende grau;
+  Filter nach Kategorie und Bahn, Suche, «Nur gesammelte»
+- Beim Öffnen: Name der Karte und «Neu!», wenn man sie noch nicht hatte
 
 - Zwei Designs: **Silber** (hell) und **Schwarz** (dunkel), wählbar unter Konto
 - Kopfzeile mit Konto-Knopf (Anfangsbuchstabe), Sammler-Level und XP-Balken
@@ -48,6 +56,8 @@ Karten pro Pack-Stufe, in Prozent (`js/karten.js`, `KARTEN_CHANCEN`):
 | Platinum | 15 | 25 | 28 | 18 | 8 | 4,5 | 1,5 |
 
 Garantie pro Pack (`KARTEN_GARANTIE`): Silver mind. 1 Uncommon, Gold mind. 1 Rare, Platinum mind. 1 Epic.
+Wird die Garantie gebraucht, ersetzt eine zufällige Karte der Mindest-Kategorie die schwächste Karte
+(Karten werden nie umbenannt oder hochgestuft, wie in der Kartenliste verlangt).
 
 XP pro Karte (`XP_PRO_KARTE`): Common 5, Uncommon 10, Rare 20, Epic 40, Mythic 80, Legendary 150, Special 250.
 Level: Level 1 braucht 100 XP, jedes weitere Level 100 XP mehr (`levelVon`).
@@ -56,8 +66,10 @@ Glücksrad (`js/rad.js`, `FELDER`): 12 Felder – 5× Nichts, 3× Basis, 2× Sil
 
 ## Was noch kommt
 
-- Die echten Karten (Liste mit Karten und Chancen folgt als Word-Dokument)
-- Das richtige Karten-Design
+- Chancen pro Pack festlegen (die Kartenliste legt nur die Seltenheit fest, nicht die Chancen)
+- Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
+- Fahrzeugbilder auf den Karten
+- Handy-Optimierung
 - Login und Online-Datenbank (eher gegen Ende des Projekts)
 
 Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eigenen Spielstand.
@@ -69,7 +81,10 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `index.html` | die ganze Seite |
 | `css/style.css` | Design Silber und Schwarz, Farben der Kategorien |
 | `js/app.js` | Seiten, Menü, Start, Packs-Karussell, Album, Konto, Level |
-| `js/karten.js` | Kategorien, Chancen, Garantie, XP, Karten-Skizze |
+| `js/karten.js` | Kategorien, Chancen, Garantie, XP, Karten-Aussehen |
+| `js/daten/kartenliste.js` | alle 308 Karten |
+| `AGENTS.md` | Regeln für Codex und andere KI-Assistenten (was beim Design geändert werden darf) |
+| `design/mockups/` | Design-Vorlagen |
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |
 | `js/rad.js` | Glücksrad |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |

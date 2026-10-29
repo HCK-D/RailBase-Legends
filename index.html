@@ -177,25 +177,40 @@
   <section class="view" id="v-album" data-view="album" hidden>
     <div class="titel-block links">
       <h1>Mein Album</h1>
-      <p>Die Karten sind noch Skizzen. Das Design kommt später.</p>
+      <p>Alle Karten aus 8 Bahnen. Gesammelte Karten sind farbig, fehlende grau.</p>
     </div>
     <div class="seite">
       <div class="stats">
-        <div><b id="st-karten">0</b><span>Karten</span></div>
+        <div><b id="st-entdeckt">0 / 0</b><span>Entdeckt</span></div>
+        <div><b id="st-karten">0</b><span>Karten gesamt</span></div>
         <div><b id="st-geoeffnet">0</b><span>Packs geöffnet</span></div>
-        <div><b id="st-vorrat">0</b><span>Im Vorrat</span></div>
       </div>
 
       <h2 class="sam-h">Kategorien</h2>
       <ul class="rar-liste" id="rar-liste"></ul>
 
-      <h2 class="sam-h" id="sam-titel" hidden>Meine Karten</h2>
+      <div class="album-filter" id="album-filter">
+        <label class="suche">
+          <span class="sr-only">Karte suchen</span>
+          <input type="search" id="al-suche" placeholder="Karte suchen, z. B. Giruno oder RB001" autocomplete="off">
+        </label>
+        <label class="auswahl">
+          <span class="sr-only">Bahn</span>
+          <select id="al-bahn"><option value="">Alle Bahnen</option></select>
+        </label>
+        <label class="schalter">
+          <input type="checkbox" id="al-nur-meine">
+          <span>Nur gesammelte</span>
+        </label>
+      </div>
+
+      <h2 class="sam-h" id="sam-titel">Alle Karten</h2>
       <ul class="karten-grid" id="sam-karten"></ul>
 
-      <div class="empty" id="sam-leer">
+      <div class="empty" id="sam-leer" hidden>
         <svg width="44" height="44" aria-hidden="true"><use href="#i-album"/></svg>
-        <b>Noch keine Karten</b>
-        <span>Öffne ein Pack, dann siehst du hier deine Karten.</span>
+        <b>Keine Karten gefunden</b>
+        <span>Ändere die Suche oder die Filter.</span>
       </div>
     </div>
   </section>
@@ -322,6 +337,7 @@
 <p class="hinweis" id="hinweis" hidden role="status"></p>
 
 <script src="js/store.js"></script>
+<script src="js/daten/kartenliste.js"></script>
 <script src="js/karten.js"></script>
 <script src="js/app.js"></script>
 <script src="js/oeffnen.js"></script>

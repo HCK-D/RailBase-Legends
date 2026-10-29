@@ -12,7 +12,7 @@ const Store = (() => {
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
     xp: 0,             // Erfahrungspunkte für das Sammler-Level
-    karten: [],        // gesammelte Karten, z. B. { nr: 27, seltenheit: 'rare' }
+    karten: [],        // gesammelte Karten als Karten-IDs, z. B. 'RB001' (doppelte kommen mehrfach vor)
     gratisZeit: null,  // Zeitpunkt (ms) des letzten Gratis-Packs
     radZeit: null,     // Zeitpunkt (ms) der letzten Drehung am Glücksrad
   };
@@ -26,7 +26,8 @@ const Store = (() => {
         ...structuredClone(STANDARD),
         ...daten,
         vorrat: { ...(daten.vorrat || {}) },
-        karten: Array.isArray(daten.karten) ? daten.karten : [],
+        // nur Karten-IDs behalten; alte Platzhalter-Karten aus früheren Beta-Versionen fallen weg
+        karten: Array.isArray(daten.karten) ? daten.karten.filter((k) => typeof k === 'string') : [],
       };
     } catch (e) {
       return structuredClone(STANDARD);

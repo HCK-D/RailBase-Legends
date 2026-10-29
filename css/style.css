@@ -70,6 +70,7 @@ button{font:inherit}
 img{display:block;max-width:100%}
 :focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:3px}
 [hidden]{display:none !important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .zahl,.btn-haupt,h1,h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
 @keyframes karte-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
 
@@ -227,9 +228,10 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .rar-uncommon{--rar:#2E9E5B}
 .rar-rare{--rar:#2F6FD6}
 .rar-epic{--rar:#8A3FD1}
-.rar-mythic{--rar:#D7264F}
-.rar-legendary{--rar:#E39B16}
-.rar-special{--rar:#D71920;--rar-bild:linear-gradient(135deg,#FF5F6D,#FFC371,#47E891,#4FACFE,#B06AB3,#FF5F6D)}
+/* Farben laut Kartenliste: Mythic rot und kupfer, Legendary gold, Special prismatisch und schwarz */
+.rar-mythic{--rar:#C2402A;--rar-bild:linear-gradient(135deg,#D7263D,#B87333)}
+.rar-legendary{--rar:#D4A017;--rar-bild:linear-gradient(135deg,#F6D365,#C9930A)}
+.rar-special{--rar:#1B1D20;--rar-bild:linear-gradient(135deg,#FF5F6D,#FFC371,#47E891,#4FACFE,#B06AB3,#FF5F6D)}
 .rar-liste{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 26px;padding:0;list-style:none}
 .rar-liste li{animation:karte-in .45s var(--ease-out) both;animation-delay:calc(var(--i,0) * 50ms)}
 .rar{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:12px;width:100%;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--rar);color:var(--fg);text-align:left;cursor:pointer;transition:transform .2s var(--spring)}
@@ -241,6 +243,11 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .rar b{font:700 19px/1.1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
 .rar small{color:var(--fg-2);font-size:13px}
 @keyframes schillern{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.album-filter{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.album-filter input[type="search"],.album-filter select{height:44px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font:inherit}
+.album-filter .suche{flex:1 1 220px;display:grid}
+.album-filter .schalter{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.album-filter .schalter input{width:18px;height:18px;accent-color:var(--accent)}
 .karten-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 26px;padding:0;list-style:none}
 .karten-grid li{animation:karte-in .45s var(--ease-out) both;animation-delay:calc(var(--i,0) * 40ms)}
 
@@ -264,8 +271,18 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .k-bild{display:grid;place-items:center;flex:1;min-height:0;border-radius:3.5cqw;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--rar) 55%,#fff),color-mix(in srgb,var(--rar) 85%,#000));color:rgba(255,255,255,.92);overflow:hidden}
 .karte.rar-special .k-bild{background:linear-gradient(135deg,#FF5F6D,#FFC371,#47E891,#4FACFE,#B06AB3);background-size:250% 250%;animation:schillern 6s linear infinite}
 .k-zug{width:84%;height:auto;--k-glas:color-mix(in srgb,var(--rar) 70%,#000);filter:drop-shadow(0 1.4cqw 1.4cqw rgba(0,0,0,.25))}
-.k-name{margin:0;font:800 10cqw/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.01em}
-.k-werte{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;margin:0}
+.k-name{margin:0;font:800 9cqw/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.k-zusatz{margin-top:-1.6cqw;font:600 6cqw/1.15 "Source Sans 3",sans-serif;color:#4E555C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-bild{position:relative}
+.k-status{position:absolute;top:2.5cqw;left:2.5cqw;padding:1cqw 2.4cqw;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;font:700 4.6cqw/1.2 "Source Sans 3",sans-serif;text-transform:uppercase;letter-spacing:.06em}
+.k-anzahl{position:absolute;right:3cqw;bottom:3cqw;z-index:3;padding:1.4cqw 3cqw;border-radius:99px;background:#D71920;color:#fff;font:800 7cqw/1 "Barlow Condensed",sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+/* Noch nicht gefunden: grau und blass */
+.karte.fehlt{filter:grayscale(1);opacity:.42;box-shadow:none}
+.karte.fehlt .k-glanz{display:none}
+/* «Neu» beim Aufdecken und in der Übersicht */
+.flip.neu .flip-vorne::after,.op-karten li.neu::after{content:"Neu";position:absolute;top:-11px;left:50%;z-index:5;padding:4px 12px;border-radius:99px;background:#D71920;color:#fff;font:800 15px/1 "Barlow Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase;transform:translateX(-50%);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.op-karten li{position:relative}
+.k-werte{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6cqw;margin:0}
 .k-werte div{display:grid;padding:1.8cqw;border-radius:2cqw;background:color-mix(in srgb,var(--rar) 10%,#F2F3F4)}
 .k-werte dt{font:700 4.6cqw/1.1 "Source Sans 3",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#626971}
 .k-werte dd{margin:0;font:800 7cqw/1.1 "Barlow Condensed",sans-serif}
@@ -366,6 +383,66 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .op-status{min-height:1.4em;margin:0;color:#D5D9DD;text-align:center;font-size:15px}
 .op-knoepfe{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .btn.ghost.op-close{color:#F5F6F7;border-color:rgba(255,255,255,.35)}
+
+/* ---------- Computer: richtige Webseite statt Handy-Spalte ----------
+   Ab 1100 px Breite steht das Menü oben in der Kopfzeile, der Inhalt ist breiter.
+   Das Handy-Layout darüber bleibt unverändert (wird später fürs Handy optimiert). */
+@media (min-width:1100px){
+  .handy{max-width:none;box-shadow:none}
+  .kopf,.xp{max-width:1200px;margin:0 auto;padding-left:32px;padding-right:32px}
+  .kopf{height:68px}
+  main{max-width:1200px;margin:0 auto;padding:0 32px 60px}
+  .seite{padding:0}
+  .titel-block{padding:34px 0 20px}
+  .titel-block.links{padding-left:0}
+  h1{font-size:52px}
+
+  /* Menü oben in der Kopfzeile */
+  .tabbar{top:calc(env(safe-area-inset-top,0px) + 10px);bottom:auto;left:50%;width:auto;max-width:none;height:48px;padding:0;
+    display:flex;gap:4px;background:none;border:0;box-shadow:none}
+  .tabbar a{display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:999px;font-size:18px;transition:background-color .2s ease}
+  .tabbar a+a::before{display:none}
+  .tabbar a:hover{background:var(--surface-2)}
+  .tabbar svg{width:22px;height:22px}
+  .tabbar a[aria-current="page"]{background:var(--accent-soft)}
+  .tabbar a[aria-current="page"]::after{top:auto;bottom:-10px;left:20%;right:20%;height:3px;border-radius:3px}
+  .tabbar a.punkt span::after{top:8px;left:30px}
+
+  /* Start: breite Bühne, Knopf in der Mitte */
+  .buehne{height:600px;margin-top:24px;border-radius:24px}
+  .buehne-txt{padding-top:40px}
+  .buehne-txt h1{font-size:64px}
+  .hero-pack{height:330px}
+  .start-aktion{max-width:440px;margin:0 auto;padding:28px 0 0}
+
+  /* Packs: mehr Packs nebeneinander, Ticket in der Mitte */
+  .reiter{max-width:640px;margin:0 auto}
+  .karussell li{flex-basis:24%}
+  .karussell li:first-child{margin-left:38%}
+  .karussell li:last-child{margin-right:38%}
+  .karussell img{width:min(86%,230px)}
+  .pfeil-links{left:18%}.pfeil-rechts{right:18%}
+  .ticket{max-width:560px;margin:0 auto 20px}
+
+  /* Glücksrad: Rad links, Knopf und Ergebnis rechts */
+  #v-rad:not([hidden]){display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:40px}
+  #v-rad .titel-block{grid-column:1 / -1}
+  .rad-buehne{width:min(100%,460px);margin:20px auto}
+  .rad-unten{padding:0}
+
+  /* Album: viele Karten nebeneinander */
+  .rar-liste{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .rar{grid-template-columns:1fr;row-gap:6px;justify-items:start}
+  .rar-stein{grid-row:auto}
+  .karten-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+
+  /* Konto und Mehr: schmale Spalte */
+  #v-konto .seite,#v-mehr .seite,#v-konto .titel-block,#v-mehr .titel-block{max-width:680px}
+
+  /* Pack öffnen: Übersicht mit 5 Karten in einer Reihe */
+  .op-box{max-width:980px}
+  .op-karten li{width:calc((100% - 40px) / 5);max-width:min(180px,calc((100vh - 220px) * 5 / 7))}
+}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}

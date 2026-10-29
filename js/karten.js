@@ -1,5 +1,5 @@
-/* Karten: die 7 Kategorien, Chancen pro Pack-Stufe, Ziehen und die Karten-Skizze.
-   Alles hier ist Platzhalter, bis die echte Kartenliste (Word-Dokument) da ist. */
+/* Karten: die 7 Kategorien, Chancen pro Pack-Stufe, Ziehen, XP und die Karten-Skizze.
+   Die Karten selbst stehen in js/daten/kartenliste.js (KARTEN). */
 
 // Die 7 Karten-Kategorien, von häufig bis selten. Farben stehen in css/style.css (.rar-<id>).
 const SELTENHEITEN = [
@@ -12,7 +12,7 @@ const SELTENHEITEN = [
   { id: 'special', name: 'Special' },
 ];
 
-// Chancen in Prozent, gleiche Reihenfolge wie SELTENHEITEN. Platzhalter.
+// Chancen in Prozent, gleiche Reihenfolge wie SELTENHEITEN. Platzhalter, bis die Chancen festgelegt sind.
 const KARTEN_CHANCEN = {
   standard: [62, 25, 9, 3, 0.8, 0.2, 0],
   silber:   [45, 30, 15, 7, 2, 0.8, 0.2],
@@ -32,7 +32,17 @@ const KARTEN_GARANTIE = {
 const XP_PRO_KARTE = [5, 10, 20, 40, 80, 150, 250];
 
 const KARTEN_PRO_PACK = 5;
-const KARTEN_IM_SET = 120; // Platzhalter für die Kartennummern #001–#120
+
+const BAHNEN = ['SBB', 'BLS', 'RhB', 'SOB', 'Zentralbahn', 'TPF', 'MOB', 'transN'];
+
+// Schneller Zugriff: Karte nach ID und alle Karten pro Kategorie
+const KARTE_NACH_ID = new Map(KARTEN.map((k) => [k.id, k]));
+const KARTEN_NACH_SELTENHEIT = Object.fromEntries(
+  SELTENHEITEN.map((s) => [s.id, KARTEN.filter((k) => k.seltenheit === s.id)]));
+
+function karteVonId(id) {
+  return KARTE_NACH_ID.get(id);
+}
 
 function seltenheitVon(id) {
   return SELTENHEITEN.find((s) => s.id === id);
@@ -40,6 +50,10 @@ function seltenheitVon(id) {
 
 function rangVon(id) {
   return SELTENHEITEN.findIndex((s) => s.id === id);
+}
+
+function zufall(liste) {
+  return liste[Math.floor(Math.random() * liste.length)];
 }
 
 function zieheSeltenheit(stufe) {
@@ -53,26 +67,26 @@ function zieheSeltenheit(stufe) {
   return SELTENHEITEN[0].id;
 }
 
-// Zieht die Karten für ein Pack. Die seltenste kommt zuletzt.
+// Zieht die Karten für ein Pack (Liste von Karten-IDs). Die seltenste kommt zuletzt.
 function zieheKarten(stufe) {
-  const karten = [];
+  const gezogen = [];
   for (let i = 0; i < KARTEN_PRO_PACK; i++) {
-    karten.push({
-      nr: 1 + Math.floor(Math.random() * KARTEN_IM_SET),
-      seltenheit: zieheSeltenheit(stufe),
-    });
+    gezogen.push(zufall(KARTEN_NACH_SELTENHEIT[zieheSeltenheit(stufe)]));
   }
-  karten.sort((a, b) => rangVon(a.seltenheit) - rangVon(b.seltenheit));
+  gezogen.sort((a, b) => rangVon(a.seltenheit) - rangVon(b.seltenheit));
 
-  // Garantie: ist die beste Karte zu schwach, wird sie auf die Mindest-Kategorie gehoben
+  // Garantie: ist die beste Karte zu schwach, wird die schwächste Karte durch eine
+  // zufällige Karte der Mindest-Kategorie ersetzt (Karten werden nie umbenannt oder hochgestuft)
   const mindestens = KARTEN_GARANTIE[stufe];
-  const beste = karten[karten.length - 1];
-  if (mindestens && rangVon(beste.seltenheit) < rangVon(mindestens)) beste.seltenheit = mindestens;
-  return karten;
+  if (mindestens && rangVon(gezogen[gezogen.length - 1].seltenheit) < rangVon(mindestens)) {
+    gezogen.shift();
+    gezogen.push(zufall(KARTEN_NACH_SELTENHEIT[mindestens]));
+  }
+  return gezogen.map((k) => k.id);
 }
 
-function xpVon(karten) {
-  return karten.reduce((summe, k) => summe + XP_PRO_KARTE[rangVon(k.seltenheit)], 0);
+function xpVon(ids) {
+  return ids.reduce((summe, id) => summe + XP_PRO_KARTE[rangVon(karteVonId(id).seltenheit)], 0);
 }
 
 // Level aus allen XP: Level 1 braucht 100 XP, jedes weitere Level 100 mehr (Platzhalter)
@@ -104,25 +118,32 @@ const ZUG_SKIZZE = `
     <path d="M2 68 H158" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
   </svg>`;
 
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
 // Vorderseite einer Karte (Skizze). Das Design wird später noch stark geändert.
-function karteHtml(karte) {
-  const s = seltenheitVon(karte.seltenheit);
-  const nr = String(karte.nr).padStart(3, '0');
+// optionen.anzahl: wie oft man die Karte hat (Album), optionen.fehlt: noch nicht gefunden
+function karteHtml(id, optionen = {}) {
+  const k = karteVonId(id);
+  const s = seltenheitVon(k.seltenheit);
+  const klassen = ['karte', `rar-${s.id}`];
+  if (optionen.fehlt) klassen.push('fehlt');
+  const zusatz = k.zusatz ? `<span class="k-zusatz">${esc(k.zusatz)}</span>` : '';
+  const hinweis = k.status ? `<span class="k-status">${k.status}</span>` : '';
   return `
-    <article class="karte rar-${s.id}" aria-label="${s.name}, Karte Nummer ${nr}">
+    <article class="${klassen.join(' ')}" data-karte="${k.id}" aria-label="${esc(k.name)}, ${s.name}, ${k.bahn}">
       <div class="k-glanz" aria-hidden="true"></div>
       <header class="k-kopf">
-        <span class="k-nr">#${nr}</span>
+        <span class="k-nr">${k.id}</span>
         <span class="k-rar"><i class="rar-stein" aria-hidden="true"></i>${s.name}</span>
       </header>
-      <div class="k-bild">${ZUG_SKIZZE}</div>
-      <h3 class="k-name">Name folgt</h3>
+      <div class="k-bild">${ZUG_SKIZZE}${hinweis}</div>
+      <h3 class="k-name">${esc(k.name)}</h3>
+      ${zusatz}
       <dl class="k-werte">
-        <div><dt>Vmax</dt><dd>—</dd></div>
-        <div><dt>Leistung</dt><dd>—</dd></div>
-        <div><dt>Baujahr</dt><dd>—</dd></div>
+        <div><dt>Bahn</dt><dd>${k.bahn}</dd></div>
+        <div><dt>Bereich</dt><dd>${k.bereich}</dd></div>
       </dl>
-      <footer class="k-fuss">RailBase · Sammelkarten</footer>
+      ${optionen.anzahl > 1 ? `<span class="k-anzahl">×${optionen.anzahl}</span>` : ''}
     </article>`;
 }
 

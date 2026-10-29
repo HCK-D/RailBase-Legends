@@ -154,7 +154,7 @@ function aktualisiereAlles() {
   zeichneStart();
   Rad.aktualisiere();
   zeichnePackDaten();
-  zeichneAlbum();
+  if (app.ansicht === 'album') zeichneAlbum(); // 308 Karten: nur zeichnen, wenn das Album offen ist
   zeichneKonto();
   zeichnePunkte();
 }
@@ -290,38 +290,67 @@ function zeichneTicket() {
 
 // ---------- Album ----------
 
+// Wie oft man jede Karte hat, z. B. { RB001: 2 }
+function besitz() {
+  const anzahl = {};
+  app.daten.karten.forEach((id) => { anzahl[id] = (anzahl[id] || 0) + 1; });
+  return anzahl;
+}
+
 function zeichneAlbum() {
-  const karten = app.daten.karten;
-  $('st-karten').textContent = karten.length;
+  const anzahl = besitz();
+  const entdeckt = Object.keys(anzahl).length;
+  $('st-entdeckt').textContent = `${entdeckt} / ${KARTEN.length}`;
+  $('st-karten').textContent = app.daten.karten.length;
   $('st-geoeffnet').textContent = app.daten.geoeffnet;
-  $('st-vorrat').textContent = vorratGesamt();
 
   const liste = $('rar-liste');
   liste.innerHTML = '';
   SELTENHEITEN.forEach((s, i) => {
-    const n = karten.filter((k) => k.seltenheit === s.id).length;
+    const alle = KARTEN_NACH_SELTENHEIT[s.id];
+    const gefunden = alle.filter((k) => anzahl[k.id]).length;
     const li = document.createElement('li');
     li.style.setProperty('--i', i);
     li.innerHTML = `
       <button class="rar rar-${s.id}" type="button" data-filter="${s.id}" aria-pressed="${app.filter === s.id}">
         <span class="rar-stein" aria-hidden="true"></span>
         <b>${s.name}</b>
-        <small>${n} ${n === 1 ? 'Karte' : 'Karten'}</small>
+        <small>${gefunden} / ${alle.length} entdeckt</small>
       </button>`;
     liste.appendChild(li);
   });
 
-  // Karten, seltenste zuerst; mit Filter nur eine Kategorie
-  const gezeigt = karten
-    .filter((k) => !app.filter || k.seltenheit === app.filter)
-    .slice()
-    .sort((a, b) => rangVon(b.seltenheit) - rangVon(a.seltenheit) || a.nr - b.nr);
-  $('sam-karten').innerHTML = gezeigt.slice(0, 60).map((k, i) => `<li style="--i:${Math.min(i, 12)}">${karteHtml(k)}</li>`).join('');
-  $('sam-leer').hidden = karten.length > 0;
-  $('sam-titel').hidden = karten.length === 0;
-  $('sam-titel').textContent = app.filter
-    ? `${seltenheitVon(app.filter).name} (${gezeigt.length})`
-    : `Meine Karten (${karten.length})`;
+  // Filter: Kategorie, Bahn, nur gesammelte, Suche nach Name oder ID
+  const suche = $('al-suche').value.trim().toLowerCase();
+  const bahn = $('al-bahn').value;
+  const nurMeine = $('al-nur-meine').checked;
+  const passt = (k) =>
+    (!app.filter || k.seltenheit === app.filter)
+    && (!bahn || k.bahn === bahn)
+    && (!nurMeine || anzahl[k.id])
+    && (!suche || `${k.id} ${k.name} ${k.zusatz || ''} ${k.bahn}`.toLowerCase().includes(suche));
+
+  // Alle Karten stehen einmal im Album; neu gezeichnet wird nur eine Karte, deren Anzahl sich geändert hat.
+  // Filter blenden nur ein und aus, damit die Suche beim Tippen nicht ruckelt.
+  const grid = $('sam-karten');
+  if (!grid.children.length) grid.innerHTML = KARTEN.map((k) => `<li data-id="${k.id}"></li>`).join('');
+  let gezeigt = 0;
+  let gefundenHier = 0;
+  [...grid.children].forEach((li) => {
+    const k = karteVonId(li.dataset.id);
+    const n = anzahl[k.id] || 0;
+    if (li.dataset.n !== String(n)) {
+      li.innerHTML = karteHtml(k.id, { anzahl: n, fehlt: n === 0 });
+      li.dataset.n = n;
+    }
+    li.hidden = !passt(k);
+    if (!li.hidden) {
+      gezeigt += 1;
+      if (n) gefundenHier += 1;
+    }
+  });
+  $('sam-leer').hidden = gezeigt > 0;
+  $('sam-titel').textContent = `${app.filter ? seltenheitVon(app.filter).name : 'Alle Karten'} · ${gefundenHier} / ${gezeigt}`;
 }
 
 // ---------- Konto ----------
@@ -350,6 +379,7 @@ function setzeAlleZurueck() {
   Store.zuruecksetzen();
   app.daten = Store.laden();
   app.filter = null;
+  $('sam-karten').innerHTML = '';
   aktualisiereAlles();
   zeigeHinweis('Alles zurückgesetzt.');
 }
@@ -375,6 +405,11 @@ function holeGratisPack() {
 // ---------- Start ----------
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Karten-IDs, die es in der Kartenliste nicht (mehr) gibt, aus dem Spielstand entfernen
+  const vorher = app.daten.karten.length;
+  app.daten.karten = app.daten.karten.filter((id) => karteVonId(id));
+  if (app.daten.karten.length !== vorher) speichern();
+
   baueKarussell();
   Oeffnen.init();
   Rad.init();
@@ -413,6 +448,10 @@ document.addEventListener('DOMContentLoaded', () => {
     app.filter = app.filter === btn.dataset.filter ? null : btn.dataset.filter;
     zeichneAlbum();
   });
+  $('al-bahn').insertAdjacentHTML('beforeend', BAHNEN.map((b) => `<option value="${b}">${b}</option>`).join(''));
+  $('al-suche').addEventListener('input', zeichneAlbum);
+  $('al-bahn').addEventListener('change', zeichneAlbum);
+  $('al-nur-meine').addEventListener('change', zeichneAlbum);
 
   // Menü unten: Richtung merken, damit die neue Seite von der richtigen Seite hereingleitet
   document.querySelector('.tabbar').addEventListener('click', (e) => {

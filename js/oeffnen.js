@@ -2,7 +2,8 @@
 
 const Oeffnen = (() => {
   let packId = null;    // Pack, das gerade offen ist
-  let karten = [];      // gezogene Karten
+  let karten = [];      // gezogene Karten (IDs)
+  let neu = [];         // pro Karte: true, wenn sie neu in der Sammlung ist
   let index = 0;        // welche Karte gerade gezeigt wird
   let phase = 'zu';     // zu | pack | reisst | einzeln | uebersicht
   let xpGewinn = 0;
@@ -64,6 +65,13 @@ const Oeffnen = (() => {
 
     // Vorrat, Zähler und Karten sofort speichern, damit beim Neuladen nichts verloren geht
     karten = zieheKarten(p.stufe);
+    // welche Karten man vorher noch nicht hatte (bei doppelten im selben Pack nur die erste)
+    const besitz = new Set(app.daten.karten);
+    neu = karten.map((id) => {
+      const istNeu = !besitz.has(id);
+      besitz.add(id);
+      return istNeu;
+    });
     app.daten.vorrat[packId] = vorratVon(packId) - 1;
     app.daten.geoeffnet += 1;
     app.daten.karten.push(...karten);
@@ -114,12 +122,14 @@ const Oeffnen = (() => {
   function decktAuf(flip) {
     if (flip.classList.contains('offen')) return;
     flip.classList.add('offen');
-    const k = karten[index];
+    const k = karteVonId(karten[index]);
     const s = seltenheitVon(k.seltenheit);
+    if (neu[index]) flip.classList.add('neu');
     if (rangVon(k.seltenheit) >= SELTEN_AB) flip.classList.add('selten');
+    const titel = `${neu[index] ? 'Neu! ' : ''}${s.name}: ${k.name}`;
     $('op-hilfe').textContent = index < karten.length - 1
-      ? `${s.name}! Wischen oder tippen für die nächste Karte`
-      : `${s.name}! Wischen oder tippen für die Übersicht`;
+      ? `${titel} · Wischen oder tippen für die nächste Karte`
+      : `${titel} · Wischen oder tippen für die Übersicht`;
     flip.setAttribute('aria-label', 'Nächste Karte');
   }
 
@@ -195,16 +205,18 @@ const Oeffnen = (() => {
     $('op-alle').hidden = true;
     const liste = $('op-karten');
     liste.innerHTML = '';
-    karten.forEach((k, i) => {
+    karten.forEach((id, i) => {
       const li = document.createElement('li');
       li.style.setProperty('--i', i);
-      li.innerHTML = karteHtml(k);
+      if (neu[i]) li.className = 'neu';
+      li.innerHTML = karteHtml(id);
       liste.appendChild(li);
     });
     liste.hidden = false;
 
-    const bestes = seltenheitVon(karten[karten.length - 1].seltenheit);
-    $('op-status').textContent = `Beste Karte: ${bestes.name} · +${xpGewinn} XP`
+    const bestes = seltenheitVon(karteVonId(karten[karten.length - 1]).seltenheit);
+    const anzahlNeu = neu.filter(Boolean).length;
+    $('op-status').textContent = `Beste Karte: ${bestes.name} · ${anzahlNeu} neu · +${xpGewinn} XP`
       + (neuesLevel ? ` · Neues Level: ${neuesLevel}!` : '');
     zeigeSchliessen('Fertig');
   }
