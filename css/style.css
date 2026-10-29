@@ -767,7 +767,7 @@ input,select{font-family:inherit}
 /* ===== Alles auf einen Blick: Start, Packs und Rad passen genau in den Bildschirm =====
    --kopf-h und --nav-h misst js/app.js (misseRahmen). Diese Seiten scrollen nicht mehr;
    Pack, Karussell und Rad werden mit der verfügbaren Höhe grösser oder kleiner.
-   Album, Konto und Mehr sind Listen und dürfen weiter scrollen. */
+   Album, Konto und Mehr: siehe Block weiter unten (im Album scrollt nur die Karten-Liste). */
 :root{--kopf-h:62px;--nav-h:76px;--frei:calc(100dvh - var(--kopf-h) - var(--nav-h))}
 main{padding-bottom:var(--nav-h)!important}
 #v-album .seite,#v-konto .seite,#v-mehr .seite{padding-bottom:28px}
@@ -791,7 +791,13 @@ main{overflow:clip} /* auch das kurze Hereingleiten von unten erzeugt keinen Scr
 #v-packs .karussell li{height:100%;align-content:center}
 #v-packs .karussell img{width:auto!important;max-width:90%;height:clamp(60px,calc(100cqh - 52px),300px)}
 #v-packs .punkte-reihe{margin:8px 0 10px!important}
-#v-packs .ticket{align-self:center;width:calc(100% - 32px);max-width:440px;box-sizing:border-box;margin:0 auto 12px!important;padding:14px 18px 10px!important}
+/* kein grosses Ticket mehr: nur ein kleinerer Knopf und darunter die kleine Vorrat-Zeile */
+#v-packs .ticket{align-self:center;width:calc(100% - 32px);max-width:320px;box-sizing:border-box;margin:0 auto 12px!important;padding:0!important;
+  background:none!important;border:0!important;box-shadow:none!important;-webkit-mask:none!important;mask:none!important;border-radius:0!important}
+#v-packs .ticket .btn-haupt{height:50px!important;font-size:21px!important;border-radius:999px!important}
+#v-packs .ticket .btn-haupt svg{width:22px;height:22px}
+#v-packs .tk-vorrat{margin-top:8px;color:var(--fg-2)}
+#v-packs .tk-vorrat.hat{color:var(--accent-ink)}
 /* klein unter dem Knopf: «Keins im Vorrat · Mind. 1 Rare» */
 .tk-vorrat{margin:10px 0 0;text-align:center;color:#5B636B;font:600 13px/1.3 "Source Sans 3",sans-serif;letter-spacing:.03em}
 .tk-vorrat.hat{color:#B3101E}
@@ -833,4 +839,76 @@ main{overflow:clip} /* auch das kurze Hereingleiten von unten erzeugt keinen Scr
   /* am Computer ist die Überschrift grösser: Pack entsprechend kleiner rechnen */
   #v-start .hero-pack{height:clamp(90px,calc(100cqh - 400px),330px)!important}
   #v-rad:not([hidden]){height:calc(var(--frei) - 40px);margin-top:20px!important;margin-bottom:20px}
+}
+
+/* ===== Menü unten: ovaler, schwebender Balken ===== */
+@media (max-width:1099px){
+  .tabbar{left:50%!important;right:auto!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%)!important;
+    width:min(calc(100% - 24px),456px)!important;height:62px!important;padding:0 6px!important;border:1px solid var(--line)!important;border-radius:999px!important;
+    box-shadow:0 10px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.35)!important;overflow:hidden}
+  .tabbar::before{top:6px!important;bottom:6px!important;border-radius:999px!important}
+  .tabbar a+a::before{display:none!important}
+  .tabbar a{font-size:13px!important;gap:2px!important}
+  .tabbar svg{width:22px;height:22px}
+  .tabbar a.punkt span::after{top:8px!important}
+}
+/* Computer: das Menü oben bekommt dieselbe ovale Form */
+@media (min-width:1100px){
+  .tabbar{padding:4px!important;height:48px!important;border:1px solid var(--line)!important;border-radius:999px!important;background:color-mix(in srgb,var(--surface) 70%,transparent)!important;box-shadow:0 4px 14px rgba(0,0,0,.08)!important}
+  .tabbar::before{top:4px!important;bottom:4px!important;border-radius:999px!important}
+  .tabbar a{height:38px;border-radius:999px!important}
+}
+
+/* ===== Album, Konto und Mehr passen auch in den Bildschirm =====
+   Album: nur die Karten-Liste scrollt in ihrem eigenen Bereich, die Seite selbst nicht. */
+#v-album:not([hidden]),#v-konto:not([hidden]),#v-mehr:not([hidden]){display:flex;flex-direction:column;box-sizing:border-box;height:var(--frei);overflow:hidden}
+#v-album>*,#v-konto>*,#v-mehr>*{flex:none}
+#v-album .seite{flex:1 1 0;min-height:0;display:flex;flex-direction:column;padding-bottom:8px!important}
+#v-album .seite>*{flex:none}
+#v-album .stats{display:flex!important;justify-content:space-around;gap:6px;margin-bottom:10px!important;padding:8px 10px!important}
+#v-album .stats div{padding:0!important;border:0!important;background:none!important;text-align:center}
+#v-album .stats b{font-size:22px!important}
+#v-album .stats span{font-size:11.5px!important}
+#v-album .sam-h{font-size:16px!important;margin:0 0 6px!important}
+#v-album .sam-h:first-of-type{display:none}
+/* Kategorien als schmale Reihe zum seitlichen Wischen */
+#v-album .rar-liste{display:flex!important;gap:8px;overflow-x:auto;margin:0 0 10px!important;padding-bottom:4px;scrollbar-width:thin}
+#v-album .rar-liste li{flex:none}
+#v-album .rar{display:flex!important;align-items:center;gap:8px;width:auto;padding:7px 12px!important;white-space:nowrap}
+#v-album .rar-stein{width:16px;height:16px}
+#v-album .rar b{font-size:15px!important}
+#v-album .album-filter{margin-bottom:10px!important;padding:8px!important;gap:8px!important}
+#v-album .album-filter input[type="search"],#v-album .album-filter select{height:38px}
+#v-album .karten-grid{flex:1 1 0!important;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0!important;padding:4px 2px 12px;align-content:start}
+#v-album .empty{flex:1 1 0}
+
+#v-konto .seite,#v-mehr .seite{flex:1 1 0;min-height:0;overflow-y:auto;padding-bottom:8px!important}
+#v-konto .panel,#v-mehr .panel{padding:12px 14px!important;margin-bottom:10px!important;gap:8px!important}
+#v-konto .panel p,#v-mehr .panel p{font-size:13px}
+#v-konto .avatar.gross{width:46px;height:46px;font-size:24px}
+#v-konto .profil b{font-size:22px}
+/* Profil und Name: ein Kasten, Eingabe und Speichern nebeneinander */
+#v-konto .profil-name{display:grid}
+#v-konto .profil{display:flex;align-items:center;gap:12px;padding:0;border:0;background:none;box-shadow:none}
+#konto-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+#konto-form .field input,#konto-form .btn{height:40px}
+/* Design: zwei flache Knöpfe mit Farbmuster links */
+#v-konto .design-wahl button{display:flex!important;align-items:center;justify-items:start;gap:10px!important;padding:8px 12px!important;font-size:16px!important}
+#v-konto .design-wahl i{width:34px!important;height:24px!important;flex:none;border-radius:6px}
+/* Anmelden-Hinweis und Zurücksetzen in einer Zeile */
+#v-konto .konto-unten{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
+#v-konto .konto-unten p{margin:0;flex:1}
+#v-konto .konto-unten .btn{flex:none;height:38px;padding:0 14px;font-size:14px}
+/* Mehr: Level-Karte kompakt, Menüpunkte als zwei Spalten */
+#v-mehr .level-zahl{width:44px;height:44px;font-size:24px}
+#v-mehr .level-kopf b{font-size:20px}
+#v-mehr .level-karte p{display:none}
+#v-mehr .menu-list{display:grid!important;grid-template-columns:1fr 1fr;gap:6px!important;padding:6px!important}
+#v-mehr .menu-list li{padding:10px 12px!important;border-radius:10px;background:var(--surface-2)}
+#v-mehr .menu-list li:has(a){padding:0!important}
+#v-mehr .menu-list a{padding:10px 12px!important;font-size:15px}
+@media (min-width:1100px){
+  #v-album .rar-liste{flex-wrap:wrap;overflow:visible}
+  #v-konto .seite{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
+  #v-konto .seite>.panel:first-child{grid-column:1 / -1}
 }

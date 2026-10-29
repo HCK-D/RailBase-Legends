@@ -124,10 +124,10 @@ function misseRahmen() {
   const kopf = document.querySelector('.topbar');
   const nav = document.querySelector('.tabbar');
   const navRect = nav.getBoundingClientRect();
-  // Menü unten (Handy) zählt mit, Menü oben in der Kopfzeile (Computer) nicht
-  const navUnten = navRect.bottom >= window.innerHeight - 2 && navRect.top > window.innerHeight / 2;
+  // Menü unten (Handy, schwebend) zählt mit samt Abstand zum Rand, Menü oben in der Kopfzeile (Computer) nicht
+  const navUnten = navRect.top > window.innerHeight / 2;
   document.documentElement.style.setProperty('--kopf-h', `${Math.round(kopf.getBoundingClientRect().height)}px`);
-  document.documentElement.style.setProperty('--nav-h', navUnten ? `${Math.round(navRect.height)}px` : '0px');
+  document.documentElement.style.setProperty('--nav-h', navUnten ? `${Math.round(window.innerHeight - navRect.top + 8)}px` : '0px');
 }
 
 // Auf dem Handy: nach links oder rechts wischen wechselt die Seite

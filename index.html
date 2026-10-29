@@ -203,21 +203,23 @@
       <p>In der Beta bleiben deine Daten nur auf diesem Gerät.</p>
     </div>
     <div class="seite">
-      <div class="panel profil">
-        <span class="avatar gross" id="avatar-gross">K</span>
-        <div>
-          <b id="profil-name">Sammler</b>
-          <span id="profil-level">Sammler-Level 1</span>
+      <!-- Profil und Name in einem Kasten -->
+      <div class="panel profil-name">
+        <div class="profil">
+          <span class="avatar gross" id="avatar-gross">K</span>
+          <div>
+            <b id="profil-name">Sammler</b>
+            <span id="profil-level">Sammler-Level 1</span>
+          </div>
         </div>
+        <form id="konto-form" autocomplete="off">
+          <label class="field">
+            <span class="sr-only">Dein Name</span>
+            <input type="text" id="konto-name" maxlength="30" placeholder="Dein Name, z. B. Hckd">
+          </label>
+          <button class="btn" type="submit">Speichern</button>
+        </form>
       </div>
-
-      <form class="panel" id="konto-form" autocomplete="off">
-        <label class="field">
-          <span>Dein Name</span>
-          <input type="text" id="konto-name" maxlength="30" placeholder="z. B. Hckd">
-        </label>
-        <button class="btn" type="submit">Speichern</button>
-      </form>
 
       <div class="panel">
         <b>Design</b>
@@ -227,15 +229,10 @@
         </div>
       </div>
 
-      <div class="panel muted">
-        <b>Anmelden</b>
-        <p>Login mit Online-Datenbank kommt später. Bis dahin gilt: ein Gerät, ein Konto.</p>
-      </div>
-
-      <div class="panel">
-        <b>Beta zurücksetzen</b>
-        <p>Löscht alle Packs, Karten, Level und Einstellungen auf diesem Gerät.</p>
-        <button class="btn ghost" type="button" id="reset-btn">Alles zurücksetzen</button>
+      <!-- Anmelden (kommt später) und Zurücksetzen in einer Zeile -->
+      <div class="panel konto-unten">
+        <p><b>Anmelden</b> kommt später. Bis dahin: ein Gerät, ein Konto.</p>
+        <button class="btn ghost" type="button" id="reset-btn" title="Löscht alle Packs, Karten, Level und Einstellungen auf diesem Gerät">Alles zurücksetzen</button>
       </div>
     </div>
   </section>
