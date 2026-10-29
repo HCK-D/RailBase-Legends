@@ -139,14 +139,33 @@ h2{margin:0;font-weight:800;font-size:22px;letter-spacing:-.01em}
 .pk-txt small{color:var(--fg-2);font-size:13.5px}
 
 /* Sammlung */
-.empty{display:grid;justify-items:center;gap:6px;padding:40px 20px;border:2px dashed var(--line);border-radius:var(--r-lg);text-align:center;color:var(--fg-2)}
+.empty{display:grid;margin-bottom:20px;justify-items:center;gap:6px;padding:40px 20px;border:2px dashed var(--line);border-radius:var(--r-lg);text-align:center;color:var(--fg-2)}
 .empty svg{color:var(--accent)}
 .empty b{color:var(--fg);font-size:19px}
 .empty .btn{margin-top:12px}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:28px}
 .stats div{display:grid;padding:16px 18px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
 .stats b{font-size:30px;font-weight:900;line-height:1.1}
 .stats span{color:var(--fg-2);font-size:14px}
+@media (max-width:420px){.stats div{padding:12px}.stats b{font-size:24px}.stats span{font-size:12.5px}}
+.sam-h{margin:0 0 12px}
+
+/* Die 7 Karten-Kategorien: je eine Farbe, Special schillert */
+.rar-common{--rar:#8A939C}
+.rar-uncommon{--rar:#2E9E5B}
+.rar-rare{--rar:#2F6FD6}
+.rar-epic{--rar:#8A3FD1}
+.rar-mythic{--rar:#D7264F}
+.rar-legendary{--rar:#E39B16}
+.rar-special{--rar:#D71920;--rar-bild:linear-gradient(135deg,#FF5F6D,#FFC371,#47E891,#4FACFE,#B06AB3,#FF5F6D)}
+.rar-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 28px;padding:0;list-style:none}
+.rar{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:12px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--rar);animation:karte-in .45s var(--ease-out) both;animation-delay:calc(var(--i,0) * 50ms)}
+.rar-stein{grid-row:span 2;width:30px;height:30px;border-radius:8px;background:var(--rar-bild,var(--rar));box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 3px 8px color-mix(in srgb,var(--rar) 40%,transparent);transform:rotate(45deg) scale(.8)}
+.rar-special .rar-stein{background-size:300% 300%;animation:schillern 4s linear infinite}
+.rar.rar-special{border-color:transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(180deg,#FF5F6D,#FFC371,#47E891,#4FACFE,#B06AB3) border-box}
+.rar b{font-size:16px;line-height:1.2}
+.rar small{color:var(--fg-2);font-size:13.5px}
+@keyframes schillern{0%{background-position:0% 50%}100%{background-position:300% 50%}}
 
 /* Konto */
 .panel{display:grid;gap:12px;margin-bottom:16px;padding:20px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}

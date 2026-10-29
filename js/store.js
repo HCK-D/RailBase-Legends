@@ -11,6 +11,7 @@ const Store = (() => {
     name: '',
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
+    karten: [],        // gesammelte Karten, z. B. { id: 'k-001', seltenheit: 'rare' } (kommt später)
     gratisTag: null,   // Datum (YYYY-MM-DD) des letzten Gratis-Packs
   };
 
@@ -30,6 +31,7 @@ const Store = (() => {
         ...structuredClone(STANDARD),
         ...daten,
         vorrat: { ...(daten.vorrat || {}) },
+        karten: Array.isArray(daten.karten) ? daten.karten : [],
       };
     } catch (e) {
       return structuredClone(STANDARD);

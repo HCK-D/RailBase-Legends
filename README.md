@@ -1,42 +1,46 @@
 # RailBase Sammelkarten – Beta
 
 Ein Sammelkarten-Spiel im Stil von RailBase: Packs öffnen, Karten sammeln, jeden Tag ein Gratis-Pack.
-Der Name und die Domain kommen später.
+Eigenes Projekt, nicht mit Railbase.ch verbunden. Name und Domain kommen später.
+
+Das Projekt bleibt vorerst nur auf diesem Computer. Auf GitHub kommt es erst, wenn das Ergebnis gut ist.
+
+## Vorschau öffnen
+
+Doppelklick auf **`Vorschau starten.bat`**. Der Browser öffnet sich von selbst.
+
+- Computer: http://localhost:8770
+- Handy: Die Adresse steht im schwarzen Fenster, z. B. `http://192.168.1.115:8770`.
+  Das Handy muss im gleichen WLAN sein.
+- Beenden: das schwarze Fenster schliessen.
+
+Beim ersten Start fragt Windows vielleicht, ob der Zugriff erlaubt ist. Dann nur **Private Netzwerke** wählen.
 
 ## Was schon da ist
 
 - Startseite mit dem täglichen Gratis-Pack (1 Standard-Pack pro Tag, neu ab Mitternacht)
-- 7 Packs in 4 Stufen: 1 Standard, 2 Silber, 2 Gold, 2 Platin
+- 7 Pack-Varianten: 1 Standard, 2 Silber, 2 Gold, 2 Platin
 - Pack öffnen mit Animation (Pack wackelt, reisst auf, 5 Karten drehen sich auf)
+- 7 Karten-Kategorien: Common, Uncommon, Rare, Epic, Mythic, Legendary, Special
 - Navigation unten: Start, Packs, Sammlung, Konto, Mehr
 - Hell und dunkel, für Handy und Computer
 
-Die Karten selbst fehlen noch. Im Moment zeigt ein geöffnetes Pack 5 Kartenrückseiten.
+## Was noch kommt
+
+- Die Karten selbst (Liste mit Karten und Wahrscheinlichkeiten folgt als Word-Dokument)
+- Login und Online-Datenbank (eher gegen Ende des Projekts)
+
+Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eigenen Spielstand.
 
 ## Ordner
 
 | Ordner / Datei | Inhalt |
 | --- | --- |
 | `index.html` | die ganze Seite |
-| `css/style.css` | Design (Farben wie RailBase.ch) |
-| `js/app.js` | Packs, Gratis-Pack, Pack öffnen, Konto |
+| `css/style.css` | Design (Farben wie RailBase.ch, Farben der Kategorien) |
+| `js/app.js` | Packs, Kategorien, Gratis-Pack, Pack öffnen, Konto |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |
-
-## Speichern der Daten
-
-In der Beta speichert die Seite alles im Browser (localStorage). Das heisst:
-jedes Gerät und jeder Browser hat sein eigenes Konto.
-
-Für die Online-Datenbank ist **Supabase** geplant (gratis Stufe, mit Login).
-Dann wird nur `js/store.js` ausgetauscht, der Rest der Seite bleibt gleich.
-
-## Online stellen (GitHub Pages)
-
-1. Auf github.com ein neues Repository anlegen, z. B. `railbase-sammelkarten`.
-2. Diesen Ordner hochladen (push).
-3. Im Repository: **Settings → Pages → Branch: main, Ordner: / (root)** wählen.
-4. Nach ein bis zwei Minuten ist die Beta unter `https://<dein-name>.github.io/railbase-sammelkarten/` erreichbar.
-
-Die eigene Domain kann später unter **Settings → Pages → Custom domain** eingetragen werden.
+| `werkzeuge/vorschau.ps1` | kleiner Webserver für die Vorschau |
+| `Vorschau starten.bat` | startet die Vorschau per Doppelklick |

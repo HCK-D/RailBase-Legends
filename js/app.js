@@ -22,6 +22,17 @@ const STUFEN = [
   { id: 'platin', titel: 'Platin', hinweis: 'Zwei Designs' },
 ];
 
+// Die 7 Karten-Kategorien, von häufig bis selten. Farben stehen in css/style.css (.rar-<id>).
+const SELTENHEITEN = [
+  { id: 'common', name: 'Common' },
+  { id: 'uncommon', name: 'Uncommon' },
+  { id: 'rare', name: 'Rare' },
+  { id: 'epic', name: 'Epic' },
+  { id: 'mythic', name: 'Mythic' },
+  { id: 'legendary', name: 'Legendary' },
+  { id: 'special', name: 'Special' },
+];
+
 // Anzahl Karten pro geöffnetem Pack. Platzhalter, bis die Karten fertig sind.
 const KARTEN_PRO_PACK = 5;
 
@@ -174,8 +185,24 @@ function zeichnePackListe() {
 }
 
 function zeichneSammlung() {
+  const karten = app.daten.karten;
+  $('st-karten').textContent = karten.length;
   $('st-geoeffnet').textContent = app.daten.geoeffnet;
   $('st-vorrat').textContent = vorratGesamt();
+
+  const liste = $('rar-liste');
+  liste.innerHTML = '';
+  SELTENHEITEN.forEach((s, i) => {
+    const n = karten.filter((k) => k.seltenheit === s.id).length;
+    const li = document.createElement('li');
+    li.className = `rar rar-${s.id}`;
+    li.style.setProperty('--i', i);
+    li.innerHTML = `
+      <span class="rar-stein" aria-hidden="true"></span>
+      <b>${s.name}</b>
+      <small>${n} ${n === 1 ? 'Karte' : 'Karten'}</small>`;
+    liste.appendChild(li);
+  });
 }
 
 function zeichneKonto() {
