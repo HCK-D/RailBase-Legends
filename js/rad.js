@@ -2,12 +2,14 @@
 
 const Rad = (() => {
   // 12 gleich grosse Felder. Die Anzahl Felder pro Preis ist die Chance (Platzhalter):
-  // Nichts 5/12, Basis 3/12, Silver 2/12, Gold 1/12, Platinum 1/12
-  const FELDER = ['nichts', 'standard', 'silber', 'nichts', 'standard', 'gold',
-                  'nichts', 'standard', 'silber', 'nichts', 'platin', 'nichts'];
+  // Nichts 3/12, Nochmal 2/12, Basis 3/12, Silver 2/12, Gold 1/12, Platinum 1/12
+  // «Nochmal» = sofort noch einmal drehen, die 24 Stunden beginnen erst danach
+  const FELDER = ['nichts', 'standard', 'silber', 'nochmal', 'standard', 'gold',
+                  'nichts', 'standard', 'silber', 'nochmal', 'platin', 'nichts'];
 
   const PREISE = {
     nichts:   { text: 'Nichts', farbe: 'var(--rad-nichts)', schrift: 'var(--fg-2)' },
+    nochmal:  { text: 'Nochmal', farbe: '#2E9E5B', schrift: '#FFFFFF' },
     standard: { text: 'Basis', farbe: '#D71920', schrift: '#FFFFFF' },
     silber:   { text: 'Silver', farbe: '#A7AFB7', schrift: '#202326' },
     gold:     { text: 'Gold', farbe: '#D4A21A', schrift: '#202326' },
@@ -64,10 +66,11 @@ const Rad = (() => {
     const feld = Math.floor(Math.random() * FELDER.length);
     const preis = FELDER[feld];
 
-    // sofort speichern: Neuladen während der Drehung gibt keine zweite Chance
-    app.daten.radZeit = Date.now();
+    // sofort speichern: Neuladen während der Drehung gibt keine zweite Chance.
+    // Bei «Nochmal» bleibt das Rad bereit.
+    if (preis !== 'nochmal') app.daten.radZeit = Date.now();
     let packId = null;
-    if (preis !== 'nichts') {
+    if (preis !== 'nichts' && preis !== 'nochmal') {
       const auswahl = PACKS.filter((p) => p.stufe === preis);
       packId = auswahl[Math.floor(Math.random() * auswahl.length)].id;
       app.daten.vorrat[packId] = vorratVon(packId) + 1;
@@ -92,19 +95,31 @@ const Rad = (() => {
       dreht = false;
       $('rad-buehne').classList.remove('dreht');
       aktualisiereAlles();
-      zeigeGewinn(packId);
+      zeigeGewinn(preis, packId);
     }, 4750);
   }
 
   // ---------- Gewinn-Fenster ----------
 
   let gewonnenesPack = null;
+  let nochmal = false;
 
-  function zeigeGewinn(packId) {
+  function zeigeGewinn(preis, packId) {
     gewonnenesPack = packId;
+    nochmal = preis === 'nochmal';
     const box = $('gewinn');
-    box.className = `gewinn ${packId ? `preis-${packVonId(packId).stufe}` : 'preis-nichts'}`;
-    if (packId) {
+    box.className = `gewinn preis-${preis}`;
+    $('gw-oeffnen-icon').setAttribute('href', nochmal ? '#i-rad' : '#i-pack-hell');
+    if (nochmal) {
+      $('gw-img').hidden = true;
+      $('gw-leer').hidden = false;
+      $('gw-kicker').textContent = 'Glück gehabt!';
+      $('gw-titel').textContent = 'Nochmal drehen';
+      $('gw-text').textContent = 'Du darfst gleich noch einmal am Rad drehen.';
+      $('gw-oeffnen-txt').textContent = 'Nochmal drehen';
+      $('gw-oeffnen').hidden = false;
+      $('gw-spaeter').textContent = 'Später drehen';
+    } else if (packId) {
       const p = packVonId(packId);
       $('gw-img').src = bildGross(p);
       $('gw-img').alt = `${p.titel} Pack ${p.name}`;
@@ -113,6 +128,7 @@ const Rad = (() => {
       $('gw-kicker').textContent = 'Gewonnen!';
       $('gw-titel').textContent = `${p.titel} Pack`;
       $('gw-text').textContent = `${p.name} liegt jetzt in deinem Vorrat.`;
+      $('gw-oeffnen-txt').textContent = 'Jetzt öffnen';
       $('gw-oeffnen').hidden = false;
       $('gw-spaeter').textContent = 'Später öffnen';
     } else {
@@ -146,7 +162,8 @@ const Rad = (() => {
     });
     $('gw-oeffnen').addEventListener('click', () => {
       schliesseGewinn();
-      if (gewonnenesPack) Oeffnen.oeffne(gewonnenesPack);
+      if (nochmal) setTimeout(drehe, 250); // Fenster erst zugehen lassen, dann dreht das Rad wieder
+      else if (gewonnenesPack) Oeffnen.oeffne(gewonnenesPack);
     });
     $('gw-spaeter').addEventListener('click', schliesseGewinn);
     $('gewinn').addEventListener('click', (e) => { if (e.target === $('gewinn')) schliesseGewinn(); });

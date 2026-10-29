@@ -149,7 +149,20 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .buehne-txt p{margin:4px 0 0;font-size:18px;color:var(--fg)}
 
 .podest-bereich{position:absolute;left:0;right:0;bottom:56px;display:grid;justify-items:center}
-.hero-pack{position:relative;z-index:2;height:clamp(150px,calc(max(min(68vh,560px),440px) - 215px),330px);width:auto;max-width:52%;margin-bottom:-34px;border-radius:6px;box-shadow:0 22px 30px rgba(0,0,0,.35);animation:pack-schweben 3.4s ease-in-out infinite}
+/* Das Pack auf dem Podest ist der Knopf */
+.hero-pack-knopf{position:relative;z-index:2;display:grid;justify-items:center;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero-pack-knopf:disabled{cursor:default}
+.hero-pack-knopf:disabled .hero-pack{filter:grayscale(.6) brightness(.85)}
+.hero-pack-knopf:hover:not(:disabled) .hero-pack{filter:brightness(1.08);box-shadow:0 22px 30px rgba(0,0,0,.35),0 0 40px rgba(227,38,46,.45)}
+.hero-pack-knopf:active:not(:disabled) .hero-pack{scale:.95}
+.hero-pack-knopf:focus-visible{outline:none}
+.hero-pack-knopf:focus-visible .hero-pack{outline:3px solid var(--accent);outline-offset:6px}
+/* bereit: Pack wackelt ab und zu, damit man sieht, dass man draufdrücken kann */
+.hero-pack-knopf.bereit .hero-pack{animation:pack-schweben 3.4s ease-in-out infinite,pack-locken 4s ease-in-out 1.5s infinite}
+@keyframes pack-locken{0%,82%,100%{rotate:0deg}86%{rotate:-4deg}90%{rotate:4deg}94%{rotate:-2deg}}
+.hero-tipp{position:absolute;left:50%;top:60%;z-index:3;padding:7px 16px;border-radius:999px;background:rgba(10,11,12,.75);color:#fff;font:700 16px/1 "Barlow Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;transform:translateX(-50%);pointer-events:none;backdrop-filter:blur(4px);animation:blinken 1.8s ease-in-out infinite}
+.hero-tipp:empty{display:none}
+.hero-pack{position:relative;z-index:2;height:clamp(150px,calc(max(min(68vh,560px),440px) - 215px),330px);width:auto;max-width:none;aspect-ratio:786/1406;margin-bottom:-34px;border-radius:6px;box-shadow:0 22px 30px rgba(0,0,0,.35);animation:pack-schweben 3.4s ease-in-out infinite}
 .podest{position:relative;width:min(78%,340px);height:84px}
 .podest-top{position:absolute;inset:0 0 auto;height:56px;border-radius:50%;background:var(--pd-top);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 2px var(--pd-ring)}
 :root[data-theme="dark"] .podest-top{box-shadow:0 0 0 2px var(--pd-ring),0 0 22px 4px rgba(255,40,48,.55),inset 0 0 0 10px rgba(0,0,0,.25)}
@@ -160,7 +173,6 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .badge svg{color:var(--accent)}
 .badge.bereit{animation:badge-puls 2.2s ease-in-out infinite}
 @keyframes badge-puls{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
-.start-aktion{padding:18px 16px 8px}
 
 /* ---------- Packs: Reiter, Karussell, Ticket ---------- */
 .reiter{display:grid;grid-template-columns:repeat(4,1fr);margin:0 16px;border-bottom:1px solid var(--line)}
@@ -228,6 +240,9 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .preis-gold .gw-box{--gw-farbe:#D4A21A}
 .preis-platin .gw-box{--gw-farbe:#5E7FA8}
 .preis-nichts .gw-box{--gw-farbe:#8A939C;animation:gw-nichts .6s ease-out}
+.preis-nochmal .gw-box{--gw-farbe:#2E9E5B}
+.preis-nochmal .gw-leer{background:rgba(46,158,91,.12);color:#2E9E5B;animation:gw-pack-rein .8s var(--spring) .1s both}
+.preis-nochmal .gw-leer svg{animation:dreh-langsam 3s linear infinite}
 @keyframes gw-auftauchen{0%{opacity:0;transform:translateY(60px) scale(.6)}60%{opacity:1}100%{transform:none}}
 @keyframes gw-nichts{0%{opacity:0;transform:scale(.9)}40%{opacity:1;transform:translateX(-10px)}60%{transform:translateX(8px)}80%{transform:translateX(-4px)}100%{transform:none}}
 /* drehende Lichtstrahlen hinter dem Pack */
@@ -452,12 +467,11 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
   .tabbar a[aria-current="page"]::after{top:auto;bottom:-10px;left:20%;right:20%;height:3px;border-radius:3px}
   .tabbar a.punkt span::after{top:8px;left:30px}
 
-  /* Start: breite Bühne, Knopf in der Mitte */
+  /* Start: breite Bühne, das Pack ist der Knopf */
   .buehne{height:600px;margin-top:24px;border-radius:24px}
   .buehne-txt{padding-top:40px}
   .buehne-txt h1{font-size:64px}
   .hero-pack{height:330px}
-  .start-aktion{max-width:440px;margin:0 auto;padding:28px 0 0}
 
   /* Packs: mehr Packs nebeneinander, Ticket in der Mitte */
   .reiter{max-width:640px;margin:0 auto}

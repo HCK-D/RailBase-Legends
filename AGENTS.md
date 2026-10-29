@@ -45,7 +45,7 @@ Start: `start-badge` (mit einem `<use>` und einem `<span>` darin), `start-btn`, 
 Packs: `pk-reiter`, `pk-karussell`, `pk-zurueck`, `pk-weiter`, `pk-stelle`, `pk-punkte`,
 `tk-name`, `tk-info`, `tk-garantie` (mit `<span>` darin), `tk-btn`, `tk-btn-txt`
 Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt`, `rad-info`
-Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-spaeter`
+Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-oeffnen-icon`, `gw-oeffnen-txt`, `gw-spaeter`
 Album: `st-entdeckt`, `st-karten`, `st-geoeffnet`, `rar-liste`, `al-suche`, `al-bahn`, `al-nur-meine`,
 `sam-titel`, `sam-karten`, `sam-leer`
 Konto: `avatar-gross`, `profil-name`, `profil-level`, `konto-form`, `konto-name`, `reset-btn`

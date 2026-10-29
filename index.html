@@ -93,18 +93,15 @@
       </div>
 
       <div class="podest-bereich">
-        <img class="hero-pack" src="assets/packs/standard.webp" alt="Basis-Pack">
+        <!-- Das Pack selbst ist der Knopf: drücken öffnet es -->
+        <button class="hero-pack-knopf" type="button" id="start-btn" aria-label="Pack öffnen">
+          <img class="hero-pack" src="assets/packs/standard.webp" alt="">
+          <span class="hero-tipp" id="start-btn-txt">Tippen zum Öffnen</span>
+        </button>
         <div class="podest" aria-hidden="true"><i class="podest-top"></i><i class="podest-seite"></i></div>
       </div>
 
       <span class="badge" id="start-badge"><svg width="16" height="16" aria-hidden="true"><use href="#i-gift"/></svg><span>Gratis-Pack bereit</span></span>
-    </div>
-
-    <div class="start-aktion">
-      <button class="btn-haupt" type="button" id="start-btn">
-        <svg width="30" height="30" aria-hidden="true"><use href="#i-pack-hell"/></svg>
-        <span id="start-btn-txt">Pack öffnen</span>
-      </button>
     </div>
   </section>
 
@@ -163,6 +160,7 @@
         <li><i style="background:#A7AFB7"></i>Silver</li>
         <li><i style="background:#D4A21A"></i>Gold</li>
         <li><i style="background:#2B2F35"></i>Platinum</li>
+        <li><i style="background:#2E9E5B"></i>Nochmal drehen</li>
         <li><i style="background:var(--rad-nichts)"></i>Nichts</li>
       </ul>
     </div>
@@ -352,8 +350,8 @@
     <p class="gw-text" id="gw-text"></p>
     <div class="gw-knoepfe">
       <button class="btn-haupt" type="button" id="gw-oeffnen">
-        <svg width="28" height="28" aria-hidden="true"><use href="#i-pack-hell"/></svg>
-        <span>Jetzt öffnen</span>
+        <svg width="28" height="28" aria-hidden="true"><use id="gw-oeffnen-icon" href="#i-pack-hell"/></svg>
+        <span id="gw-oeffnen-txt">Jetzt öffnen</span>
       </button>
       <button class="btn ghost gw-spaeter" type="button" id="gw-spaeter">Später</button>
     </div>

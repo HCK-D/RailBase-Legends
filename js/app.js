@@ -175,15 +175,16 @@ function gratisBereit() {
   return bereitIn(app.daten.gratisZeit) === 0;
 }
 
-// Start: was der grosse Knopf gerade tut
+// Start: was beim Drücken aufs Pack passiert
 function startZustand() {
-  if (gratisBereit()) return { art: 'gratis', badge: 'Gratis-Pack bereit', icon: 'i-gift', knopf: 'Pack öffnen' };
+  if (gratisBereit()) return { art: 'gratis', badge: 'Gratis-Pack bereit', icon: 'i-gift', tipp: 'Tippen zum Öffnen', label: 'Gratis-Pack öffnen' };
   const basis = vorratVon('standard');
-  if (basis > 0) return { art: 'basis', badge: `${basis} Basis-Pack${basis > 1 ? 's' : ''} im Vorrat`, icon: 'i-pack-voll', knopf: 'Pack öffnen' };
+  if (basis > 0) return { art: 'basis', badge: `${basis} Basis-Pack${basis > 1 ? 's' : ''} im Vorrat`, icon: 'i-pack-voll', tipp: 'Tippen zum Öffnen', label: 'Basis-Pack öffnen' };
   const alle = vorratGesamt();
-  if (alle > 0) return { art: 'packs', badge: `${alle} Pack${alle > 1 ? 's' : ''} im Vorrat`, icon: 'i-pack-voll', knopf: 'Zu den Packs' };
-  if (Rad.bereit()) return { art: 'rad', badge: `Gratis-Pack in ${dauerText(bereitIn(app.daten.gratisZeit))}`, icon: 'i-uhr', knopf: 'Glücksrad drehen' };
-  return { art: 'warten', badge: `Gratis-Pack in ${dauerText(bereitIn(app.daten.gratisZeit))}`, icon: 'i-uhr', knopf: 'Morgen wieder' };
+  if (alle > 0) return { art: 'packs', badge: `${alle} Pack${alle > 1 ? 's' : ''} im Vorrat`, icon: 'i-pack-voll', tipp: 'Tippen für deine Packs', label: 'Zu den Packs' };
+  const warten = `Gratis-Pack in ${dauerText(bereitIn(app.daten.gratisZeit))}`;
+  if (Rad.bereit()) return { art: 'rad', badge: warten, icon: 'i-uhr', tipp: 'Tippen fürs Glücksrad', label: 'Zum Glücksrad' };
+  return { art: 'warten', badge: warten, icon: 'i-uhr', tipp: '', label: warten };
 }
 
 function zeichneStart() {
@@ -192,8 +193,10 @@ function zeichneStart() {
   badge.querySelector('use').setAttribute('href', `#${z.icon}`);
   badge.querySelector('span').textContent = z.badge;
   badge.classList.toggle('bereit', z.art === 'gratis');
-  $('start-btn-txt').textContent = z.knopf;
+  $('start-btn-txt').textContent = z.tipp;
   $('start-btn').disabled = z.art === 'warten';
+  $('start-btn').classList.toggle('bereit', z.art === 'gratis' || z.art === 'basis');
+  $('start-btn').setAttribute('aria-label', z.label);
 }
 
 function startKnopf() {
