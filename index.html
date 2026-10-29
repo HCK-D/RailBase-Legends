@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Sammelkarten · Beta</title>
-  <meta name="description" content="Sammelkarten-Beta: Packs öffnen, Karten sammeln und jeden Tag ein Gratis-Pack holen.">
+  <meta name="description" content="Sammelkarten-Beta: Packs öffnen, Karten sammeln, alle 24 Stunden ein Gratis-Pack und das Glücksrad.">
   <script>(function(){var t='light';try{t=localStorage.getItem('sk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){t='light'}document.documentElement.setAttribute('data-theme',t)})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,11 +21,14 @@
   </symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8.5a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-pack" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 9h14M9 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-rad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></symbol>
   <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="6" width="11" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5h9a2 2 0 0 1 2 2V16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 9h19M12 9v11.5M12 9c-1.5-3.5-6-4.5-6-1.8C6 9 12 9 12 9zm0 0c1.5-3.5 6-4.5 6-1.8C18 9 12 9 12 9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-pfeil" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
 <header class="topbar">
@@ -52,15 +55,29 @@
     <div class="hero">
       <span class="kicker">Die Schweiz auf Schienen</span>
       <h1>Hol dir deine Packs.</h1>
-      <p class="lede">Jeden Tag ein Gratis-Pack. Öffne Packs, sammle Karten und finde heraus, was in den Silber-, Gold- und Platin-Packs steckt.</p>
+      <p class="lede">Alle 24 Stunden ein Gratis-Pack und eine Drehung am Glücksrad. Öffne Packs und sammle Karten von Common bis Special.</p>
+    </div>
 
-      <div class="free-card" id="free-card">
-        <div class="free-txt">
+    <div class="aktionen">
+      <div class="aktion free-card" id="free-card">
+        <img class="aktion-bild" src="assets/packs/klein/standard.webp" alt="">
+        <div class="aktion-txt">
+          <span class="aktion-kicker"><svg width="14" height="14" aria-hidden="true"><use href="#i-gift"/></svg>Gratis-Pack</span>
           <b id="free-titel">Dein Gratis-Pack</b>
           <span id="free-info">wird geladen …</span>
         </div>
         <button class="btn" type="button" id="free-btn" disabled>Gratis-Pack holen</button>
       </div>
+
+      <a class="aktion rad-karte" href="#rad">
+        <span class="aktion-rad" aria-hidden="true"><svg width="54" height="54"><use href="#i-rad"/></svg></span>
+        <div class="aktion-txt">
+          <span class="aktion-kicker"><svg width="14" height="14" aria-hidden="true"><use href="#i-rad"/></svg>Glücksrad</span>
+          <b>Dreh am Rad</b>
+          <span id="rad-start-info">wird geladen …</span>
+        </div>
+        <span class="aktion-pfeil" aria-hidden="true"><svg width="20" height="20"><use href="#i-pfeil"/></svg></span>
+      </a>
     </div>
 
     <div class="sec-head">
@@ -80,12 +97,36 @@
     <div id="pk-liste"></div>
   </section>
 
+  <!-- ===== GLÜCKSRAD ===== -->
+  <section class="view" id="v-rad" data-view="rad" hidden>
+    <div class="page-head">
+      <span class="kicker">Glücksrad</span>
+      <h1>Dreh am Rad</h1>
+      <p id="rad-info">wird geladen …</p>
+    </div>
+    <div class="rad-buehne" data-kein-wischen>
+      <div class="rad-zeiger" aria-hidden="true"></div>
+      <svg class="rad" id="rad-svg" viewBox="0 0 200 200" role="img" aria-label="Glücksrad mit Feldern für Nichts, Standard, Silber, Gold und Platin"></svg>
+    </div>
+    <div class="rad-unten">
+      <button class="btn btn-gross" type="button" id="rad-btn" disabled>Drehen</button>
+      <div class="rad-ergebnis" id="rad-ergebnis" hidden aria-live="polite"></div>
+      <ul class="rad-legende">
+        <li><i style="background:#D71920"></i>Standard</li>
+        <li><i style="background:#A7AFB7"></i>Silber</li>
+        <li><i style="background:#D4A21A"></i>Gold</li>
+        <li><i style="background:#2F4A6E"></i>Platin</li>
+        <li><i style="background:var(--rad-nichts)"></i>Nichts</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ===== SAMMLUNG ===== -->
   <section class="view" id="v-sammlung" data-view="sammlung" hidden>
     <div class="page-head">
       <span class="kicker">Sammelkarten</span>
       <h1>Meine Sammlung</h1>
-      <p>Hier erscheinen deine Karten, sobald sie eingebaut sind.</p>
+      <p>Die Karten sind noch Skizzen. Das Design und die echten Karten kommen später.</p>
     </div>
     <div class="stats">
       <div><b id="st-karten">0</b><span>Karten</span></div>
@@ -96,10 +137,13 @@
     <h2 class="sam-h">Kategorien</h2>
     <ul class="rar-liste" id="rar-liste"></ul>
 
-    <div class="empty">
+    <h2 class="sam-h" id="sam-titel" hidden>Meine Karten</h2>
+    <ul class="karten-grid" id="sam-karten"></ul>
+
+    <div class="empty" id="sam-leer">
       <svg width="44" height="44" aria-hidden="true"><use href="#i-cards"/></svg>
       <b>Noch keine Karten</b>
-      <span>Die Karten kommen bald. Packs kannst du schon jetzt öffnen.</span>
+      <span>Öffne ein Pack, dann siehst du hier deine Karten.</span>
       <a class="btn" href="#packs">Zu den Packs</a>
     </div>
   </section>
@@ -118,15 +162,14 @@
         <input type="text" id="konto-name" maxlength="30" placeholder="z. B. Hckd">
       </label>
       <button class="btn" type="submit">Speichern</button>
-      <p class="msg" id="konto-msg" aria-live="polite"></p>
     </form>
 
     <div class="panel muted">
       <b>Anmelden</b>
-      <p>Login mit Online-Datenbank kommt in einem späteren Schritt. Bis dahin gilt: ein Gerät, ein Konto.</p>
+      <p>Login mit Online-Datenbank kommt später. Bis dahin gilt: ein Gerät, ein Konto.</p>
     </div>
 
-    <div class="panel danger-zone">
+    <div class="panel">
       <b>Beta zurücksetzen</b>
       <p>Löscht alle Packs, Karten und Einstellungen in diesem Browser.</p>
       <button class="btn ghost" type="button" id="reset-btn">Alles zurücksetzen</button>
@@ -143,7 +186,8 @@
     <ul class="menu-list">
       <li><span>Tauschen</span><small>bald</small></li>
       <li><span>Rangliste</span><small>bald</small></li>
-      <li><span>Regeln und Hilfe</span><small>bald</small></li>
+      <li><span>Erfolge</span><small>bald</small></li>
+      <li><span>Regeln und Chancen</span><small>bald</small></li>
       <li><span>Feedback an die Beta</span><small>bald</small></li>
     </ul>
   </section>
@@ -155,18 +199,30 @@
   <div class="op-box">
     <p class="op-titel" id="op-titel"></p>
 
-    <div class="op-stage" id="op-stage">
-      <button class="op-pack" type="button" id="op-pack" aria-label="Pack öffnen">
+    <div class="op-stage">
+      <button class="op-pack" type="button" id="op-pack" aria-label="Pack aufreissen">
         <img id="op-img" alt="">
         <span class="op-tipp" id="op-tipp">Tippen zum Aufreissen</span>
       </button>
+
+      <div class="op-einzeln" id="op-einzeln" hidden>
+        <p class="op-zaehler" id="op-zaehler"></p>
+        <div class="op-slot" id="op-slot"></div>
+        <p class="op-hilfe" id="op-hilfe" aria-live="polite"></p>
+      </div>
+
       <ul class="op-karten" id="op-karten" hidden></ul>
     </div>
 
     <p class="op-status" id="op-status" aria-live="polite"></p>
-    <button class="btn ghost op-close" type="button" id="op-close" hidden>Schliessen</button>
+    <div class="op-knoepfe">
+      <button class="btn ghost op-close" type="button" id="op-alle" hidden>Alle aufdecken</button>
+      <button class="btn ghost op-close" type="button" id="op-close" hidden>Schliessen</button>
+    </div>
   </div>
 </div>
+
+<p class="hinweis" id="hinweis" hidden role="status"></p>
 
 <nav class="tabbar" aria-label="Hauptbereiche">
   <a href="#start" data-tab="start">
@@ -174,6 +230,9 @@
   </a>
   <a href="#packs" data-tab="packs">
     <svg width="22" height="22" aria-hidden="true"><use href="#i-pack"/></svg><span>Packs</span>
+  </a>
+  <a href="#rad" data-tab="rad" class="tab-rad">
+    <span class="tab-rad-kreis"><svg width="24" height="24" aria-hidden="true"><use href="#i-rad"/></svg></span><span>Rad</span>
   </a>
   <a href="#sammlung" data-tab="sammlung">
     <svg width="22" height="22" aria-hidden="true"><use href="#i-cards"/></svg><span>Sammlung</span>
@@ -187,6 +246,9 @@
 </nav>
 
 <script src="js/store.js"></script>
+<script src="js/karten.js"></script>
 <script src="js/app.js"></script>
+<script src="js/oeffnen.js"></script>
+<script src="js/rad.js"></script>
 </body>
 </html>

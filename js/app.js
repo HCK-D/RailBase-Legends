@@ -1,6 +1,7 @@
-/* Sammelkarten-Beta: Oberfläche, Packs, Gratis-Pack, Konto. Die Daten holt sich die App über store.js. */
+/* Sammelkarten-Beta: Seiten, Packs, Gratis-Pack, Sammlung, Konto.
+   Daten über store.js, Karten in karten.js, Öffnen in oeffnen.js, Glücksrad in rad.js. */
 
-// Die 7 Pack-Designs. Karten kommen später dazu (pro Pack ein Kartenpool).
+// Die 7 Pack-Designs.
 // Bilder: assets/packs/<id>.webp (gross, zum Öffnen) und assets/packs/klein/<id>.webp (Listen).
 const PACKS = [
   { id: 'standard', stufe: 'standard', titel: 'Standard', name: 'Schweizer Bahn' },
@@ -16,29 +17,21 @@ const bildKlein = (p) => `assets/packs/klein/${p.id}.webp`;
 const bildGross = (p) => `assets/packs/${p.id}.webp`;
 
 const STUFEN = [
-  { id: 'standard', titel: 'Standard', hinweis: 'Gratis jeden Tag' },
+  { id: 'standard', titel: 'Standard', hinweis: 'Gratis alle 24 h' },
   { id: 'silber', titel: 'Silber', hinweis: 'Zwei Designs' },
   { id: 'gold', titel: 'Gold', hinweis: 'Zwei Designs' },
   { id: 'platin', titel: 'Platin', hinweis: 'Zwei Designs' },
 ];
 
-// Die 7 Karten-Kategorien, von häufig bis selten. Farben stehen in css/style.css (.rar-<id>).
-const SELTENHEITEN = [
-  { id: 'common', name: 'Common' },
-  { id: 'uncommon', name: 'Uncommon' },
-  { id: 'rare', name: 'Rare' },
-  { id: 'epic', name: 'Epic' },
-  { id: 'mythic', name: 'Mythic' },
-  { id: 'legendary', name: 'Legendary' },
-  { id: 'special', name: 'Special' },
-];
+// Reihenfolge der Seiten unten im Menü (auch fürs Wischen zwischen den Seiten)
+const TABS = ['start', 'packs', 'rad', 'sammlung', 'konto', 'mehr'];
 
-// Anzahl Karten pro geöffnetem Pack. Platzhalter, bis die Karten fertig sind.
-const KARTEN_PRO_PACK = 5;
+const TAG_MS = 24 * 60 * 60 * 1000;
 
 const app = {
   daten: Store.laden(),
   ansicht: null,
+  filter: null, // Kategorie-Filter in der Sammlung
 };
 
 const $ = (id) => document.getElementById(id);
@@ -61,24 +54,35 @@ function speichern() {
   Store.speichern(app.daten);
 }
 
-function gratisHeuteSchonGeholt() {
-  return app.daten.gratisTag === Store.heute();
+// Wie lange es noch dauert, bis wieder 24 Stunden vorbei sind (0 = jetzt bereit)
+function bereitIn(zeit) {
+  if (!zeit) return 0;
+  return Math.max(0, zeit + TAG_MS - Date.now());
 }
 
-// Zeit bis Mitternacht, z. B. "5 Std. 12 Min."
-function bisMitternacht() {
-  const jetzt = new Date();
-  const mitternacht = new Date(jetzt);
-  mitternacht.setHours(24, 0, 0, 0);
-  const min = Math.max(0, Math.round((mitternacht - jetzt) / 60000));
+// z. B. "5 Std. 12 Min."
+function dauerText(ms) {
+  const min = Math.max(1, Math.ceil(ms / 60000));
   const std = Math.floor(min / 60);
   const rest = min % 60;
   return std > 0 ? `${std} Std. ${rest} Min.` : `${rest} Min.`;
 }
 
-// ---------- Ansichten (Hash-Routing) ----------
+let hinweisTimer = null;
+function zeigeHinweis(text) {
+  const el = $('hinweis');
+  el.textContent = text;
+  el.hidden = false;
+  el.classList.remove('sichtbar');
+  void el.offsetWidth;
+  el.classList.add('sichtbar');
+  clearTimeout(hinweisTimer);
+  hinweisTimer = setTimeout(() => { el.classList.remove('sichtbar'); }, 2600);
+}
 
-function zeigeAnsicht(name) {
+// ---------- Seiten (Hash-Routing) ----------
+
+function zeigeAnsicht(name, richtung = 0) {
   const ziel = document.querySelector(`[data-view="${name}"]`);
   if (!ziel) return zeigeAnsicht('start');
 
@@ -89,43 +93,95 @@ function zeigeAnsicht(name) {
   });
 
   app.ansicht = name;
-  ziel.classList.remove('view');
+  ziel.classList.remove('view', 'von-rechts', 'von-links');
   void ziel.offsetWidth; // Animation neu starten
   ziel.classList.add('view');
+  if (richtung > 0) ziel.classList.add('von-rechts');
+  if (richtung < 0) ziel.classList.add('von-links');
   window.scrollTo({ top: 0, behavior: 'instant' });
   aktualisiereAlles();
 }
 
+let naechsteRichtung = 0;
 function aktuelleAnsichtAusHash() {
   const name = location.hash.replace('#', '') || 'start';
-  zeigeAnsicht(name);
+  zeigeAnsicht(name, naechsteRichtung);
+  naechsteRichtung = 0;
+}
+
+function geheZuTab(name, richtung) {
+  naechsteRichtung = richtung;
+  location.hash = name;
+}
+
+// Auf dem Handy: nach links oder rechts wischen wechselt die Seite
+function bindeSeitenWischen() {
+  let x0 = 0;
+  let y0 = 0;
+  let aktiv = false;
+  const main = $('app');
+
+  main.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    aktiv = e.touches.length === 1 && !e.target.closest('input, textarea, select, [data-kein-wischen]');
+    x0 = t.clientX;
+    y0 = t.clientY;
+  }, { passive: true });
+
+  main.addEventListener('touchend', (e) => {
+    if (!aktiv) return;
+    aktiv = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - x0;
+    const dy = t.clientY - y0;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const i = TABS.indexOf(app.ansicht);
+    const neu = i + (dx < 0 ? 1 : -1);
+    if (neu < 0 || neu >= TABS.length) return;
+    geheZuTab(TABS[neu], dx < 0 ? 1 : -1);
+  }, { passive: true });
 }
 
 // ---------- Anzeige ----------
 
 function aktualisiereAlles() {
   aktualisiereGratis();
+  Rad.aktualisiere();
   zeichneStufen();
   zeichnePackListe();
   zeichneSammlung();
   zeichneKonto();
+  zeichnePunkte();
+}
+
+function gratisBereit() {
+  return bereitIn(app.daten.gratisZeit) === 0;
 }
 
 function aktualisiereGratis() {
   const titel = $('free-titel');
   const info = $('free-info');
   const btn = $('free-btn');
-  if (gratisHeuteSchonGeholt()) {
-    titel.textContent = 'Gratis-Pack geholt';
-    info.textContent = `Das nächste Gratis-Pack gibt es in ${bisMitternacht()}`;
-    btn.disabled = true;
-    btn.textContent = 'Heute schon geholt';
-  } else {
+  if (gratisBereit()) {
     titel.textContent = 'Dein Gratis-Pack ist bereit';
-    info.textContent = 'Ein Standard-Pack für heute.';
+    info.textContent = 'Ein Standard-Pack, alle 24 Stunden.';
     btn.disabled = false;
     btn.textContent = 'Gratis-Pack holen';
+    $('free-card').classList.add('bereit');
+  } else {
+    titel.textContent = 'Gratis-Pack geholt';
+    info.textContent = `Nächstes Gratis-Pack in ${dauerText(bereitIn(app.daten.gratisZeit))}`;
+    btn.disabled = true;
+    btn.textContent = 'Schon geholt';
+    $('free-card').classList.remove('bereit');
   }
+}
+
+// Roter Punkt im Menü, wenn etwas bereit ist
+function zeichnePunkte() {
+  document.querySelector('[data-tab="start"]').classList.toggle('punkt', gratisBereit());
+  document.querySelector('[data-tab="rad"]').classList.toggle('punkt', Rad.bereit());
+  document.querySelector('[data-tab="packs"]').classList.toggle('punkt', vorratGesamt() > 0);
 }
 
 function zeichneStufen() {
@@ -171,9 +227,10 @@ function zeichnePackListe() {
       li.innerHTML = `
         <button class="pk-karte" type="button" data-oeffnen="${p.id}" ${n === 0 ? 'disabled' : ''}>
           <img src="${bildKlein(p)}" alt="${p.titel} Pack ${p.name}" loading="lazy">
+          ${n > 0 ? `<span class="pk-anzahl">${n}×</span>` : ''}
           <span class="pk-txt">
             <b>${p.name}</b>
-            <small>Vorrat: ${n}</small>
+            <small>${n > 0 ? 'Tippen zum Öffnen' : 'Keins im Vorrat'}</small>
           </span>
         </button>`;
       liste.appendChild(li);
@@ -195,14 +252,28 @@ function zeichneSammlung() {
   SELTENHEITEN.forEach((s, i) => {
     const n = karten.filter((k) => k.seltenheit === s.id).length;
     const li = document.createElement('li');
-    li.className = `rar rar-${s.id}`;
     li.style.setProperty('--i', i);
     li.innerHTML = `
-      <span class="rar-stein" aria-hidden="true"></span>
-      <b>${s.name}</b>
-      <small>${n} ${n === 1 ? 'Karte' : 'Karten'}</small>`;
+      <button class="rar rar-${s.id}" type="button" data-filter="${s.id}" aria-pressed="${app.filter === s.id}">
+        <span class="rar-stein" aria-hidden="true"></span>
+        <b>${s.name}</b>
+        <small>${n} ${n === 1 ? 'Karte' : 'Karten'}</small>
+      </button>`;
     liste.appendChild(li);
   });
+
+  // Karten, seltenste zuerst; mit Filter nur eine Kategorie
+  const gezeigt = karten
+    .filter((k) => !app.filter || k.seltenheit === app.filter)
+    .slice()
+    .sort((a, b) => rangVon(b.seltenheit) - rangVon(a.seltenheit) || a.nr - b.nr);
+  const grid = $('sam-karten');
+  grid.innerHTML = gezeigt.slice(0, 60).map((k, i) => `<li style="--i:${Math.min(i, 12)}">${karteHtml(k)}</li>`).join('');
+  $('sam-leer').hidden = karten.length > 0;
+  $('sam-titel').hidden = karten.length === 0;
+  $('sam-titel').textContent = app.filter
+    ? `${seltenheitVon(app.filter).name} (${gezeigt.length})`
+    : `Meine Karten (${karten.length})`;
 }
 
 function zeichneKonto() {
@@ -213,102 +284,12 @@ function zeichneKonto() {
 // ---------- Gratis-Pack ----------
 
 function holeGratisPack() {
-  if (gratisHeuteSchonGeholt()) return;
+  if (!gratisBereit()) return;
   app.daten.vorrat.standard = vorratVon('standard') + 1;
-  app.daten.gratisTag = Store.heute();
+  app.daten.gratisZeit = Date.now();
   speichern();
   aktualisiereAlles();
-  oeffneOverlay('standard');
-}
-
-// ---------- Pack öffnen ----------
-
-let oeffnet = null; // Pack-ID, die gerade geöffnet wird
-
-function oeffneOverlay(id) {
-  const p = packVonId(id);
-  if (!p) return;
-  if (vorratVon(id) <= 0) {
-    alert('Von diesem Pack hast du keins mehr im Vorrat.');
-    return;
-  }
-
-  oeffnet = id;
-  $('op-titel').textContent = `${p.titel} · ${p.name}`;
-  $('op-img').src = bildGross(p);
-  $('op-img').alt = `${p.titel} Pack ${p.name}`;
-  $('op-tipp').textContent = 'Tippen zum Aufreissen';
-  $('op-status').textContent = '';
-  $('op-karten').hidden = true;
-  $('op-karten').innerHTML = '';
-  $('op-close').textContent = 'Später öffnen';
-  $('op-close').hidden = false;
-  $('op-pack').hidden = false;
-  $('op-pack').disabled = false;
-  $('op-pack').classList.remove('op-shake', 'op-reisst');
-  $('opener').hidden = false;
-  document.body.classList.add('op-offen');
-  $('op-pack').focus();
-}
-
-function schliesseOverlay() {
-  $('opener').hidden = true;
-  document.body.classList.remove('op-offen');
-  oeffnet = null;
-  aktualisiereAlles();
-}
-
-function oeffnePack() {
-  const id = oeffnet;
-  if (!id) return;
-  const pack = $('op-pack');
-  if (pack.disabled) return;
-  if (vorratVon(id) <= 0) {
-    $('op-status').textContent = 'Kein Pack mehr im Vorrat.';
-    return;
-  }
-
-  pack.disabled = true;
-  $('op-close').hidden = true;
-  $('op-tipp').textContent = '';
-  pack.classList.add('op-shake');
-
-  setTimeout(() => {
-    pack.classList.remove('op-shake');
-    pack.classList.add('op-reisst');
-
-    // Vorrat und Zähler erst beim Öffnen ändern, damit ein Abbruch nichts verliert
-    app.daten.vorrat[id] = vorratVon(id) - 1;
-    app.daten.geoeffnet += 1;
-    speichern();
-
-    setTimeout(() => zeichneKarten(), 480);
-  }, 700);
-}
-
-function zeichneKarten() {
-  $('op-pack').hidden = true;
-  const liste = $('op-karten');
-  liste.innerHTML = '';
-  for (let i = 0; i < KARTEN_PRO_PACK; i++) {
-    const li = document.createElement('li');
-    li.className = 'op-karte';
-    li.style.setProperty('--i', i);
-    li.innerHTML = `
-      <div class="op-flip">
-        <div class="op-rueck" aria-hidden="true"><span>RB</span></div>
-      </div>`;
-    liste.appendChild(li);
-  }
-  liste.hidden = false;
-  $('op-status').textContent = 'Deine Karten sind noch im Aufbau. Die Packs zählen aber schon.';
-  $('op-close').textContent = 'Schliessen';
-  $('op-close').hidden = false;
-  requestAnimationFrame(() => {
-    liste.querySelectorAll('.op-karte').forEach((k, i) => {
-      setTimeout(() => k.classList.add('gedreht'), 180 + i * 140);
-    });
-  });
+  Oeffnen.oeffne('standard');
 }
 
 // ---------- Konto ----------
@@ -317,15 +298,16 @@ function speichereName(e) {
   e.preventDefault();
   app.daten.name = $('konto-name').value.trim().slice(0, 30);
   speichern();
-  $('konto-msg').textContent = 'Gespeichert.';
-  setTimeout(() => { $('konto-msg').textContent = ''; }, 2000);
+  zeigeHinweis('Name gespeichert.');
 }
 
 function setzeAlleZurueck() {
   if (!confirm('Wirklich alles in diesem Browser löschen?')) return;
   Store.zuruecksetzen();
   app.daten = Store.laden();
+  app.filter = null;
   aktualisiereAlles();
+  zeigeHinweis('Alles zurückgesetzt.');
 }
 
 // ---------- Theme ----------
@@ -339,31 +321,41 @@ function wechsleTheme() {
 // ---------- Start ----------
 
 document.addEventListener('DOMContentLoaded', () => {
+  Oeffnen.init();
+  Rad.init();
+
   $('free-btn').addEventListener('click', holeGratisPack);
-  $('op-pack').addEventListener('click', oeffnePack);
-  $('op-close').addEventListener('click', schliesseOverlay);
   $('konto-form').addEventListener('submit', speichereName);
   $('reset-btn').addEventListener('click', setzeAlleZurueck);
   $('theme-btn').addEventListener('click', wechsleTheme);
 
   $('pk-liste').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-oeffnen]');
-    if (btn) oeffneOverlay(btn.dataset.oeffnen);
+    if (btn) Oeffnen.oeffne(btn.dataset.oeffnen);
   });
 
-  $('opener').addEventListener('click', (e) => {
-    // Klick auf den dunklen Hintergrund schliesst nicht, solange das Pack gerade aufreisst
-    if (e.target === $('opener') && !$('op-close').hidden) schliesseOverlay();
+  $('rar-liste').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    app.filter = app.filter === btn.dataset.filter ? null : btn.dataset.filter;
+    zeichneSammlung();
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !$('opener').hidden && !$('op-close').hidden) schliesseOverlay();
+
+  // Menü unten: Richtung merken, damit die neue Seite von der richtigen Seite hereingleitet
+  document.querySelector('.tabbar').addEventListener('click', (e) => {
+    const a = e.target.closest('[data-tab]');
+    if (!a) return;
+    naechsteRichtung = Math.sign(TABS.indexOf(a.dataset.tab) - TABS.indexOf(app.ansicht));
   });
 
   window.addEventListener('hashchange', aktuelleAnsichtAusHash);
+  bindeSeitenWischen();
   aktuelleAnsichtAusHash();
 
-  // Countdown bis zum nächsten Gratis-Pack aktualisieren
+  // Countdowns aktualisieren
   setInterval(() => {
-    if (app.ansicht === 'start') aktualisiereGratis();
+    aktualisiereGratis();
+    Rad.aktualisiere();
+    zeichnePunkte();
   }, 30000);
 });

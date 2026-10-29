@@ -1,8 +1,8 @@
 /*
  * Speicher-Schicht.
  * Im Moment liegen die Daten im Browser (localStorage). Später wird nur dieser Teil
- * gegen eine Online-Datenbank (z. B. Supabase) ausgetauscht. Die App ruft nur
- * Store.laden(), Store.speichern() und Store.heute() auf.
+ * gegen eine Online-Datenbank ausgetauscht. Die App ruft nur Store.laden(),
+ * Store.speichern() und Store.zuruecksetzen() auf.
  */
 const Store = (() => {
   const SCHLUESSEL = 'sk-beta-v1';
@@ -11,16 +11,10 @@ const Store = (() => {
     name: '',
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
-    karten: [],        // gesammelte Karten, z. B. { id: 'k-001', seltenheit: 'rare' } (kommt später)
-    gratisTag: null,   // Datum (YYYY-MM-DD) des letzten Gratis-Packs
+    karten: [],        // gesammelte Karten, z. B. { nr: 27, seltenheit: 'rare' }
+    gratisZeit: null,  // Zeitpunkt (ms) des letzten Gratis-Packs
+    radZeit: null,     // Zeitpunkt (ms) der letzten Drehung am Glücksrad
   };
-
-  function heute() {
-    const d = new Date();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const t = String(d.getDate()).padStart(2, '0');
-    return `${d.getFullYear()}-${m}-${t}`;
-  }
 
   function laden() {
     try {
@@ -51,5 +45,5 @@ const Store = (() => {
     try { localStorage.removeItem(SCHLUESSEL); } catch (e) { /* ignorieren */ }
   }
 
-  return { laden, speichern, zuruecksetzen, heute };
+  return { laden, speichern, zuruecksetzen };
 })();
