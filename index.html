@@ -15,6 +15,7 @@
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs><linearGradient id="metal-red" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff5e67"/><stop offset=".48" stop-color="#d60923"/><stop offset="1" stop-color="#790011"/></linearGradient><linearGradient id="metal-silver" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".48" stop-color="#9caab8"/><stop offset="1" stop-color="#e8f0f8"/></linearGradient><linearGradient id="metal-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a0"/><stop offset=".48" stop-color="#d5a441"/><stop offset="1" stop-color="#fff0ae"/></linearGradient><linearGradient id="metal-black" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4f5a63"/><stop offset=".48" stop-color="#1d252c"/><stop offset="1" stop-color="#49545e"/></linearGradient><linearGradient id="metal-green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#86e8ae"/><stop offset=".48" stop-color="#157249"/><stop offset="1" stop-color="#2fb66e"/></linearGradient><linearGradient id="metal-prism" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bedfff"/><stop offset=".48" stop-color="#ddd3f9"/><stop offset="1" stop-color="#88d3d2"/></linearGradient></defs>
   <!-- RailBase-Zeichen: rotes R über einem Gleis (wie auf Railbase.ch) -->
   <symbol id="logo" viewBox="0 0 570 270">
     <path fill="#D71920" d="M233 5H460C512 5 547 40 547 82C547 120 525 148 488 160L560 263H460L377 150H138L172 105H435C452 105 463 95 463 82C463 69 452 60 435 60H200Z"/>
@@ -88,8 +89,8 @@
       </div>
 
       <div class="buehne-txt">
-        <h1>Dein nächster Fund.</h1>
-        <p>Eine neue Bahnlegende wartet.</p>
+        <span class="eyebrow">Die Schweiz. Karte für Karte.</span><h1>Dein nächster Fund.</h1>
+        <p>Eine neue Bahnlegende wartet.</p><div class="hero-description">Vom ersten Zug bis zur seltenen Legende. Öffne dein Pack und entdecke die Vielfalt der Schweizer Bahnen.</div><div class="hero-meta"><span>308 Karten</span><span>8 Bahnen</span><span>7 Seltenheiten</span></div>
       </div>
 
       <div class="podest-bereich">
@@ -102,13 +103,10 @@
       </div>
 
       <span class="badge" id="start-badge"><svg width="16" height="16" aria-hidden="true"><use href="#i-gift"/></svg><span>Gratis-Pack bereit</span></span>
-    </div>
-  </section>
-
-  <!-- ===== PACKS ===== -->
+    </div><div class="collection-strip"><strong>Schweizer Bahnen. Eine Sammlung.</strong><div class="operators"><span>SBB</span><span>BLS</span><span>RhB</span><span>SOB</span><span>Zentralbahn</span><span>TPF</span><span>MOB</span><span>transN</span></div></div></section><!-- ===== PACKS ===== -->
   <section class="view" id="v-packs" data-view="packs" hidden>
     <div class="titel-block">
-      <h1>Wähle dein Pack</h1>
+      <span class="title-kicker">Deine nächste Entdeckung</span><h1>Wähle dein Pack</h1>
       <p>Vier Packs. Neue Entdeckungen.</p>
     </div>
 
@@ -142,34 +140,29 @@
   <!-- ===== GLÜCKSRAD ===== -->
   <section class="view" id="v-rad" data-view="rad" hidden>
     <div class="titel-block">
-      <h1>Glücksrad</h1>
+      <span class="title-kicker">Ein Dreh. Neue Möglichkeiten.</span><h1>Dein Glücksrad</h1>
       <p id="rad-info">wird geladen …</p>
     </div>
+    <!-- rad-platz misst den freien Platz, damit das Rad so gross wie möglich wird, ohne zu scrollen -->
+    <div class="rad-platz">
     <div class="rad-buehne" id="rad-buehne" data-kein-wischen role="button" tabindex="0" aria-label="Glücksrad drehen">
       <div class="rad-zeiger" aria-hidden="true"></div>
       <svg class="rad" id="rad-svg" viewBox="0 0 200 200" aria-hidden="true"></svg>
       <span class="rad-tipp" aria-hidden="true">Tippen</span>
+    </div>
     </div>
     <div class="rad-unten">
       <button class="btn-haupt" type="button" id="rad-btn" disabled>
         <svg width="26" height="26" aria-hidden="true"><use href="#i-rad"/></svg>
         <span id="rad-btn-txt">Drehen</span>
       </button>
-      <ul class="rad-legende">
-        <li><i style="background:#D71920"></i>Basis</li>
-        <li><i style="background:#A7AFB7"></i>Silver</li>
-        <li><i style="background:#D4A21A"></i>Gold</li>
-        <li><i style="background:#2B2F35"></i>Platinum</li>
-        <li><i style="background:#2E9E5B"></i>Nochmal drehen</li>
-        <li><i style="background:var(--rad-nichts)"></i>Nichts</li>
-      </ul>
     </div>
   </section>
 
   <!-- ===== ALBUM ===== -->
   <section class="view" id="v-album" data-view="album" hidden>
     <div class="titel-block links">
-      <h1>Mein Album</h1>
+      <span class="title-kicker">Deine Sammlung</span><h1>Mein Album</h1>
       <p>Alle Karten aus 8 Bahnen. Gesammelte Karten sind farbig, fehlende grau.</p>
     </div>
     <div class="seite">
@@ -366,5 +359,88 @@
 <script src="js/app.js"></script>
 <script src="js/oeffnen.js"></script>
 <script src="js/rad.js"></script>
+
+<script>
+// Rein visuelle Effekte. Keine Änderung an Preisen, Karten oder Speicherständen.
+(() => {
+  const cover = document.getElementById('op-img');
+  const pack = document.getElementById('op-pack');
+  const opener = document.getElementById('opener');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  function setCover() { pack.style.setProperty('--pack-cover', 'url(' + JSON.stringify(cover.getAttribute('src') || '') + ')'); }
+  new MutationObserver(setCover).observe(cover, { attributes:true, attributeFilter:['src'] });
+  setCover();
+  function burst(host, color) {
+    if(reduced.matches) return;
+    host.querySelector('.game-partikel')?.remove();
+    const layer = document.createElement('div');
+    layer.className = 'game-partikel';layer.setAttribute('aria-hidden','true');
+    for(let i=0;i<28;i++) {
+      const spark = document.createElement('i');
+      const angle = i / 28 * Math.PI * 2;
+      const distance = 140 + (i % 5) * 40;
+      spark.style.cssText = '--dx:'+Math.cos(angle)*distance+'px;--dy:'+(Math.sin(angle)*distance+80)+'px;--turn:'+i*43+'deg;--delay:'+(i%4)*25+'ms;--funken:'+color;
+      layer.appendChild(spark);
+    }
+    host.appendChild(layer);setTimeout(()=>layer.remove(),1300);
+  }
+  let torn=false;
+  new MutationObserver(()=>{
+    const active=pack.classList.contains('op-reisst');
+    if(active&&!torn) burst(opener,'#d6efff');
+    torn=active;
+  }).observe(pack,{attributes:true,attributeFilter:['class']});
+  const prize=document.getElementById('gewinn');
+  new MutationObserver(()=>{
+    if(!prize.hidden&&!prize.classList.contains('preis-nichts')) burst(prize,'#ffe3a1');
+  }).observe(prize,{attributes:true,attributeFilter:['hidden']});
+})();
+</script>
+
+<script>
+// Navigation: Markierung gleitet auch bei Hashwechsel, Tastatur und Seitenwischen.
+(() => {
+  const nav=document.querySelector('.tabbar');
+  const links=[...nav.querySelectorAll('[data-tab]')];
+  function position() {
+    const active=nav.querySelector('[aria-current="page"]');
+    nav.style.setProperty('--nav-visible',active?'1':'0');
+    if(!active)return;
+    nav.style.setProperty('--nav-x',active.offsetLeft+'px');
+    nav.style.setProperty('--nav-w',active.offsetWidth+'px');
+  }
+  new MutationObserver(position).observe(nav,{subtree:true,attributes:true,attributeFilter:['aria-current']});
+  new ResizeObserver(position).observe(nav);
+  document.fonts.ready.then(position);position();
+  nav.addEventListener('dragstart',e=>e.preventDefault());
+  let gesture=null, suppressClick=false;
+  nav.addEventListener('pointerdown',e=>{
+    if(e.button!==0||!e.isPrimary)return;
+    gesture={id:e.pointerId,x:e.clientX,y:e.clientY};suppressClick=false;
+  });
+  nav.addEventListener('pointermove',e=>{
+    if(!gesture||gesture.id!==e.pointerId)return;
+    const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
+    if(Math.abs(dy)>25&&Math.abs(dy)>Math.abs(dx)){gesture=null;return;}
+    if(Math.abs(dx)>18&&Math.abs(dx)>Math.abs(dy)*1.4)nav.setPointerCapture(e.pointerId);
+  });
+  nav.addEventListener('pointerup',e=>{
+    if(!gesture||gesture.id!==e.pointerId)return;
+    const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;gesture=null;
+    if(nav.hasPointerCapture(e.pointerId))nav.releasePointerCapture(e.pointerId);
+    if(Math.abs(dx)<45||Math.abs(dx)<Math.abs(dy)*1.4)return;
+    suppressClick=true;
+    const current=links.findIndex(a=>a.getAttribute('aria-current')==='page');
+    if(current<0)return;
+    const next=Math.max(0,Math.min(links.length-1,current+(dx<0?1:-1)));
+    if(next!==current)links[next].click();
+  });
+  nav.addEventListener('pointercancel',()=>{gesture=null;});
+  nav.addEventListener('click',e=>{
+    if(suppressClick&&e.isTrusted){suppressClick=false;e.preventDefault();e.stopImmediatePropagation();}
+  },true);
+})();
+
+</script>
 </body>
 </html>

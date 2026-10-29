@@ -118,6 +118,18 @@ function geheZuTab(name, richtung) {
   location.hash = name;
 }
 
+// Echte Höhe von Kopfzeile und Menü unten messen, damit Start, Packs und Rad genau
+// in den Bildschirm passen (CSS-Variablen --kopf-h und --nav-h, siehe Ende von style.css)
+function misseRahmen() {
+  const kopf = document.querySelector('.topbar');
+  const nav = document.querySelector('.tabbar');
+  const navRect = nav.getBoundingClientRect();
+  // Menü unten (Handy) zählt mit, Menü oben in der Kopfzeile (Computer) nicht
+  const navUnten = navRect.bottom >= window.innerHeight - 2 && navRect.top > window.innerHeight / 2;
+  document.documentElement.style.setProperty('--kopf-h', `${Math.round(kopf.getBoundingClientRect().height)}px`);
+  document.documentElement.style.setProperty('--nav-h', navUnten ? `${Math.round(navRect.height)}px` : '0px');
+}
+
 // Auf dem Handy: nach links oder rechts wischen wechselt die Seite
 function bindeSeitenWischen() {
   let x0 = 0;
@@ -463,6 +475,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!a) return;
     naechsteRichtung = Math.sign(TABS.indexOf(a.dataset.tab) - TABS.indexOf(app.ansicht));
   });
+
+  misseRahmen();
+  new ResizeObserver(misseRahmen).observe(document.querySelector('.topbar'));
+  window.addEventListener('resize', misseRahmen);
+  document.fonts.ready.then(misseRahmen);
 
   window.addEventListener('hashchange', aktuelleAnsichtAusHash);
   bindeSeitenWischen();

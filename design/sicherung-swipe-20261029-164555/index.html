@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#121315">
+  <title>RailBase Sammelkarten · Beta</title>
+  <meta name="description" content="Sammelkarten-Beta: Packs öffnen, Karten sammeln, alle 24 Stunden ein Gratis-Pack und das Glücksrad.">
+  <script>(function(){var t='dark';try{t=localStorage.getItem('sk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}document.documentElement.setAttribute('data-theme',t)})()</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs><linearGradient id="metal-red" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff5e67"/><stop offset=".48" stop-color="#d60923"/><stop offset="1" stop-color="#790011"/></linearGradient><linearGradient id="metal-silver" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".48" stop-color="#9caab8"/><stop offset="1" stop-color="#e8f0f8"/></linearGradient><linearGradient id="metal-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a0"/><stop offset=".48" stop-color="#d5a441"/><stop offset="1" stop-color="#fff0ae"/></linearGradient><linearGradient id="metal-black" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4f5a63"/><stop offset=".48" stop-color="#1d252c"/><stop offset="1" stop-color="#49545e"/></linearGradient><linearGradient id="metal-green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#86e8ae"/><stop offset=".48" stop-color="#157249"/><stop offset="1" stop-color="#2fb66e"/></linearGradient><linearGradient id="metal-prism" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bedfff"/><stop offset=".48" stop-color="#ddd3f9"/><stop offset="1" stop-color="#88d3d2"/></linearGradient></defs>
+  <!-- RailBase-Zeichen: rotes R über einem Gleis (wie auf Railbase.ch) -->
+  <symbol id="logo" viewBox="0 0 570 270">
+    <path fill="#D71920" d="M233 5H460C512 5 547 40 547 82C547 120 525 148 488 160L560 263H460L377 150H138L172 105H435C452 105 463 95 463 82C463 69 452 60 435 60H200Z"/>
+    <path fill="currentColor" d="M105 263H8L140 170H187ZM220 170H338L345 178H213ZM202 194H358L370 212H190ZM176 225H382L410 263H145Z"/>
+  </symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8.5a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home-voll" viewBox="0 0 24 24"><path d="M3.5 11.2 12 4.6l8.5 6.6v8.6a1.2 1.2 0 0 1-1.2 1.2H15v-6.5H9V21H4.7a1.2 1.2 0 0 1-1.2-1.2z" fill="currentColor"/></symbol>
+  <symbol id="i-pack" viewBox="0 0 24 24"><path d="M7 3.5h10l.8 1.6-.8 1.4v11l.8 1.4-.8 1.6H7l-.8-1.6.8-1.4v-11l-.8-1.4z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pack-voll" viewBox="0 0 24 24"><path d="M7 3.5h10l.8 1.6-.8 1.4v11l.8 1.4-.8 1.6H7l-.8-1.6.8-1.4v-11l-.8-1.4z" fill="currentColor"/></symbol>
+  <symbol id="i-pack-hell" viewBox="0 0 24 24"><path d="M8.5 2.5h9l.6 1.4-.9 1.3-1.8 13.6.6 1.4-.9 1.3h-9l-.6-1.4.9-1.3L8.2 5.2l-.6-1.4z" fill="#fff" transform="rotate(10 12 12)"/></symbol>
+  <symbol id="i-rad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></symbol>
+  <symbol id="i-album" viewBox="0 0 24 24"><rect x="7" y="3.5" width="12.5" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 6.5v12.2a1.8 1.8 0 0 0 1.8 1.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3.5 9h17v3.5h-17zM5 12.5h14V21H5z" fill="currentColor"/><path d="M12 9v12" stroke="#fff" stroke-width="2"/><path d="M12 9c-1.5-3.5-6-4.5-6-1.8C6 9 12 9 12 9zm0 0c1.5-3.5 6-4.5 6-1.8C18 9 12 9 12 9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-uhr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-stern" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z" fill="currentColor"/></symbol>
+  <symbol id="i-links" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-rechts" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="handy">
+
+<header class="topbar">
+  <div class="kopf">
+    <a class="brand" href="#start" aria-label="RailBase Sammelkarten – Start">
+      <svg class="mark" aria-hidden="true"><use href="#logo"/></svg>
+      <span class="wm">RailBase</span>
+      <span class="beta-tag">Beta</span>
+    </a>
+    <a class="konto-knopf" href="#konto" aria-label="Mein Konto">
+      <span class="avatar" id="avatar">K</span>
+      <span class="lvl" id="lvl">LVL 1</span>
+    </a>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ===== START ===== -->
+  <section class="view" id="v-start" data-view="start">
+    <div class="buehne">
+      <svg class="szene" viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="sz-himmel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color:var(--sz-himmel-1)"/>
+            <stop offset="1" style="stop-color:var(--sz-himmel-2)"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="520" fill="url(#sz-himmel)"/>
+        <!-- ferne Berge mit Schnee -->
+        <path d="M0 250 L40 205 L70 222 L118 150 L150 190 L178 172 L215 120 L252 178 L282 160 L325 110 L362 170 L400 140 V330 H0Z" style="fill:var(--sz-berg-1)"/>
+        <path d="M118 150 L104 166 L116 163 L124 170 L132 160 Z M215 120 L200 141 L212 137 L221 146 L230 135 Z M325 110 L310 131 L322 127 L332 137 L340 126 Z" style="fill:var(--sz-schnee)"/>
+        <!-- nähere Berge -->
+        <path d="M0 300 L52 250 L96 276 L150 228 L200 270 L248 236 L300 280 L352 240 L400 262 V360 H0Z" style="fill:var(--sz-berg-2)"/>
+        <!-- Wald -->
+        <path d="M0 360 L12 320 L24 360 L30 330 L42 360 L50 312 L62 360 L70 334 L80 360 L90 316 L102 360 V420 H0Z M300 360 L312 318 L324 360 L332 332 L342 360 L352 308 L364 360 L372 326 L384 360 L392 314 L400 340 V420 H300Z" style="fill:var(--sz-wald)"/>
+        <!-- Viadukt -->
+        <g style="fill:var(--sz-viadukt)">
+          <path d="M96 344 H310 V352 H96Z"/>
+          <path d="M104 352h18v40h-18zM140 352h18v40h-18zM176 352h18v40h-18zM212 352h18v40h-18zM248 352h18v40h-18zM284 352h18v40h-18z"/>
+        </g>
+        <path d="M96 341 H310" style="stroke:var(--sz-gleis)" stroke-width="2.4"/>
+        <!-- Boden -->
+        <path d="M0 392 Q200 370 400 392 V520 H0Z" style="fill:var(--sz-boden)"/>
+      </svg>
+      <!-- nur im schwarzen Design: Lichter und Fahnen der Halle -->
+      <div class="halle" aria-hidden="true">
+        <span class="halle-01">01</span>
+        <span class="halle-fahne"></span>
+        <span class="halle-licht l1"></span><span class="halle-licht l2"></span><span class="halle-licht l3"></span><span class="halle-licht l4"></span>
+      </div>
+
+      <div class="buehne-txt">
+        <span class="eyebrow">Die Schweiz. Karte für Karte.</span><h1>Dein nächster Fund.</h1>
+        <p>Eine neue Bahnlegende wartet.</p><div class="hero-description">Vom ersten Zug bis zur seltenen Legende. Öffne dein Pack und entdecke die Vielfalt der Schweizer Bahnen.</div><div class="hero-meta"><span>308 Karten</span><span>8 Bahnen</span><span>7 Seltenheiten</span></div>
+      </div>
+
+      <div class="podest-bereich">
+        <!-- Das Pack selbst ist der Knopf: drücken öffnet es -->
+        <button class="hero-pack-knopf" type="button" id="start-btn" aria-label="Pack öffnen">
+          <img class="hero-pack" src="assets/packs/standard.webp" alt="">
+          <span class="hero-tipp" id="start-btn-txt">Tippen zum Öffnen</span>
+        </button>
+        <div class="podest" aria-hidden="true"><i class="podest-top"></i><i class="podest-seite"></i></div>
+      </div>
+
+      <span class="badge" id="start-badge"><svg width="16" height="16" aria-hidden="true"><use href="#i-gift"/></svg><span>Gratis-Pack bereit</span></span>
+    </div><div class="collection-strip"><strong>Schweizer Bahnen. Eine Sammlung.</strong><div class="operators"><span>SBB</span><span>BLS</span><span>RhB</span><span>SOB</span><span>Zentralbahn</span><span>TPF</span><span>MOB</span><span>transN</span></div></div></section><!-- ===== PACKS ===== -->
+  <section class="view" id="v-packs" data-view="packs" hidden>
+    <div class="titel-block">
+      <span class="title-kicker">Deine nächste Entdeckung</span><h1>Wähle dein Pack</h1>
+      <p>Vier Packs. Neue Entdeckungen.</p>
+    </div>
+
+    <div class="reiter" id="pk-reiter" role="tablist" aria-label="Pack-Stufe"></div>
+
+    <div class="karussell-bereich" data-kein-wischen>
+      <button class="pfeil pfeil-links" type="button" id="pk-zurueck" aria-label="Vorheriges Pack"><svg width="22" height="22"><use href="#i-links"/></svg></button>
+      <ul class="karussell" id="pk-karussell" aria-label="Packs"></ul>
+      <button class="pfeil pfeil-rechts" type="button" id="pk-weiter" aria-label="Nächstes Pack"><svg width="22" height="22"><use href="#i-rechts"/></svg></button>
+    </div>
+    <div class="punkte-reihe">
+      <span id="pk-stelle">1 / 7</span>
+      <span class="punkte" id="pk-punkte" aria-hidden="true"></span>
+    </div>
+
+    <div class="ticket" id="pk-ticket">
+      <div class="ticket-kopf">
+        <div>
+          <h2 id="tk-name">Basis Pack</h2>
+          <span id="tk-info">5 Karten</span>
+        </div>
+        <span class="garantie" id="tk-garantie"><svg width="15" height="15" aria-hidden="true"><use href="#i-stern"/></svg><span></span></span>
+      </div>
+      <button class="btn-haupt" type="button" id="tk-btn">
+        <svg width="28" height="28" aria-hidden="true"><use href="#i-pack-hell"/></svg>
+        <span id="tk-btn-txt">Pack öffnen</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== GLÜCKSRAD ===== -->
+  <section class="view" id="v-rad" data-view="rad" hidden>
+    <div class="titel-block">
+      <span class="title-kicker">Ein Dreh. Neue Möglichkeiten.</span><h1>Dein Glücksrad</h1>
+      <p id="rad-info">wird geladen …</p>
+    </div>
+    <div class="rad-buehne" id="rad-buehne" data-kein-wischen role="button" tabindex="0" aria-label="Glücksrad drehen">
+      <div class="rad-zeiger" aria-hidden="true"></div>
+      <svg class="rad" id="rad-svg" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <span class="rad-tipp" aria-hidden="true">Tippen</span>
+    </div>
+    <div class="rad-unten">
+      <button class="btn-haupt" type="button" id="rad-btn" disabled>
+        <svg width="26" height="26" aria-hidden="true"><use href="#i-rad"/></svg>
+        <span id="rad-btn-txt">Drehen</span>
+      </button>
+      <ul class="rad-legende">
+        <li><i style="background:#D71920"></i>Basis</li>
+        <li><i style="background:#A7AFB7"></i>Silver</li>
+        <li><i style="background:#D4A21A"></i>Gold</li>
+        <li><i style="background:#2B2F35"></i>Platinum</li>
+        <li><i style="background:#2E9E5B"></i>Nochmal drehen</li>
+        <li><i style="background:var(--rad-nichts)"></i>Nichts</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== ALBUM ===== -->
+  <section class="view" id="v-album" data-view="album" hidden>
+    <div class="titel-block links">
+      <span class="title-kicker">Deine Sammlung</span><h1>Mein Album</h1>
+      <p>Alle Karten aus 8 Bahnen. Gesammelte Karten sind farbig, fehlende grau.</p>
+    </div>
+    <div class="seite">
+      <div class="stats">
+        <div><b id="st-entdeckt">0 / 0</b><span>Entdeckt</span></div>
+        <div><b id="st-karten">0</b><span>Karten gesamt</span></div>
+        <div><b id="st-geoeffnet">0</b><span>Packs geöffnet</span></div>
+      </div>
+
+      <h2 class="sam-h">Kategorien</h2>
+      <ul class="rar-liste" id="rar-liste"></ul>
+
+      <div class="album-filter" id="album-filter">
+        <label class="suche">
+          <span class="sr-only">Karte suchen</span>
+          <input type="search" id="al-suche" placeholder="Karte suchen, z. B. Giruno oder RB001" autocomplete="off">
+        </label>
+        <label class="auswahl">
+          <span class="sr-only">Bahn</span>
+          <select id="al-bahn"><option value="">Alle Bahnen</option></select>
+        </label>
+        <label class="schalter">
+          <input type="checkbox" id="al-nur-meine">
+          <span>Nur gesammelte</span>
+        </label>
+      </div>
+
+      <h2 class="sam-h" id="sam-titel">Alle Karten</h2>
+      <ul class="karten-grid" id="sam-karten"></ul>
+
+      <div class="empty" id="sam-leer" hidden>
+        <svg width="44" height="44" aria-hidden="true"><use href="#i-album"/></svg>
+        <b>Keine Karten gefunden</b>
+        <span>Ändere die Suche oder die Filter.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== KONTO ===== -->
+  <section class="view" id="v-konto" data-view="konto" hidden>
+    <div class="titel-block links">
+      <h1>Mein Konto</h1>
+      <p>In der Beta bleiben deine Daten nur auf diesem Gerät.</p>
+    </div>
+    <div class="seite">
+      <div class="panel profil">
+        <span class="avatar gross" id="avatar-gross">K</span>
+        <div>
+          <b id="profil-name">Sammler</b>
+          <span id="profil-level">Sammler-Level 1</span>
+        </div>
+      </div>
+
+      <form class="panel" id="konto-form" autocomplete="off">
+        <label class="field">
+          <span>Dein Name</span>
+          <input type="text" id="konto-name" maxlength="30" placeholder="z. B. Hckd">
+        </label>
+        <button class="btn" type="submit">Speichern</button>
+      </form>
+
+      <div class="panel">
+        <b>Design</b>
+        <div class="design-wahl" role="radiogroup" aria-label="Design wählen">
+          <button type="button" role="radio" data-design="light" class="dw-silber"><i></i>Silber</button>
+          <button type="button" role="radio" data-design="dark" class="dw-schwarz"><i></i>Schwarz</button>
+        </div>
+      </div>
+
+      <div class="panel muted">
+        <b>Anmelden</b>
+        <p>Login mit Online-Datenbank kommt später. Bis dahin gilt: ein Gerät, ein Konto.</p>
+      </div>
+
+      <div class="panel">
+        <b>Beta zurücksetzen</b>
+        <p>Löscht alle Packs, Karten, Level und Einstellungen auf diesem Gerät.</p>
+        <button class="btn ghost" type="button" id="reset-btn">Alles zurücksetzen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MEHR ===== -->
+  <section class="view" id="v-mehr" data-view="mehr" hidden>
+    <div class="titel-block links">
+      <h1>Mehr</h1>
+      <p>Hier kommen bald weitere Bereiche dazu.</p>
+    </div>
+    <div class="seite">
+      <div class="panel level-karte">
+        <div class="level-kopf">
+          <span class="level-zahl" id="level-zahl">1</span>
+          <div>
+            <b id="xp-level">Sammler-Level 1</b>
+            <span id="xp-zahl">0 / 100 XP</span>
+          </div>
+        </div>
+        <span class="xp-balken" aria-hidden="true"><i id="xp-balken"></i></span>
+        <p>XP bekommst du für jede Karte, die du ziehst. Je seltener die Karte, desto mehr XP.</p>
+      </div>
+      <ul class="menu-list">
+        <li><a href="#konto"><span>Konto und Design</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
+        <li><span>Tauschen</span><small>bald</small></li>
+        <li><span>Rangliste</span><small>bald</small></li>
+        <li><span>Erfolge</span><small>bald</small></li>
+        <li><span>Regeln und Chancen</span><small>bald</small></li>
+        <li><span>Feedback an die Beta</span><small>bald</small></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar" aria-label="Hauptbereiche">
+  <a href="#start" data-tab="start">
+    <svg class="t-aus" width="26" height="26" aria-hidden="true"><use href="#i-home"/></svg>
+    <svg class="t-an" width="26" height="26" aria-hidden="true"><use href="#i-home-voll"/></svg>
+    <span>Start</span>
+  </a>
+  <a href="#packs" data-tab="packs">
+    <svg class="t-aus" width="26" height="26" aria-hidden="true"><use href="#i-pack"/></svg>
+    <svg class="t-an" width="26" height="26" aria-hidden="true"><use href="#i-pack-voll"/></svg>
+    <span>Packs</span>
+  </a>
+  <a href="#rad" data-tab="rad">
+    <svg width="26" height="26" aria-hidden="true"><use href="#i-rad"/></svg>
+    <span>Rad</span>
+  </a>
+  <a href="#album" data-tab="album">
+    <svg width="26" height="26" aria-hidden="true"><use href="#i-album"/></svg>
+    <span>Album</span>
+  </a>
+  <a href="#mehr" data-tab="mehr">
+    <svg width="26" height="26" aria-hidden="true"><use href="#i-more"/></svg>
+    <span>Mehr</span>
+  </a>
+</nav>
+
+</div>
+
+<!-- ===== PACK ÖFFNEN (Overlay) ===== -->
+<div class="opener" id="opener" hidden role="dialog" aria-modal="true" aria-labelledby="op-titel">
+  <div class="op-box">
+    <p class="op-titel" id="op-titel"></p>
+
+    <div class="op-stage">
+      <button class="op-pack" type="button" id="op-pack" aria-label="Pack aufreissen">
+        <img id="op-img" alt="">
+        <span class="op-tipp" id="op-tipp">Tippen zum Aufreissen</span>
+      </button>
+
+      <div class="op-einzeln" id="op-einzeln" hidden>
+        <p class="op-zaehler" id="op-zaehler"></p>
+        <div class="op-slot" id="op-slot"></div>
+        <p class="op-hilfe" id="op-hilfe" aria-live="polite"></p>
+      </div>
+
+      <ul class="op-karten" id="op-karten" hidden></ul>
+    </div>
+
+    <p class="op-status" id="op-status" aria-live="polite"></p>
+    <div class="op-knoepfe">
+      <button class="btn ghost op-close" type="button" id="op-alle" hidden>Alle aufdecken</button>
+      <button class="btn ghost op-close" type="button" id="op-close" hidden>Schliessen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GEWINN VOM GLÜCKSRAD (Fenster) ===== -->
+<div class="gewinn" id="gewinn" hidden role="dialog" aria-modal="true" aria-labelledby="gw-titel">
+  <div class="gw-box">
+    <div class="gw-strahlen" aria-hidden="true"></div>
+    <div class="gw-funken" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <img class="gw-pack" id="gw-img" alt="">
+    <span class="gw-leer" id="gw-leer" aria-hidden="true"><svg width="64" height="64"><use href="#i-rad"/></svg></span>
+    <p class="gw-kicker" id="gw-kicker">Glücksrad</p>
+    <h2 class="gw-titel" id="gw-titel">Gewonnen!</h2>
+    <p class="gw-text" id="gw-text"></p>
+    <div class="gw-knoepfe">
+      <button class="btn-haupt" type="button" id="gw-oeffnen">
+        <svg width="28" height="28" aria-hidden="true"><use id="gw-oeffnen-icon" href="#i-pack-hell"/></svg>
+        <span id="gw-oeffnen-txt">Jetzt öffnen</span>
+      </button>
+      <button class="btn ghost gw-spaeter" type="button" id="gw-spaeter">Später</button>
+    </div>
+  </div>
+</div>
+
+<p class="hinweis" id="hinweis" hidden role="status"></p>
+
+<script src="js/store.js"></script>
+<script src="js/daten/kartenliste.js"></script>
+<script src="js/karten.js"></script>
+<script src="js/app.js"></script>
+<script src="js/oeffnen.js"></script>
+<script src="js/rad.js"></script>
+
+<script>
+// Rein visuelle Effekte. Keine Änderung an Preisen, Karten oder Speicherständen.
+(() => {
+  const cover = document.getElementById('op-img');
+  const pack = document.getElementById('op-pack');
+  const opener = document.getElementById('opener');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  function setCover() { pack.style.setProperty('--pack-cover', 'url(' + JSON.stringify(cover.getAttribute('src') || '') + ')'); }
+  new MutationObserver(setCover).observe(cover, { attributes:true, attributeFilter:['src'] });
+  setCover();
+  function burst(host, color) {
+    if(reduced.matches) return;
+    host.querySelector('.game-partikel')?.remove();
+    const layer = document.createElement('div');
+    layer.className = 'game-partikel';layer.setAttribute('aria-hidden','true');
+    for(let i=0;i<28;i++) {
+      const spark = document.createElement('i');
+      const angle = i / 28 * Math.PI * 2;
+      const distance = 140 + (i % 5) * 40;
+      spark.style.cssText = '--dx:'+Math.cos(angle)*distance+'px;--dy:'+(Math.sin(angle)*distance+80)+'px;--turn:'+i*43+'deg;--delay:'+(i%4)*25+'ms;--funken:'+color;
+      layer.appendChild(spark);
+    }
+    host.appendChild(layer);setTimeout(()=>layer.remove(),1300);
+  }
+  let torn=false;
+  new MutationObserver(()=>{
+    const active=pack.classList.contains('op-reisst');
+    if(active&&!torn) burst(opener,'#d6efff');
+    torn=active;
+  }).observe(pack,{attributes:true,attributeFilter:['class']});
+  const prize=document.getElementById('gewinn');
+  new MutationObserver(()=>{
+    if(!prize.hidden&&!prize.classList.contains('preis-nichts')) burst(prize,'#ffe3a1');
+  }).observe(prize,{attributes:true,attributeFilter:['hidden']});
+})();
+</script>
+
+</body>
+</html>
