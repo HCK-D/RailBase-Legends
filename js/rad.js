@@ -2,16 +2,16 @@
 
 const Rad = (() => {
   // 12 gleich grosse Felder. Die Anzahl Felder pro Preis ist die Chance (Platzhalter):
-  // Nichts 5/12, Standard 3/12, Silber 2/12, Gold 1/12, Platin 1/12
+  // Nichts 5/12, Basis 3/12, Silver 2/12, Gold 1/12, Platinum 1/12
   const FELDER = ['nichts', 'standard', 'silber', 'nichts', 'standard', 'gold',
                   'nichts', 'standard', 'silber', 'nichts', 'platin', 'nichts'];
 
   const PREISE = {
     nichts:   { text: 'Nichts', farbe: 'var(--rad-nichts)', schrift: 'var(--fg-2)' },
-    standard: { text: 'Standard', farbe: 'var(--t-standard)', schrift: '#FFFFFF' },
-    silber:   { text: 'Silber', farbe: '#A7AFB7', schrift: '#202326' },
+    standard: { text: 'Basis', farbe: '#D71920', schrift: '#FFFFFF' },
+    silber:   { text: 'Silver', farbe: '#A7AFB7', schrift: '#202326' },
     gold:     { text: 'Gold', farbe: '#D4A21A', schrift: '#202326' },
-    platin:   { text: 'Platin', farbe: '#2F4A6E', schrift: '#FFFFFF' },
+    platin:   { text: 'Platinum', farbe: '#2B2F35', schrift: '#FFFFFF' },
   };
 
   let drehung = 0;    // aktueller Winkel des Rads in Grad
@@ -48,15 +48,13 @@ const Rad = (() => {
     if (dreht) return;
     if (bereit()) {
       btn.disabled = false;
-      btn.textContent = 'Drehen';
+      $('rad-btn-txt').textContent = 'Drehen';
       info.textContent = 'Einmal alle 24 Stunden. Vielleicht gewinnst du ein Pack.';
     } else {
       btn.disabled = true;
-      btn.textContent = 'Schon gedreht';
-      info.textContent = `Nächste Drehung in ${dauerText(bereitIn(app.daten.radZeit))}`;
+      $('rad-btn-txt').textContent = `In ${dauerText(bereitIn(app.daten.radZeit))}`;
+      info.textContent = 'Du hast heute schon gedreht.';
     }
-    const startInfo = $('rad-start-info');
-    if (startInfo) startInfo.textContent = bereit() ? 'Bereit zum Drehen' : `Wieder in ${dauerText(bereitIn(app.daten.radZeit))}`;
   }
 
   function drehe() {
@@ -82,7 +80,7 @@ const Rad = (() => {
     drehung += 360 * 6 + ((360 - ziel - aktuell) % 360 + 360) % 360;
 
     $('rad-btn').disabled = true;
-    $('rad-btn').textContent = 'Dreht …';
+    $('rad-btn-txt').textContent = 'Dreht …';
     $('rad-ergebnis').hidden = true;
     const rad = $('rad-svg');
     rad.style.transition = 'transform 4.6s cubic-bezier(.12,.62,.08,1)';
@@ -106,7 +104,7 @@ const Rad = (() => {
     const p = packVonId(packId);
     box.innerHTML = `
       <img src="${bildKlein(p)}" alt="">
-      <div><b>Gewonnen: ${p.titel}-Pack!</b><span>${p.name} liegt jetzt in deinem Vorrat.</span></div>
+      <div><b>Gewonnen: ${p.titel} Pack!</b><span>${p.name} liegt jetzt in deinem Vorrat.</span></div>
       <button class="btn" type="button" data-oeffnen="${p.id}">Jetzt öffnen</button>`;
   }
 

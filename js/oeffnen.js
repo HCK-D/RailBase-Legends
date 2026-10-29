@@ -5,6 +5,8 @@ const Oeffnen = (() => {
   let karten = [];      // gezogene Karten
   let index = 0;        // welche Karte gerade gezeigt wird
   let phase = 'zu';     // zu | pack | reisst | einzeln | uebersicht
+  let xpGewinn = 0;
+  let neuesLevel = null; // gesetzt, wenn dieses Pack ein Level-Aufstieg bringt
 
   const SELTEN_AB = rangVon('epic'); // ab hier gibt es Glanz beim Aufdecken
 
@@ -65,6 +67,11 @@ const Oeffnen = (() => {
     app.daten.vorrat[packId] = vorratVon(packId) - 1;
     app.daten.geoeffnet += 1;
     app.daten.karten.push(...karten);
+    const levelVorher = levelVon(app.daten.xp).level;
+    xpGewinn = xpVon(karten);
+    app.daten.xp += xpGewinn;
+    const levelNachher = levelVon(app.daten.xp).level;
+    neuesLevel = levelNachher > levelVorher ? levelNachher : null;
     speichern();
 
     setTimeout(() => {
@@ -197,7 +204,8 @@ const Oeffnen = (() => {
     liste.hidden = false;
 
     const bestes = seltenheitVon(karten[karten.length - 1].seltenheit);
-    $('op-status').textContent = `Deine ${karten.length} Karten. Beste Karte: ${bestes.name}.`;
+    $('op-status').textContent = `Beste Karte: ${bestes.name} · +${xpGewinn} XP`
+      + (neuesLevel ? ` · Neues Level: ${neuesLevel}!` : '');
     zeigeSchliessen('Fertig');
   }
 

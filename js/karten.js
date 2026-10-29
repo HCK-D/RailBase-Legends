@@ -20,6 +20,17 @@ const KARTEN_CHANCEN = {
   platin:   [15, 25, 28, 18, 8, 4.5, 1.5],
 };
 
+// Garantie: mindestens eine Karte dieser Kategorie pro Pack (Platzhalter)
+const KARTEN_GARANTIE = {
+  standard: null,
+  silber: 'uncommon',
+  gold: 'rare',
+  platin: 'epic',
+};
+
+// Erfahrungspunkte pro Karte, gleiche Reihenfolge wie SELTENHEITEN (Platzhalter)
+const XP_PRO_KARTE = [5, 10, 20, 40, 80, 150, 250];
+
 const KARTEN_PRO_PACK = 5;
 const KARTEN_IM_SET = 120; // Platzhalter für die Kartennummern #001–#120
 
@@ -51,7 +62,28 @@ function zieheKarten(stufe) {
       seltenheit: zieheSeltenheit(stufe),
     });
   }
-  return karten.sort((a, b) => rangVon(a.seltenheit) - rangVon(b.seltenheit));
+  karten.sort((a, b) => rangVon(a.seltenheit) - rangVon(b.seltenheit));
+
+  // Garantie: ist die beste Karte zu schwach, wird sie auf die Mindest-Kategorie gehoben
+  const mindestens = KARTEN_GARANTIE[stufe];
+  const beste = karten[karten.length - 1];
+  if (mindestens && rangVon(beste.seltenheit) < rangVon(mindestens)) beste.seltenheit = mindestens;
+  return karten;
+}
+
+function xpVon(karten) {
+  return karten.reduce((summe, k) => summe + XP_PRO_KARTE[rangVon(k.seltenheit)], 0);
+}
+
+// Level aus allen XP: Level 1 braucht 100 XP, jedes weitere Level 100 mehr (Platzhalter)
+function levelVon(xp) {
+  let level = 1;
+  let rest = xp;
+  while (rest >= level * 100) {
+    rest -= level * 100;
+    level += 1;
+  }
+  return { level, aktuell: rest, noetig: level * 100 };
 }
 
 // Skizze eines Zugs als Platzhalter-Bild

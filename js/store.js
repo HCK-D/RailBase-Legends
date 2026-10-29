@@ -11,6 +11,7 @@ const Store = (() => {
     name: '',
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
+    xp: 0,             // Erfahrungspunkte für das Sammler-Level
     karten: [],        // gesammelte Karten, z. B. { nr: 27, seltenheit: 'rare' }
     gratisZeit: null,  // Zeitpunkt (ms) des letzten Gratis-Packs
     radZeit: null,     // Zeitpunkt (ms) der letzten Drehung am Glücksrad
