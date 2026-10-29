@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sammelkarten · Beta</title>
+  <meta name="description" content="Sammelkarten-Beta: Packs öffnen, Karten sammeln und jeden Tag ein Gratis-Pack holen.">
+  <script>(function(){var t='light';try{t=localStorage.getItem('sk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){t='light'}document.documentElement.setAttribute('data-theme',t)})()</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- RailBase-Zeichen: rotes R über einem Gleis (wie auf Railbase.ch) -->
+  <symbol id="logo" viewBox="0 0 570 270">
+    <path fill="#D71920" d="M233 5H460C512 5 547 40 547 82C547 120 525 148 488 160L560 263H460L377 150H138L172 105H435C452 105 463 95 463 82C463 69 452 60 435 60H200Z"/>
+    <path fill="currentColor" d="M105 263H8L140 170H187ZM220 170H338L345 178H213ZM202 194H358L370 212H190ZM176 225H382L410 263H145Z"/>
+  </symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8.5a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pack" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 9h14M9 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="6" width="11" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5h9a2 2 0 0 1 2 2V16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#start" aria-label="Sammelkarten – Startseite">
+      <svg class="mark" aria-hidden="true"><use href="#logo"/></svg>
+      <span class="brand-txt">
+        <span class="wm">Rail<em>Base</em></span>
+        <span class="brand-sub">Sammelkarten</span>
+      </span>
+    </a>
+    <span class="beta-tag">Beta</span>
+    <button class="theme-btn" type="button" id="theme-btn" aria-label="Hell oder dunkel" title="Hell oder dunkel">
+      <svg class="ti-light" width="18" height="18" aria-hidden="true"><use href="#i-sun"/></svg>
+      <svg class="ti-dark" width="18" height="18" aria-hidden="true"><use href="#i-moon"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="app" class="wrap">
+
+  <!-- ===== START ===== -->
+  <section class="view" id="v-start" data-view="start">
+    <div class="hero">
+      <span class="kicker">Die Schweiz auf Schienen</span>
+      <h1>Hol dir deine Packs.</h1>
+      <p class="lede">Jeden Tag ein Gratis-Pack. Öffne Packs, sammle Karten und finde heraus, was in den Silber-, Gold- und Platin-Packs steckt.</p>
+
+      <div class="free-card" id="free-card">
+        <div class="free-txt">
+          <b id="free-titel">Dein Gratis-Pack</b>
+          <span id="free-info">wird geladen …</span>
+        </div>
+        <button class="btn" type="button" id="free-btn" disabled>Gratis-Pack holen</button>
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <h2>Packs</h2>
+      <a class="link-btn" href="#packs">Alle ansehen</a>
+    </div>
+    <ul class="tier-grid" id="tier-grid-start"></ul>
+  </section>
+
+  <!-- ===== PACKS ===== -->
+  <section class="view" id="v-packs" data-view="packs" hidden>
+    <div class="page-head">
+      <span class="kicker">Packs</span>
+      <h1>Packs öffnen</h1>
+      <p>Du hast <b id="pk-anzahl">0 Packs</b> im Vorrat. Tippe auf ein Pack, um es zu öffnen.</p>
+    </div>
+    <div id="pk-liste"></div>
+  </section>
+
+  <!-- ===== SAMMLUNG ===== -->
+  <section class="view" id="v-sammlung" data-view="sammlung" hidden>
+    <div class="page-head">
+      <span class="kicker">Sammelkarten</span>
+      <h1>Meine Sammlung</h1>
+      <p>Hier erscheinen deine Karten, sobald sie eingebaut sind.</p>
+    </div>
+    <div class="empty">
+      <svg width="44" height="44" aria-hidden="true"><use href="#i-cards"/></svg>
+      <b>Noch keine Karten</b>
+      <span>Öffne ein Pack, dann siehst du hier deine Sammlung.</span>
+      <a class="btn" href="#packs">Zu den Packs</a>
+    </div>
+    <div class="stats">
+      <div><b id="st-geoeffnet">0</b><span>Packs geöffnet</span></div>
+      <div><b id="st-vorrat">0</b><span>Packs im Vorrat</span></div>
+    </div>
+  </section>
+
+  <!-- ===== KONTO ===== -->
+  <section class="view" id="v-konto" data-view="konto" hidden>
+    <div class="page-head">
+      <span class="kicker">Konto</span>
+      <h1>Mein Konto</h1>
+      <p>In der Beta werden deine Daten nur in diesem Browser gespeichert.</p>
+    </div>
+
+    <form class="panel" id="konto-form" autocomplete="off">
+      <label class="field">
+        <span>Dein Name (Anzeige)</span>
+        <input type="text" id="konto-name" maxlength="30" placeholder="z. B. Hckd">
+      </label>
+      <button class="btn" type="submit">Speichern</button>
+      <p class="msg" id="konto-msg" aria-live="polite"></p>
+    </form>
+
+    <div class="panel muted">
+      <b>Anmelden</b>
+      <p>Login mit Online-Datenbank kommt in einem späteren Schritt. Bis dahin gilt: ein Gerät, ein Konto.</p>
+    </div>
+
+    <div class="panel danger-zone">
+      <b>Beta zurücksetzen</b>
+      <p>Löscht alle Packs, Karten und Einstellungen in diesem Browser.</p>
+      <button class="btn ghost" type="button" id="reset-btn">Alles zurücksetzen</button>
+    </div>
+  </section>
+
+  <!-- ===== MEHR ===== -->
+  <section class="view" id="v-mehr" data-view="mehr" hidden>
+    <div class="page-head">
+      <span class="kicker">Mehr</span>
+      <h1>Mehr</h1>
+      <p>Hier kommen bald weitere Bereiche dazu.</p>
+    </div>
+    <ul class="menu-list">
+      <li><span>Tauschen</span><small>bald</small></li>
+      <li><span>Rangliste</span><small>bald</small></li>
+      <li><span>Regeln und Hilfe</span><small>bald</small></li>
+      <li><span>Feedback an die Beta</span><small>bald</small></li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- ===== PACK ÖFFNEN (Overlay) ===== -->
+<div class="opener" id="opener" hidden role="dialog" aria-modal="true" aria-labelledby="op-titel">
+  <div class="op-box">
+    <p class="op-titel" id="op-titel"></p>
+
+    <div class="op-stage" id="op-stage">
+      <button class="op-pack" type="button" id="op-pack" aria-label="Pack öffnen">
+        <img id="op-img" alt="">
+        <span class="op-tipp" id="op-tipp">Tippen zum Aufreissen</span>
+      </button>
+      <ul class="op-karten" id="op-karten" hidden></ul>
+    </div>
+
+    <p class="op-status" id="op-status" aria-live="polite"></p>
+    <button class="btn ghost op-close" type="button" id="op-close" hidden>Schliessen</button>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="Hauptbereiche">
+  <a href="#start" data-tab="start">
+    <svg width="22" height="22" aria-hidden="true"><use href="#i-home"/></svg><span>Start</span>
+  </a>
+  <a href="#packs" data-tab="packs">
+    <svg width="22" height="22" aria-hidden="true"><use href="#i-pack"/></svg><span>Packs</span>
+  </a>
+  <a href="#sammlung" data-tab="sammlung">
+    <svg width="22" height="22" aria-hidden="true"><use href="#i-cards"/></svg><span>Sammlung</span>
+  </a>
+  <a href="#konto" data-tab="konto">
+    <svg width="22" height="22" aria-hidden="true"><use href="#i-user"/></svg><span>Konto</span>
+  </a>
+  <a href="#mehr" data-tab="mehr">
+    <svg width="22" height="22" aria-hidden="true"><use href="#i-more"/></svg><span>Mehr</span>
+  </a>
+</nav>
+
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
