@@ -165,6 +165,7 @@ function zeichneKopf() {
   const buchstabe = (app.daten.name || 'K').trim().charAt(0).toUpperCase() || 'K';
   $('avatar').textContent = buchstabe;
   $('lvl').textContent = `LVL ${level}`;
+  $('level-zahl').textContent = level;
   $('xp-level').textContent = `Sammler-Level ${level}`;
   $('xp-zahl').textContent = `${tausender(aktuell)} / ${tausender(noetig)} XP`;
   $('xp-balken').style.width = `${Math.round((aktuell / noetig) * 100)}%`;

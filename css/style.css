@@ -88,9 +88,14 @@ img{display:block;max-width:100%}
 .avatar{position:relative;z-index:1;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:2px solid var(--fg);background:var(--surface);font:700 22px/1 "Barlow Condensed",sans-serif;text-transform:uppercase}
 .avatar.gross{width:64px;height:64px;font-size:34px}
 .lvl{margin-left:-10px;padding:6px 10px 6px 16px;border:1px solid var(--line);border-radius:0 999px 999px 0;background:var(--surface-2);font:700 13px/1 "Barlow Condensed",sans-serif;letter-spacing:.04em}
-.xp{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:0 16px 10px;font-size:13px;color:var(--fg-2)}
-.xp span:first-child,.xp span:last-child{color:var(--fg);font-weight:600;white-space:nowrap}
-.xp-balken{height:5px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+/* Sammler-Level (auf der Seite «Mehr») */
+.level-kopf{display:flex;align-items:center;gap:14px}
+.level-kopf div{display:grid}
+.level-kopf b{font:800 26px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.level-kopf span:not(.level-zahl){color:var(--fg-2);font-weight:600}
+.level-zahl{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:linear-gradient(180deg,var(--btn-1),var(--btn-2));color:#fff;font:800 30px/1 "Barlow Condensed",sans-serif;box-shadow:0 4px 0 var(--btn-kante)}
+.xp-balken{display:block;height:10px;border-radius:10px;background:var(--surface-2);overflow:hidden}
+.level-karte p{font-size:14px}
 .xp-balken i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--btn-2),var(--accent));transition:width .8s var(--spring,ease)}
 :root{--ease-out:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.45,.64,1)}
 
@@ -201,14 +206,53 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .rad text{font-family:"Barlow Condensed",sans-serif;letter-spacing:.03em}
 .rad-zeiger{position:absolute;top:-18px;left:50%;z-index:2;width:32px;height:40px;transform:translateX(-50%);background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))}
 .rad-unten{display:grid;justify-items:center;gap:18px;padding:0 16px}
-.rad-ergebnis{display:flex;flex-wrap:wrap;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:14px;background:var(--ticket);color:var(--ticket-fg);box-shadow:var(--shadow-lift);animation:ergebnis-pop .5s var(--spring)}
-.rad-ergebnis img{flex:none;width:44px;border-radius:4px;transform:rotate(-6deg)}
-.rad-ergebnis div{display:grid;flex:1}
-.rad-ergebnis b{font:800 22px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase}
-.rad-ergebnis span{color:#4E555C;font-size:15px}
-.rad-ergebnis .btn{width:100%}
-.rad-ergebnis.preis-nichts{display:grid;text-align:center}
-@keyframes ergebnis-pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+/* Das Rad selbst ist ein Knopf: bereit = wippt leicht und lädt zum Drücken ein */
+.rad-buehne{outline:none;-webkit-tap-highlight-color:transparent}
+.rad-buehne.bereit{cursor:pointer}
+.rad-buehne.bereit .rad{animation:rad-wippen 2.4s ease-in-out infinite}
+.rad-buehne.bereit:hover .rad{animation-play-state:paused;filter:brightness(1.06)}
+.rad-buehne.bereit:active .rad{scale:.97}
+.rad-buehne:focus-visible .rad{outline:3px solid var(--accent);outline-offset:14px}
+/* eigene Eigenschaft «rotate», damit das Wippen die Drehung (transform) nicht stört */
+@keyframes rad-wippen{0%,100%{rotate:0deg}50%{rotate:6deg}}
+.rad-tipp{position:absolute;left:50%;top:50%;z-index:2;padding:6px 14px;border-radius:999px;background:var(--accent);color:#fff;font:800 16px/1 "Barlow Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase;transform:translate(-50%,calc(-50% + 42px));pointer-events:none;opacity:0;transition:opacity .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.rad-buehne.bereit .rad-tipp{opacity:1;animation:blinken 1.6s ease-in-out infinite}
+.rad-buehne.dreht .rad-zeiger{animation:zeiger-ticken .12s ease-in-out infinite alternate}
+@keyframes zeiger-ticken{from{transform:translateX(-50%) rotate(-8deg)}to{transform:translateX(-50%) rotate(8deg)}}
+
+/* ---------- Gewinn-Fenster vom Glücksrad ---------- */
+.gewinn{position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:20px;background:rgba(6,7,8,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:viewin .3s var(--ease-out)}
+.gw-box{position:relative;display:grid;justify-items:center;gap:6px;width:min(100%,420px);padding:34px 26px 26px;border-radius:24px;background:var(--ticket);color:var(--ticket-fg);text-align:center;overflow:hidden;isolation:isolate;
+  --gw-farbe:#D71920;box-shadow:0 0 0 3px var(--gw-farbe),0 0 70px color-mix(in srgb,var(--gw-farbe) 60%,transparent),0 30px 60px rgba(0,0,0,.5);animation:gw-auftauchen .65s var(--spring)}
+.preis-silber .gw-box{--gw-farbe:#A7AFB7}
+.preis-gold .gw-box{--gw-farbe:#D4A21A}
+.preis-platin .gw-box{--gw-farbe:#5E7FA8}
+.preis-nichts .gw-box{--gw-farbe:#8A939C;animation:gw-nichts .6s ease-out}
+@keyframes gw-auftauchen{0%{opacity:0;transform:translateY(60px) scale(.6)}60%{opacity:1}100%{transform:none}}
+@keyframes gw-nichts{0%{opacity:0;transform:scale(.9)}40%{opacity:1;transform:translateX(-10px)}60%{transform:translateX(8px)}80%{transform:translateX(-4px)}100%{transform:none}}
+/* drehende Lichtstrahlen hinter dem Pack */
+.gw-strahlen{position:absolute;left:50%;top:150px;z-index:-1;width:620px;height:620px;margin:-310px 0 0 -310px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--gw-farbe) 35%,transparent) 0deg 10deg,transparent 10deg 24deg);
+  -webkit-mask:radial-gradient(circle,#000 20%,transparent 65%);mask:radial-gradient(circle,#000 20%,transparent 65%);animation:dreh-langsam 14s linear infinite}
+.preis-nichts .gw-strahlen,.preis-nichts .gw-funken{display:none}
+/* Funken, die nach aussen fliegen */
+.gw-funken{position:absolute;left:50%;top:150px;z-index:-1}
+.gw-funken i{position:absolute;width:8px;height:8px;border-radius:2px;background:var(--gw-farbe);opacity:0;animation:funke 1.4s ease-out .35s both}
+.gw-funken i:nth-child(odd){background:#FFD54A}
+.gw-funken i:nth-child(1){--x:-150px;--y:-90px}.gw-funken i:nth-child(2){--x:140px;--y:-110px}.gw-funken i:nth-child(3){--x:-170px;--y:30px}
+.gw-funken i:nth-child(4){--x:165px;--y:40px}.gw-funken i:nth-child(5){--x:-90px;--y:-150px}.gw-funken i:nth-child(6){--x:100px;--y:-160px}
+.gw-funken i:nth-child(7){--x:-120px;--y:120px}.gw-funken i:nth-child(8){--x:130px;--y:110px}.gw-funken i:nth-child(9){--x:0px;--y:-180px}
+.gw-funken i:nth-child(10){--x:-185px;--y:-30px}.gw-funken i:nth-child(11){--x:185px;--y:-20px}.gw-funken i:nth-child(12){--x:40px;--y:160px}
+@keyframes funke{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(320deg) scale(.4)}}
+.gw-pack{width:auto;height:min(34vh,250px);margin-bottom:12px;border-radius:6px;box-shadow:0 18px 34px rgba(0,0,0,.45);animation:gw-pack-rein .8s var(--spring) .1s both,pack-schweben 3.4s ease-in-out 1s infinite}
+@keyframes gw-pack-rein{0%{opacity:0;transform:translateY(-160px) rotate(-25deg) scale(.5)}100%{opacity:1;transform:none}}
+.gw-leer{display:grid;place-items:center;width:110px;height:110px;margin-bottom:10px;border-radius:50%;background:rgba(0,0,0,.06);color:#8A939C}
+.gw-kicker{margin:0;color:var(--accent-ink);font:800 16px/1 "Barlow Condensed",sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.gw-titel{margin:0;font-size:42px;text-transform:uppercase;letter-spacing:.02em}
+.gw-text{margin:0 0 14px;color:#4E555C;font-size:16px}
+.gw-knoepfe{display:grid;gap:10px;width:100%}
+.gw-knoepfe .btn-haupt{font-size:28px}
+.btn.ghost.gw-spaeter{width:100%;color:#16181A;border-color:rgba(0,0,0,.18)}
 .rad-legende{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin:0;padding:0;list-style:none;color:var(--fg-2);font-size:14px}
 .rad-legende li{display:flex;align-items:center;gap:6px}
 .rad-legende i{width:12px;height:12px;border-radius:3px;border:1px solid var(--line)}
@@ -389,7 +433,7 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
    Das Handy-Layout darüber bleibt unverändert (wird später fürs Handy optimiert). */
 @media (min-width:1100px){
   .handy{max-width:none;box-shadow:none}
-  .kopf,.xp{max-width:1200px;margin:0 auto;padding-left:32px;padding-right:32px}
+  .kopf{max-width:1200px;margin:0 auto;padding-left:32px;padding-right:32px}
   .kopf{height:68px}
   main{max-width:1200px;margin:0 auto;padding:0 32px 60px}
   .seite{padding:0}

@@ -39,11 +39,13 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 
 ### IDs, die der Code braucht (müssen im HTML bleiben)
 
-Kopf: `avatar`, `lvl`, `xp-level`, `xp-balken`, `xp-zahl`
+Kopf: `avatar`, `lvl`
+Mehr (Sammler-Level): `level-zahl`, `xp-level`, `xp-balken`, `xp-zahl`
 Start: `start-badge` (mit einem `<use>` und einem `<span>` darin), `start-btn`, `start-btn-txt`
 Packs: `pk-reiter`, `pk-karussell`, `pk-zurueck`, `pk-weiter`, `pk-stelle`, `pk-punkte`,
 `tk-name`, `tk-info`, `tk-garantie` (mit `<span>` darin), `tk-btn`, `tk-btn-txt`
-Rad: `rad-svg`, `rad-btn`, `rad-btn-txt`, `rad-info`, `rad-ergebnis`
+Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt`, `rad-info`
+Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-spaeter`
 Album: `st-entdeckt`, `st-karten`, `st-geoeffnet`, `rar-liste`, `al-suche`, `al-bahn`, `al-nur-meine`,
 `sam-titel`, `sam-karten`, `sam-leer`
 Konto: `avatar-gross`, `profil-name`, `profil-level`, `konto-form`, `konto-name`, `reset-btn`
@@ -64,6 +66,7 @@ Sonstiges: `app`, `hinweis`
 - Karten: `.karte.rar-<seltenheit>`, `.fehlt` (noch nicht gefunden), `.k-anzahl` (×2 …)
 - Aufdecken: `.flip`, `.flip-innen`, `.flip-seite`, `.flip-vorne`, `.flip-rueck`, Zustände `.offen`, `.selten`, `.neu`, `.weg`, `.flip-rein`
 - Pack-Animation: `.op-shake`, `.op-reisst`; Übersicht `li.neu`
+- Rad: `#rad-buehne.bereit` (kann gedreht werden), `.dreht` (dreht gerade); Gewinn-Fenster: `.preis-standard|silber|gold|platin|nichts`
 - Seitenwechsel: `.view`, `.von-rechts`, `.von-links`
 
 ## Die 7 Karten-Seltenheiten (Farben laut Kartenliste)

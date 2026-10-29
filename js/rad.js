@@ -46,10 +46,11 @@ const Rad = (() => {
     const btn = $('rad-btn');
     const info = $('rad-info');
     if (dreht) return;
+    $('rad-buehne').classList.toggle('bereit', bereit());
     if (bereit()) {
       btn.disabled = false;
       $('rad-btn-txt').textContent = 'Drehen';
-      info.textContent = 'Einmal alle 24 Stunden. Vielleicht gewinnst du ein Pack.';
+      info.textContent = 'Tippe auf das Rad. Einmal alle 24 Stunden, vielleicht gewinnst du ein Pack.';
     } else {
       btn.disabled = true;
       $('rad-btn-txt').textContent = `In ${dauerText(bereitIn(app.daten.radZeit))}`;
@@ -81,39 +82,76 @@ const Rad = (() => {
 
     $('rad-btn').disabled = true;
     $('rad-btn-txt').textContent = 'Dreht …';
-    $('rad-ergebnis').hidden = true;
+    $('rad-buehne').classList.remove('bereit');
+    $('rad-buehne').classList.add('dreht');
     const rad = $('rad-svg');
     rad.style.transition = 'transform 4.6s cubic-bezier(.12,.62,.08,1)';
     rad.style.transform = `rotate(${drehung}deg)`;
 
     setTimeout(() => {
       dreht = false;
-      zeigeErgebnis(preis, packId);
+      $('rad-buehne').classList.remove('dreht');
       aktualisiereAlles();
+      zeigeGewinn(packId);
     }, 4750);
   }
 
-  function zeigeErgebnis(preis, packId) {
-    const box = $('rad-ergebnis');
-    box.hidden = false;
-    box.className = `rad-ergebnis preis-${preis}`;
-    if (!packId) {
-      box.innerHTML = '<b>Leider nichts.</b><span>Morgen hast du eine neue Chance.</span>';
-      return;
+  // ---------- Gewinn-Fenster ----------
+
+  let gewonnenesPack = null;
+
+  function zeigeGewinn(packId) {
+    gewonnenesPack = packId;
+    const box = $('gewinn');
+    box.className = `gewinn ${packId ? `preis-${packVonId(packId).stufe}` : 'preis-nichts'}`;
+    if (packId) {
+      const p = packVonId(packId);
+      $('gw-img').src = bildGross(p);
+      $('gw-img').alt = `${p.titel} Pack ${p.name}`;
+      $('gw-img').hidden = false;
+      $('gw-leer').hidden = true;
+      $('gw-kicker').textContent = 'Gewonnen!';
+      $('gw-titel').textContent = `${p.titel} Pack`;
+      $('gw-text').textContent = `${p.name} liegt jetzt in deinem Vorrat.`;
+      $('gw-oeffnen').hidden = false;
+      $('gw-spaeter').textContent = 'Später öffnen';
+    } else {
+      $('gw-img').hidden = true;
+      $('gw-leer').hidden = false;
+      $('gw-kicker').textContent = 'Glücksrad';
+      $('gw-titel').textContent = 'Leider nichts';
+      $('gw-text').textContent = 'Morgen hast du eine neue Chance.';
+      $('gw-oeffnen').hidden = true;
+      $('gw-spaeter').textContent = 'OK';
     }
-    const p = packVonId(packId);
-    box.innerHTML = `
-      <img src="${bildKlein(p)}" alt="">
-      <div><b>Gewonnen: ${p.titel} Pack!</b><span>${p.name} liegt jetzt in deinem Vorrat.</span></div>
-      <button class="btn" type="button" data-oeffnen="${p.id}">Jetzt öffnen</button>`;
+    box.hidden = false;
+    document.body.classList.add('op-offen');
+    (packId ? $('gw-oeffnen') : $('gw-spaeter')).focus({ preventScroll: true });
+  }
+
+  function schliesseGewinn() {
+    $('gewinn').hidden = true;
+    document.body.classList.remove('op-offen');
   }
 
   function init() {
     zeichneRad();
     $('rad-btn').addEventListener('click', drehe);
-    $('rad-ergebnis').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-oeffnen]');
-      if (btn) Oeffnen.oeffne(btn.dataset.oeffnen);
+    // Auf das Rad drücken dreht es auch
+    $('rad-buehne').addEventListener('click', drehe);
+    $('rad-buehne').addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      drehe();
+    });
+    $('gw-oeffnen').addEventListener('click', () => {
+      schliesseGewinn();
+      if (gewonnenesPack) Oeffnen.oeffne(gewonnenesPack);
+    });
+    $('gw-spaeter').addEventListener('click', schliesseGewinn);
+    $('gewinn').addEventListener('click', (e) => { if (e.target === $('gewinn')) schliesseGewinn(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !$('gewinn').hidden) schliesseGewinn();
     });
   }
 

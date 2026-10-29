@@ -49,11 +49,6 @@
       <span class="lvl" id="lvl">LVL 1</span>
     </a>
   </div>
-  <div class="xp" aria-label="Sammler-Level">
-    <span id="xp-level">Sammler-Level 1</span>
-    <span class="xp-balken" aria-hidden="true"><i id="xp-balken"></i></span>
-    <span id="xp-zahl">0 / 100 XP</span>
-  </div>
 </header>
 
 <main id="app">
@@ -153,16 +148,16 @@
       <h1>Glücksrad</h1>
       <p id="rad-info">wird geladen …</p>
     </div>
-    <div class="rad-buehne" data-kein-wischen>
+    <div class="rad-buehne" id="rad-buehne" data-kein-wischen role="button" tabindex="0" aria-label="Glücksrad drehen">
       <div class="rad-zeiger" aria-hidden="true"></div>
-      <svg class="rad" id="rad-svg" viewBox="0 0 200 200" role="img" aria-label="Glücksrad mit Feldern für Nichts, Basis, Silver, Gold und Platinum"></svg>
+      <svg class="rad" id="rad-svg" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <span class="rad-tipp" aria-hidden="true">Tippen</span>
     </div>
     <div class="rad-unten">
       <button class="btn-haupt" type="button" id="rad-btn" disabled>
         <svg width="26" height="26" aria-hidden="true"><use href="#i-rad"/></svg>
         <span id="rad-btn-txt">Drehen</span>
       </button>
-      <div class="rad-ergebnis" id="rad-ergebnis" hidden aria-live="polite"></div>
       <ul class="rad-legende">
         <li><i style="background:#D71920"></i>Basis</li>
         <li><i style="background:#A7AFB7"></i>Silver</li>
@@ -266,6 +261,17 @@
       <p>Hier kommen bald weitere Bereiche dazu.</p>
     </div>
     <div class="seite">
+      <div class="panel level-karte">
+        <div class="level-kopf">
+          <span class="level-zahl" id="level-zahl">1</span>
+          <div>
+            <b id="xp-level">Sammler-Level 1</b>
+            <span id="xp-zahl">0 / 100 XP</span>
+          </div>
+        </div>
+        <span class="xp-balken" aria-hidden="true"><i id="xp-balken"></i></span>
+        <p>XP bekommst du für jede Karte, die du ziehst. Je seltener die Karte, desto mehr XP.</p>
+      </div>
       <ul class="menu-list">
         <li><a href="#konto"><span>Konto und Design</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Tauschen</span><small>bald</small></li>
@@ -330,6 +336,26 @@
     <div class="op-knoepfe">
       <button class="btn ghost op-close" type="button" id="op-alle" hidden>Alle aufdecken</button>
       <button class="btn ghost op-close" type="button" id="op-close" hidden>Schliessen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GEWINN VOM GLÜCKSRAD (Fenster) ===== -->
+<div class="gewinn" id="gewinn" hidden role="dialog" aria-modal="true" aria-labelledby="gw-titel">
+  <div class="gw-box">
+    <div class="gw-strahlen" aria-hidden="true"></div>
+    <div class="gw-funken" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <img class="gw-pack" id="gw-img" alt="">
+    <span class="gw-leer" id="gw-leer" aria-hidden="true"><svg width="64" height="64"><use href="#i-rad"/></svg></span>
+    <p class="gw-kicker" id="gw-kicker">Glücksrad</p>
+    <h2 class="gw-titel" id="gw-titel">Gewonnen!</h2>
+    <p class="gw-text" id="gw-text"></p>
+    <div class="gw-knoepfe">
+      <button class="btn-haupt" type="button" id="gw-oeffnen">
+        <svg width="28" height="28" aria-hidden="true"><use href="#i-pack-hell"/></svg>
+        <span>Jetzt öffnen</span>
+      </button>
+      <button class="btn ghost gw-spaeter" type="button" id="gw-spaeter">Später</button>
     </div>
   </div>
 </div>
