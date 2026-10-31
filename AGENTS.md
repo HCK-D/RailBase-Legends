@@ -69,10 +69,13 @@ Sonstiges: `app`, `hinweis`
 - Reiter: `button[data-stufe]` mit `aria-selected`
 - Album-Kategorien: `button[data-filter]` mit `aria-pressed`
 - Karten: `.karte.rar-<seltenheit>`, `.fehlt` (noch nicht gefunden), `.k-anzahl` (×2 …)
-- Aufdecken: `.flip`, `.flip-innen`, `.flip-seite`, `.flip-vorne`, `.flip-rueck`, Zustände `.offen`, `.selten`, `.neu`, `.weg`,
-  `.flip-stapel` (erste Karte), `.flip-naechste`, `.ahnung` (ab Rare), `.spannung` (kurz vor dem Umdrehen einer seltenen Karte).
-  Ab Epic `.ahnung-hoch` und beim Tippen `.laedt` (Aufladen, Dauer `AUFLADEN` in js/oeffnen.js): Lichtball `.fx-glut`
-  (Special `.bunt`), Lichtpunkte `.fx-sog`, ab Mythic Strahlen `.fx-strahlen.vorab` → `.voll`; am `#opener` `.fx-laedt`.
+- Aufdecken: `.flip`, `.flip-innen`, `.flip-seite`, `.flip-vorne`, `.flip-rueck`, Zustände `.offen`, `.neu`, `.weg`,
+  `.flip-stapel` (erste Karte), `.flip-naechste`, `.ahnung` (Rare), `.spannung` (kurz vor dem Umdrehen einer Rare-Karte).
+  Ab Epic `.hoch` und beim Tippen `.laedt`; am `#opener` `.fx-laedt`. Licht, Strahlen, Druckwellen, Funken und Konfetti
+  malt `js/enthuellung.js` (`Enthuellung`) auf die Zeichenflächen `#fx-hinten` und `#fx-vorne`: Aufladen mit Farbstufen
+  Epic → Mythic → Legendary → Special, dann Knall und Nachglühen. Keine grossen Leucht-Elemente im Pack-Fenster bauen:
+  auf dem Handy läuft sonst der Grafikspeicher voll und das Bild flackert.
+  Während das Pack offen ist, trägt `body` die Klasse `.pack-offen` (App dahinter ausgeblendet, ihre Animationen ruhen).
   Während der Einzelkarten hat `#opener` die Klasse `.einzeln` und scrollt nicht (Effekte ragen über den Rand).
   Hinter der obersten Karte liegt der Stapel `.op-stapel` mit `.op-stapel-karte`.
 - Pack-Animation als Szene: `.op-druck` (gedrückt) → `.op-feder` → `.op-shake` (Naht reisst) → `.op-reisst` (Hülle fällt) → Stapel `.stapel-rein`.

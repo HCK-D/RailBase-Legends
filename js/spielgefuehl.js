@@ -105,6 +105,17 @@ const Gefuehl = (() => {
         klang(70, s, 0.12, { laut: 0.18, bis: 50 });
       }
     },
+    // Aufladen ab Epic: die Farbe springt eine Stufe höher (1 = Mythic, 2 = Legendary, 3 = Special).
+    // Ein heller Akkord, jede Stufe eine Quarte höher, dazu ein Luftzug.
+    stufe: (n = 1) => {
+      [0, 7, 12].forEach((h, i) => klang(note(h + n * 5 - 5), i * 0.03, 0.45, { typ: 'triangle', laut: 0.15 }));
+      rauschen(0, 0.3, { von: 700, bis: 5000, laut: 0.1 });
+    },
+    // Aufdecken ab Epic: tiefer Schlag und ein Luftstoss
+    knall: () => {
+      klang(150, 0, 0.55, { laut: 0.5, bis: 38 });
+      rauschen(0, 0.55, { von: 4000, bis: 250, laut: 0.3, art: 'lowpass' });
+    },
   };
 
   // Seltenheit: je seltener, desto mehr und hellere Töne
@@ -118,7 +129,7 @@ const Gefuehl = (() => {
     special: [0, 4, 7, 11, 14, 19, 24],
   };
 
-  // wert: bei «selten» die Seltenheit, bei «laden» die Dauer in Sekunden
+  // wert: bei «selten» die Seltenheit, bei «laden» die Dauer in Sekunden, bei «stufe» die Farbstufe
   function ton(name, wert) {
     if (!an() || !audio()) return;
     try {

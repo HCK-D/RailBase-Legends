@@ -88,6 +88,7 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `AGENTS.md` | Regeln für Codex und andere KI-Assistenten (was beim Design geändert werden darf) |
 | `design/` | Design-Vorlagen und Sicherungen, nur lokal (nicht auf GitHub) |
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |
+| `js/enthuellung.js` | Enthüllung ab Epic: Aufladen mit Farbstufen, Knall, Strahlen, Funken und Konfetti (auf canvas gemalt) |
 | `js/rad.js` | Glücksrad |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |

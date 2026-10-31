@@ -12,12 +12,8 @@ const Oeffnen = (() => {
   let xpVorher = 0;      // für den XP-Balken in der Übersicht
   let besitzVorher = new Set(); // Karten vor diesem Pack, für den Bahn-Fortschritt in der Übersicht
 
-  const SELTEN_AB = rangVon('epic'); // ab hier gibt es Glanz beim Aufdecken
-  // Ab Epic lädt sich die Karte vor dem Umdrehen auf (ms): je seltener, desto länger die Spannung.
-  // WUCHT: wie stark die Karte dabei zittert (1 = Epic)
-  const AUFLADEN = { epic: 1100, mythic: 1400, legendary: 1700, special: 2000 };
-  const WUCHT = { epic: 1, mythic: 1.1, legendary: 1.2, special: 1.3 };
-  const BEWEGUNG_RUHIG = matchMedia('(prefers-reduced-motion: reduce)');
+  // ab hier übernimmt js/enthuellung.js: Aufladen mit Farbstufen, Knall und Nachglühen
+  const HOCH_AB = rangVon('epic');
 
   function oeffne(id) {
     const p = packVonId(id);
@@ -29,6 +25,7 @@ const Oeffnen = (() => {
 
     packId = id;
     phase = 'pack';
+    Enthuellung.beenden(true);
     $('op-titel').textContent = `${p.titel} · ${p.name}`;
     // Bis das neue Bild bereit ist, bleibt das Pack unsichtbar (sonst blitzt kurz das zuletzt geöffnete Pack auf)
     const img = $('op-img');
@@ -72,6 +69,7 @@ const Oeffnen = (() => {
         return { html: k.outerHTML, rect: k.getBoundingClientRect(), neu: li.classList.contains('neu') };
       })
       : [];
+    Enthuellung.beenden(true);
     // Erst die App dahinter wieder zeichnen lassen, zwei Bilder später das Fenster schliessen.
     // Sonst blitzt sie auf dem Handy kurz leer oder in Stücken auf.
     document.body.classList.remove('op-offen', 'pack-offen');
@@ -188,19 +186,21 @@ const Oeffnen = (() => {
     const flip = slot.querySelector('.flip');
     // die erste Karte kommt mit dem Stapel, jede weitere hebt sich kurz vom Stapel ab
     flip.classList.add(erste ? 'flip-stapel' : 'flip-naechste');
-    // Vorahnung: ab Rare leuchtet es um die Rückseite ruhig in der Farbe der Seltenheit
-    // ab Epic atmet das Leuchten schon vor dem Tippen
+    // Vorahnung: Rare leuchtet ruhig blau um die Rückseite. Ab Epic schimmert es lila dahinter und verrät noch nicht,
+    // wie selten genau: das zeigt erst das Aufladen (js/enthuellung.js).
     const seltenheit = karteVonId(k).seltenheit;
-    if (rangVon(seltenheit) >= rangVon('rare')) {
+    if (rangVon(seltenheit) >= HOCH_AB) {
+      flip.classList.add('hoch');
+      Enthuellung.vorbereiten(slot, flip);
+    } else if (rangVon(seltenheit) >= rangVon('rare')) {
       flip.classList.add('ahnung');
       flip.style.setProperty('--ahnung', FX_FARBEN[seltenheit][0]);
     }
-    if (AUFLADEN[seltenheit]) flip.classList.add('ahnung-hoch');
     bindeWischen(flip);
     flip.focus({ preventScroll: true });
   }
 
-  // Effekte pro Seltenheit: je seltener, desto mehr Funken, Ringe, Blitz und Beben
+  // Effekte bis Rare: je seltener, desto mehr Funken. Ab Epic zeichnet js/enthuellung.js alles.
   const FX_STUFE = { common: 0, uncommon: 1, rare: 2, epic: 3, mythic: 4, legendary: 5, special: 6 };
   const FX_FARBEN = {
     common: ['#cfd5db'],
@@ -211,39 +211,12 @@ const Oeffnen = (() => {
     legendary: ['#ffd34d', '#fff0a8', '#f5a300'],
     special: ['#ff5f6d', '#ffc371', '#47e891', '#4face0', '#b06ab3'],
   };
-  const FX_FUNKEN = [4, 10, 16, 24, 34, 48, 70];
-
-  // Lichtball hinter der Karte; bei Special in allen Farben, die um die Karte kreisen
-  const glutHtml = (seltenheit) =>
-    `<i class="fx-glut${seltenheit === 'special' ? ' bunt' : ''}" style="--farbe:${FX_FARBEN[seltenheit][0]}"></i>`;
-
-  // Strahlenkranz als SVG: 18 schmale Strahlen, jeder wird nach aussen durchsichtig (Verlauf statt Maske).
-  // Mehrere Farben (Special) wechseln sich ab. Es gibt immer nur einen Kranz, darum feste IDs.
-  // «vorab»: ab Mythic brechen die Strahlen schon beim Aufladen schwach hinter der Karte hervor
-  function strahlenSvg(farben, vorab = false) {
-    const verlaeufe = farben.map((f, i) => `
-      <radialGradient id="fx-strahl-${i}" cx="0" cy="0" r="100" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stop-color="${f}" stop-opacity=".8"/>
-        <stop offset=".4" stop-color="${f}" stop-opacity=".4"/>
-        <stop offset="1" stop-color="${f}" stop-opacity="0"/>
-      </radialGradient>`).join('');
-    const ANZAHL = 18;
-    let strahlen = '';
-    for (let i = 0; i < ANZAHL; i++) {
-      const a = (i / ANZAHL) * Math.PI * 2;
-      const b = a + (Math.PI * 2 / ANZAHL) * 0.32;
-      const p = (w) => `${(Math.cos(w) * 100).toFixed(1)} ${(Math.sin(w) * 100).toFixed(1)}`;
-      strahlen += `<path d="M0 0L${p(a)}L${p(b)}Z" fill="url(#fx-strahl-${i % farben.length})"/>`;
-    }
-    return `<svg class="fx-strahlen${vorab ? ' vorab' : ''}" viewBox="-100 -100 200 200" aria-hidden="true"><defs>${verlaeufe}</defs>${strahlen}</svg>`;
-  }
+  const FX_FUNKEN = [4, 10, 16];
 
   function feiereKarte(flip, seltenheit) {
     const stufe = FX_STUFE[seltenheit] ?? 0;
     const farben = FX_FARBEN[seltenheit] || FX_FARBEN.common;
     const slot = flip.parentElement;
-    flip.classList.add(seltenheit); // für die CSS-Effekte, z. B. .flip.special
-    const opener = $('opener');
 
     // Funken fliegen von der Mitte nach aussen
     for (let i = 0; i < FX_FUNKEN[stufe]; i++) {
@@ -258,105 +231,37 @@ const Oeffnen = (() => {
       slot.appendChild(f);
       f.addEventListener('animationend', () => f.remove());
     }
-
-    // Leuchtring und Lichtstrahlen ab Epic (beide flach hinter der Karte, die Strahlen bleiben bis zur nächsten Karte).
-    // Ab Legendary läuft ein zweiter Ring kurz danach. Der Lichtball vom Aufladen bleibt und atmet.
-    if (stufe >= 3) {
-      (stufe >= 5 ? [0, 1] : [0]).forEach((n) => {
-        const ring = document.createElement('i');
-        ring.className = 'fx-ring';
-        ring.style.setProperty('--farbe', farben[n]);
-        ring.style.animationDelay = `${n * 0.18}s`;
-        slot.appendChild(ring);
-        ring.addEventListener('animationend', () => ring.remove());
-      });
-      const strahlen = slot.querySelector('.fx-strahlen.vorab');
-      if (strahlen) strahlen.classList.add('voll');
-      else slot.insertAdjacentHTML('afterbegin', strahlenSvg(seltenheit === 'special' ? farben : [farben[0]]));
-      if (!slot.querySelector('.fx-glut')) slot.insertAdjacentHTML('afterbegin', glutHtml(seltenheit));
-      slot.querySelector('.fx-glut').classList.add('da');
-    }
-
-    // Blitz ab Mythic. Kein Bildschirm-Beben mehr: das liess auf Handys alles verzerrt aussehen.
-    if (stufe >= 4) {
-      opener.classList.remove('fx-blitz');
-      void opener.offsetWidth;
-      opener.classList.add('fx-blitz');
-      opener.style.setProperty('--blitz', farben[0]);
-      setTimeout(() => opener.classList.remove('fx-blitz'), 800);
-    }
   }
 
-  // Ton, Vibration, Schriftzug und Konfetti: je seltener, desto grösser
+  // Ton, Vibration und Schriftzug: je seltener, desto grösser (Konfetti ab Legendary kommt aus js/enthuellung.js)
   function feiereMitTon(seltenheit, name) {
     const stufe = FX_STUFE[seltenheit] ?? 0;
-    Gefuehl.ton('flip');
+    Gefuehl.ton(stufe >= 3 ? 'knall' : 'flip');
     setTimeout(() => Gefuehl.ton('selten', seltenheit), 120);
-    if (stufe >= 5) Gefuehl.vibriere([40, 30, 40, 30, 140]);
-    else if (stufe >= 3) Gefuehl.vibriere([30, 40, 70]);
+    if (stufe >= 5) Gefuehl.vibriere([60, 30, 40, 30, 160]);
+    else if (stufe >= 3) Gefuehl.vibriere([50, 40, 80]);
     else Gefuehl.vibriere(12);
     if (stufe >= 2) Gefuehl.banner($('op-stage'), `${name}!`, FX_FARBEN[seltenheit][0]);
-    if (stufe >= 5) Gefuehl.konfetti(FX_FARBEN[seltenheit], stufe === 6 ? 130 : 80);
   }
 
-  // Gewöhnliche Karten drehen sich zügig um. Ab Rare hebt sich die Karte zuerst kurz und zittert (Spannung),
-  // dann dreht sie sich langsamer um (Tempo im CSS: .flip.ahnung). Ab Epic lädt sie sich vorher auf.
+  // Gewöhnliche Karten drehen sich zügig um. Rare hebt sich zuerst kurz und zittert (Spannung),
+  // dann dreht sie sich langsamer um (Tempo im CSS: .flip.ahnung). Ab Epic lädt sie sich vorher auf (js/enthuellung.js).
   function decktAuf(flip) {
-    if (flip.classList.contains('offen') || flip.classList.contains('spannung')) return;
+    if (flip.classList.contains('offen') || flip.classList.contains('spannung') || flip.classList.contains('laedt')) return;
     const seltenheit = karteVonId(karten[index]).seltenheit;
+    if (flip.classList.contains('hoch')) {
+      flip.classList.add('laedt');
+      $('opener').classList.add('fx-laedt');
+      setTimeout(() => dreheUm(flip), Enthuellung.aufladen(seltenheit));
+      return;
+    }
     if (rangVon(seltenheit) < rangVon('rare')) {
       dreheUm(flip);
       return;
     }
     flip.classList.add('spannung');
-    const dauer = AUFLADEN[seltenheit];
-    if (!dauer) {
-      Gefuehl.vibriere([15, 40, 15, 40, 15]);
-      setTimeout(() => dreheUm(flip), 520);
-      return;
-    }
-    ladeAuf(flip, seltenheit, dauer);
-    setTimeout(() => dreheUm(flip), dauer);
-  }
-
-  // Aufladen ab Epic: die Karte hebt sich und zittert immer stärker, von hinten wächst ein Lichtball,
-  // Lichtpunkte fliegen zur Karte und alles andere tritt zurück. Ton und Vibration werden immer schneller.
-  function ladeAuf(flip, seltenheit, dauer) {
-    const farben = FX_FARBEN[seltenheit];
-    const slot = flip.parentElement;
-    slot.style.setProperty('--laden', `${dauer}ms`);
-    slot.style.setProperty('--wucht', WUCHT[seltenheit]);
-    flip.classList.add('laedt');
-    $('opener').classList.add('fx-laedt');
-    if (FX_STUFE[seltenheit] >= 4) slot.insertAdjacentHTML('afterbegin', strahlenSvg(seltenheit === 'special' ? farben : [farben[0]], true));
-    slot.insertAdjacentHTML('afterbegin', glutHtml(seltenheit));
-
-    // Lichtpunkte starten rund um die Karte und verschwinden hinter ihr
-    if (!BEWEGUNG_RUHIG.matches) {
-      const anzahl = Math.round(dauer / 60);
-      const rx = slot.offsetWidth / 2;
-      const ry = slot.offsetHeight / 2;
-      for (let i = 0; i < anzahl; i++) {
-        const p = document.createElement('i');
-        p.className = 'fx-sog';
-        const winkel = Math.random() * Math.PI * 2;
-        const weiter = 30 + Math.random() * 70;
-        p.style.setProperty('--x', `${(Math.cos(winkel) * (rx + weiter)).toFixed(0)}px`);
-        p.style.setProperty('--y', `${(Math.sin(winkel) * (ry + weiter)).toFixed(0)}px`);
-        p.style.setProperty('--farbe', farben[i % farben.length]);
-        p.style.setProperty('--warte', `${((i / anzahl) * (dauer - 550)).toFixed(0)}ms`);
-        slot.appendChild(p);
-        p.addEventListener('animationend', () => p.remove());
-      }
-    }
-
-    Gefuehl.ton('laden', dauer / 1000);
-    // Vibration: kurze Stösse, die immer dichter kommen
-    const muster = [];
-    for (let zeit = 0, pause = 220; zeit < dauer - 120; zeit += 18 + pause, pause = Math.max(40, pause * 0.78)) {
-      muster.push(18, Math.round(pause));
-    }
-    Gefuehl.vibriere(muster);
+    Gefuehl.vibriere([15, 40, 15, 40, 15]);
+    setTimeout(() => dreheUm(flip), 520);
   }
 
   function dreheUm(flip) {
@@ -366,14 +271,16 @@ const Oeffnen = (() => {
     flip.classList.add('offen');
     const k = karteVonId(karten[index]);
     const s = seltenheitVon(k.seltenheit);
+    flip.classList.add(k.seltenheit); // für die CSS-Effekte, z. B. .flip.special
     if (neu[index]) flip.classList.add('neu');
-    if (rangVon(k.seltenheit) >= SELTEN_AB) flip.classList.add('selten');
-    // ab Rare dreht die Karte langsamer: Funken, Strahlen und Schriftzug kommen, sobald die Vorderseite
+    // ab Rare dreht die Karte langsamer: Funken, Knall und Schriftzug kommen, sobald die Vorderseite
     // herklappt (nach der ersten Hälfte, --halb in css/spielgefuehl.css)
-    const warten = flip.classList.contains('ahnung') ? 280 : 0;
+    const hoch = flip.classList.contains('hoch');
+    const warten = hoch ? 180 : flip.classList.contains('ahnung') ? 280 : 0;
     setTimeout(() => {
       if (!flip.isConnected) return;
-      feiereKarte(flip, k.seltenheit);
+      if (hoch) Enthuellung.knall(k.seltenheit);
+      else feiereKarte(flip, k.seltenheit);
       feiereMitTon(k.seltenheit, s.name);
     }, warten);
     const vermerk = neu[index] ? 'Neu! ' : 'Doppelt · ';
@@ -387,6 +294,7 @@ const Oeffnen = (() => {
   function weiter(flip, richtung = 1) {
     if (flip.classList.contains('weg')) return;
     flip.classList.add('weg');
+    Enthuellung.beenden();
     Gefuehl.ton('weg');
     flip.style.transition = 'transform .35s cubic-bezier(.4,0,.6,1), opacity .35s ease';
     flip.style.transform = `translateX(${richtung * 140}%) rotate(${richtung * 22}deg)`;
@@ -410,6 +318,7 @@ const Oeffnen = (() => {
       startY = e.clientY;
       dx = 0;
       zieht = true;
+      Enthuellung.halt();
       flip.setPointerCapture(e.pointerId);
       flip.style.transition = 'none';
     });
@@ -453,6 +362,7 @@ const Oeffnen = (() => {
 
   function zeigeUebersicht() {
     phase = 'uebersicht';
+    Enthuellung.beenden(true);
     $('opener').classList.remove('einzeln', 'fx-laedt');
     $('op-einzeln').hidden = true;
     $('op-alle').hidden = true;

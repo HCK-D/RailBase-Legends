@@ -242,12 +242,6 @@ button[data-filter]:active{transform:scale(.95)}
 .op-slot{position:relative}
 .fx-funke{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:var(--farbe);box-shadow:0 0 10px var(--farbe),0 0 2px #fff;pointer-events:none;z-index:20;animation:fx-funke var(--dauer,1s) cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes fx-funke{0%{opacity:1;transform:translate(0,0) scale(1.2)}70%{opacity:.9}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2)}}
-.fx-ring{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px;border-radius:50%;border:3px solid var(--farbe);box-shadow:0 0 22px var(--farbe);pointer-events:none;z-index:19;animation:fx-ring .9s ease-out forwards}
-@keyframes fx-ring{from{transform:scale(.4);opacity:1}to{transform:scale(7);opacity:0}}
-.opener.fx-blitz::after{content:"";position:fixed;inset:0;z-index:70;pointer-events:none;background:radial-gradient(circle at 50% 45%,var(--blitz,#fff) 0%,transparent 60%);animation:fx-blitz .85s ease-out forwards}
-@keyframes fx-blitz{0%{opacity:.85}100%{opacity:0}}
-.opener.fx-beben{animation:fx-beben .5s linear}
-@keyframes fx-beben{0%,100%{transform:translate(0,0)}10%{transform:translate(-7px,4px)}25%{transform:translate(6px,-5px)}40%{transform:translate(-5px,3px)}55%{transform:translate(4px,-3px)}70%{transform:translate(-2px,2px)}}
 /* Gewöhnlich: nur ein kurzer Zucker, Seltenes wird stärker */
 .flip.offen.neu .flip-innen{animation:fx-zucken .4s ease-out}
 @keyframes fx-zucken{0%{scale:.96}50%{scale:1.03}100%{scale:1}}

@@ -76,7 +76,7 @@ body.pack-offen > .handy ::after {
 }
 
 @keyframes gf-banner {
-  0% { opacity: 0; scale: 2.4; rotate: -8deg; }
+  0% { opacity: 0; scale: 1.8; rotate: -8deg; }
   16% { opacity: 1; scale: .9; rotate: -4deg; }
   26% { scale: 1.05; }
   38% { scale: 1; }
@@ -621,11 +621,10 @@ body.pack-offen > .handy ::after {
   animation: none;
 }
 
-/* ---------- Enthüllung ab Rare ----------
-   Heben, Zittern und «Pop» macht die Hülle .flip in 2D; Leuchten, Strahlen, Ring und Funken liegen
-   flach hinter der Karte. So bleibt das Bild auf dem Handy scharf und unverzerrt. */
+/* ---------- Enthüllung bis Rare ----------
+   Heben, Zittern und Hüpfer macht die Hülle .flip in 2D. */
 
-/* Spannung vor einer seltenen Karte: die Hülle hebt sich und zittert, das Leuchten wird voll.
+/* Spannung vor einer Rare-Karte: die Hülle hebt sich und zittert, das Leuchten wird voll.
    Beim Umdrehen sinkt sie weich zurück (Übergang statt Sprung). */
 .op-slot > .flip {
   transition: translate .35s ease-out, scale .35s ease-out;
@@ -652,183 +651,14 @@ body.pack-offen > .handy ::after {
   filter: none;
 }
 
-/* Ab Epic atmet das Leuchten um die Rückseite schon vor dem Tippen (nur die Helligkeit, die Karte bleibt ruhig) */
-.flip.ahnung-hoch:not(.spannung):not(.offen)::before {
-  animation: gf-ahnung-atmen 1.6s ease-in-out infinite;
-}
-
-@keyframes gf-ahnung-atmen {
-  0%, 100% { opacity: .5; }
-  50% { opacity: 1; }
-}
-
-/* ---------- Aufladen ab Epic ----------
-   Nach dem Tippen hebt sich die Karte höher und zittert immer stärker (nur flach, 2D), das Leuchten wächst,
-   von hinten kommt ein Lichtball (.fx-glut), Lichtpunkte fliegen zur Karte (.fx-sog), alles andere tritt zurück.
-   Dauer: --laden aus js/oeffnen.js (AUFLADEN). */
-.flip.spannung.laedt {
-  translate: 0 -12px;
-  scale: 1.07;
-  transition: translate .45s ease-out, scale var(--laden) cubic-bezier(.4, 0, .9, .6);
-  animation: gf-laden-zittern var(--laden) linear both;
-}
-
-/* --wucht aus js/oeffnen.js (WUCHT): je seltener, desto stärker */
-@keyframes gf-laden-zittern {
-  0% { rotate: 0deg; }
-  10% { rotate: calc(-.3deg * var(--wucht, 1)); }
-  20% { rotate: calc(.4deg * var(--wucht, 1)); }
-  29% { rotate: calc(-.5deg * var(--wucht, 1)); }
-  37% { rotate: calc(.6deg * var(--wucht, 1)); }
-  44% { rotate: calc(-.8deg * var(--wucht, 1)); }
-  51% { rotate: calc(.9deg * var(--wucht, 1)); }
-  57% { rotate: calc(-1.1deg * var(--wucht, 1)); }
-  63% { rotate: calc(1.2deg * var(--wucht, 1)); }
-  68% { rotate: calc(-1.4deg * var(--wucht, 1)); }
-  73% { rotate: calc(1.5deg * var(--wucht, 1)); }
-  77% { rotate: calc(-1.7deg * var(--wucht, 1)); }
-  81% { rotate: calc(1.8deg * var(--wucht, 1)); }
-  85% { rotate: calc(-2deg * var(--wucht, 1)); }
-  88% { rotate: calc(2deg * var(--wucht, 1)); }
-  91% { rotate: calc(-2deg * var(--wucht, 1)); }
-  94% { rotate: calc(1.6deg * var(--wucht, 1)); }
-  97% { rotate: calc(-1deg * var(--wucht, 1)); }
-  100% { rotate: 0deg; }
-}
-
-.flip.laedt::before {
-  opacity: 1;
-  animation: gf-laden-leuchten var(--laden) ease-in both;
-}
-
-@keyframes gf-laden-leuchten {
-  to { scale: 1.05; }
-}
-
-.opener :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {
-  transition: opacity .35s ease;
-}
-
-.opener.fx-laedt :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {
-  opacity: .15;
-}
-
-/* Lichtball hinter der Karte: wächst beim Aufladen, bleibt nach dem Aufdecken und atmet */
-.fx-glut {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 0;
-  width: 240%;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(closest-side, var(--farbe) 35%, transparent);
-  opacity: 0;
-  scale: .45;
-  animation: fx-glut-an var(--laden, .6s) cubic-bezier(.3, .6, .6, 1) forwards;
-}
-
-@keyframes fx-glut-an {
-  to { opacity: .85; scale: 1; }
-}
-
-.fx-glut.da {
-  opacity: .85;
-  scale: 1;
-  animation: fx-glut-atmen 2.4s ease-in-out infinite;
-}
-
-@keyframes fx-glut-atmen {
-  50% { opacity: .5; scale: .92; }
-}
-
-/* Special: Lichtflecken in allen Farben, die langsam um die Karte kreisen (die Drehung bleibt an zweiter Stelle) */
-.fx-glut.bunt {
-  /* jeder Fleck läuft aus, bevor er den Rand des Kreises erreicht (Mitte höchstens 30 % + Radius 20 %) */
-  background:
-    radial-gradient(20% 20% at 28% 32%, #ff5f6d, transparent),
-    radial-gradient(20% 20% at 72% 32%, #ffc371, transparent),
-    radial-gradient(20% 20% at 76% 64%, #47e891, transparent),
-    radial-gradient(20% 20% at 50% 80%, #4face0, transparent),
-    radial-gradient(20% 20% at 24% 64%, #b06ab3, transparent);
-  animation: fx-glut-an var(--laden, .6s) cubic-bezier(.3, .6, .6, 1) forwards, fx-glut-dreh 5s linear infinite;
-}
-
-.fx-glut.bunt.da {
-  animation: fx-glut-atmen 2.4s ease-in-out infinite, fx-glut-dreh 5s linear infinite;
-}
-
-@keyframes fx-glut-dreh {
-  to { rotate: 360deg; }
-}
-
-/* Lichtpunkte fliegen von aussen zur Mitte und verschwinden hinter der Karte */
-.fx-sog {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 0;
-  width: 6px;
-  height: 6px;
-  margin: -3px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 6px 2px var(--farbe);
-  pointer-events: none;
-  opacity: 0;
-  animation: fx-sog .6s cubic-bezier(.5, 0, .9, .5) var(--warte) forwards;
-}
-
-@keyframes fx-sog {
-  0% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.5); }
-  25% { opacity: 1; }
-  100% { opacity: .9; transform: translate(0, 0) scale(1.2); }
-}
-
 /* Rare: nach dem Umdrehen geht das Vorahnungs-Leuchten aus */
-.flip.ahnung.offen:not(.selten)::before {
+.flip.ahnung.offen::before {
   animation: none;
   opacity: 0;
 }
 
-/* Ab Epic: die Hülle macht einen kräftigen «Pop», sobald die Vorderseite da ist
-   (startet dort, wo das Aufladen aufgehört hat, darum kein Sprung) */
-.flip.selten.offen {
-  animation: gf-enthuellt .9s ease-out both;
-}
-
-@keyframes gf-enthuellt {
-  0%, 30% { translate: 0 -12px; scale: 1.07; }
-  45% { translate: 0 -6px; scale: 1.13; }
-  100% { translate: 0 0; scale: 1; }
-}
-
-/* Ab Epic: die Vorderseite kommt weiss aus dem Licht, danach streicht ein Glanz einmal darüber */
-.flip.selten.offen .karte::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .75) 50%, transparent 62%) 100% 0 / 250% 100% no-repeat;
-  animation: gf-karte-blitz .5s ease-out var(--halb) both, gf-karte-streif .9s ease-in-out calc(var(--halb) + .3s) both;
-}
-
-@keyframes gf-karte-blitz {
-  from { background-color: #fff; }
-  to { background-color: rgba(255, 255, 255, 0); }
-}
-
-@keyframes gf-karte-streif {
-  from { background-position: 100% 0; }
-  to { background-position: 0 0; }
-}
-
-/* neue Karten (unter Epic): kleiner Hüpfer der Hülle, nachdem sie zurückgesunken ist */
-.flip.offen.neu:not(.selten) {
+/* neue Karten bis Rare: kleiner Hüpfer der Hülle, nachdem sie zurückgesunken ist */
+.flip.offen.neu:not(.hoch) {
   animation: gf-neu-huepfer .4s ease-out .3s;
 }
 
@@ -836,32 +666,6 @@ body.pack-offen > .handy ::after {
   0% { scale: 1; }
   45% { scale: 1.03; }
   100% { scale: 1; }
-}
-
-/* Ab Epic: pulsierendes Leuchten in der Farbe der Seltenheit (--ahnung, aus js/oeffnen.js), eng um die Karte.
-   Ersetzt die frühere drehende, unscharfe Oval-Aura, die den Bildschirm verzerrt aussehen liess. */
-.flip.selten.offen::before {
-  inset: -3px;
-  border-radius: 17px;
-  background: none;
-  filter: none;
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, .9),
-    0 0 30px 8px color-mix(in srgb, var(--ahnung, #fff) 70%, transparent),
-    0 0 90px 24px color-mix(in srgb, var(--ahnung, #fff) 35%, transparent);
-  opacity: 1;
-  animation: gf-aura-puls 2.4s ease-in-out infinite;
-}
-
-@keyframes gf-aura-puls {
-  0%, 100% { opacity: .7; }
-  50% { opacity: 1; }
-}
-
-/* auf der Karte selbst kein grosses Leuchten (das kommt von hinten) */
-.flip.selten .karte,
-.flip.selten.offen .karte {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
 }
 
 /* Glanz ohne Mischmodus: «mix-blend-mode» stört auf Handys das 3D-Umdrehen */
@@ -875,66 +679,79 @@ body.pack-offen > .handy ::after {
   animation: schillern 6s linear infinite;
 }
 
-/* Lichtstrahlen ab Epic: ein runder Strahlenkranz hinter der Karte, dreht sich langsam.
-   Gezeichnet als SVG (js/oeffnen.js, strahlenSvg): jeder Strahl wird nach aussen von selbst durchsichtig.
-   Früher eine CSS-Maske auf einem grossen Feld; manche Handys ignorierten die Maske und zeigten ein
-   riesiges eckiges Strahlenfeld. Nur «transform» und «opacity», damit es überall gleich läuft. */
-.fx-strahlen {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 0;
-  width: 200%;
-  height: auto;
-  aspect-ratio: 1;
-  translate: -50% -50%;
+/* Während des Aufladens tritt alles andere zurück */
+.opener :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {
+  transition: opacity .35s ease;
+}
+
+.opener.fx-laedt :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {
+  opacity: .15;
+}
+
+/* ---------- Enthüllung ab Epic ----------
+   Licht, Strahlen, Druckwellen, Funken und Konfetti malt js/enthuellung.js auf zwei Zeichenflächen:
+   hinten (hinter der Karte) und vorne (über allem). Beide lassen jeden Fingertipp durch.
+   Früher waren das viele grosse, leuchtende Elemente; auf dem Handy lief damit der Grafikspeicher voll
+   und das Bild flackerte. Die Karte selbst bewegt das Skript nur mit «transform». */
+.fx-flaeche {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  opacity: 0;
-  animation: fx-strahlen-an .6s ease-out .1s forwards, fx-strahlen-dreh 20s linear infinite;
 }
 
-@keyframes fx-strahlen-an {
-  to { opacity: 1; }
-}
-
-@keyframes fx-strahlen-dreh {
-  to { transform: rotate(360deg); }
-}
-
-/* Ab Mythic: beim Aufladen brechen die Strahlen schon schwach hervor, beim Aufdecken werden sie voll.
-   Die Drehung bleibt an zweiter Stelle, so läuft sie beim Wechsel ohne Sprung weiter. */
-.fx-strahlen.vorab {
-  animation: fx-strahlen-vorab var(--laden, 1s) linear forwards, fx-strahlen-dreh 20s linear infinite;
-}
-
-.fx-strahlen.vorab.voll {
-  animation: fx-strahlen-voll .5s ease-out forwards, fx-strahlen-dreh 20s linear infinite;
-}
-
-@keyframes fx-strahlen-vorab {
-  from { opacity: 0; scale: .6; }
-  to { opacity: .6; scale: .9; }
-}
-
-@keyframes fx-strahlen-voll {
-  from { opacity: .6; scale: .9; }
-  to { opacity: 1; scale: 1; }
-}
-
-/* Leuchtring und Funken: der Ring läuft hinter der Karte durch, nicht quer über das Bild */
-.op-slot .fx-ring {
+.fx-flaeche.hinten {
   z-index: 0;
-  animation-fill-mode: both; /* der zweite Ring ab Legendary wartet unsichtbar */
 }
 
-/* Blitz ab Mythic etwas sanfter */
-.opener.fx-blitz::after {
-  animation: gf-blitz-sanft .7s ease-out forwards;
+.fx-flaeche.vorne {
+  z-index: 2;
 }
 
-@keyframes gf-blitz-sanft {
-  0% { opacity: .55; }
-  100% { opacity: 0; }
+.opener .op-box {
+  position: relative;
+  z-index: 1;
+}
+
+/* Vorahnung: die Rückseite schwebt sanft auf und ab (nur «translate», das Skript nutzt «transform») */
+.flip.hoch:not(.offen):not(.laedt) {
+  animation: gf-hoch-schweben 1.8s ease-in-out infinite;
+}
+
+@keyframes gf-hoch-schweben {
+  50% { translate: 0 -5px; }
+}
+
+/* zügig umdrehen, damit der Knall genau mit der Vorderseite kommt (js/oeffnen.js wartet 180 ms) */
+.flip.hoch {
+  --halb: .18s;
+}
+
+/* die Vorderseite kommt weiss aus dem Licht (nur Deckkraft, darum flüssig) */
+.flip.hoch .karte::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flip.hoch.offen .karte::after {
+  animation: gf-weiss .6s ease-out var(--halb) both;
+}
+
+@keyframes gf-weiss {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* heller Rand um die Karte, ohne grossen Schatten: das Leuchten kommt von hinten */
+.flip.hoch.offen .karte {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 6px 16px rgba(0, 0, 0, .35);
 }
 
 /* ---------- Nach «Fertig»: alle Karten in einer Reihe, dann einzeln ins Album (Bewegung in js/spielgefuehl.js) ---------- */
