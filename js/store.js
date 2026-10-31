@@ -12,6 +12,7 @@ const Store = (() => {
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
     radDrehungen: 0,   // Gratisdrehungen für den Gold-Fortschritt; verfällt nicht
+    radExtra: 0,       // zusätzliche Drehungen am Glücksrad (z. B. aus dem Beta-Code), zählen neben dem Tagesdreh
     xp: 0,             // Erfahrungspunkte für das Sammler-Level
     karten: [],        // gesammelte Karten als Karten-IDs, z. B. 'RB001' (doppelte kommen mehrfach vor)
     muenzen: 0,        // RB Coins (gold): Standardwährung, damit kauft man Basis-Packs und Rubin-Coins

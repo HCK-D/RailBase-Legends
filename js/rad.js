@@ -18,8 +18,12 @@ const Rad = (() => {
   let drehung = 0;    // aktueller Winkel des Rads in Grad
   let dreht = false;
 
+  // Tagesdreh (alle 24 Stunden) oder eine Extra-Drehung (app.daten.radExtra, z. B. aus dem Beta-Code)
+  const tagesdreh = () => bereitIn(app.daten.radZeit) === 0;
+  const extra = () => app.daten.radExtra || 0;
+
   function bereit() {
-    return bereitIn(app.daten.radZeit) === 0;
+    return tagesdreh() || extra() > 0;
   }
 
   function zeichneRad() {
@@ -53,7 +57,9 @@ const Rad = (() => {
     if (bereit()) {
       btn.disabled = false;
       $('rad-btn-txt').textContent = 'Drehen';
-      info.textContent = 'Jeder Dreh gewinnt. Ein Gratisdreh alle 24 Stunden.';
+      info.textContent = extra() > 0
+        ? `Jeder Dreh gewinnt. Extra-Drehungen: ${extra()}${tagesdreh() ? ' plus der Gratisdreh von heute' : ''}.`
+        : 'Jeder Dreh gewinnt. Ein Gratisdreh alle 24 Stunden.';
     } else {
       btn.disabled = true;
       $('rad-btn-txt').textContent = `In ${dauerText(bereitIn(app.daten.radZeit))}`;
@@ -69,7 +75,9 @@ const Rad = (() => {
 
     // sofort speichern: Neuladen während der Drehung gibt keine zweite Chance.
     // Bei «Nochmal» bleibt das Rad bereit.
-    app.daten.radZeit = Date.now();
+    // zuerst der Gratisdreh von heute, sonst eine Extra-Drehung
+    if (tagesdreh()) app.daten.radZeit = Date.now();
+    else app.daten.radExtra = extra() - 1;
     app.daten.radDrehungen = (app.daten.radDrehungen || 0) + 1;
     bonusPack = null;
     let packId = null;

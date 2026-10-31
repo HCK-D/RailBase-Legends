@@ -875,9 +875,29 @@ async function verschenkePack(id) {
   zeigeGeschenkCode(code, p, freund);
 }
 
+// Beta-Code zum Testen: einmal pro Gerät 10 Packs von jeder Sorte, 1000 RB Coins und 30 Extra-Drehungen am Rad
+const BETA_CODE = 'HCKD-BETA';
+
+function loeseBetaCodeEin() {
+  if (app.daten.eingeloest.includes(BETA_CODE)) return zeigeHinweis('Den Beta-Code hast du auf diesem Gerät schon eingelöst.');
+  app.daten.eingeloest.push(BETA_CODE);
+  PACKS.forEach((p) => { app.daten.vorrat[p.id] = vorratVon(p.id) + 10; });
+  app.daten.muenzen += 1000;
+  app.daten.radExtra = (app.daten.radExtra || 0) + 30;
+  speichern();
+  $('geschenk-eingabe').value = '';
+  aktualisiereAlles();
+  Gefuehl.ton('gewinn');
+  Gefuehl.vibriere([30, 40, 80]);
+  Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], 80);
+  Gefuehl.muenzFlug($('geschenk-form'), MUENZ_BILD.muenzen, 8);
+  zeigeHinweis('Beta-Code eingelöst: 10 Packs von jeder Sorte, 1000 RB Coins und 30 Drehungen am Glücksrad!');
+}
+
 // Geschenk einlösen: der Code darf auch mitten in der geteilten Nachricht stehen
 function loeseGeschenkEin(e) {
   e.preventDefault();
+  if ($('geschenk-eingabe').value.trim().toUpperCase() === BETA_CODE) return loeseBetaCodeEin();
   const treffer = $('geschenk-eingabe').value.toUpperCase().match(GESCHENK_MUSTER);
   const ungueltig = () => zeigeHinweis('Das ist kein gültiger Geschenk-Code.');
   if (!treffer) return ungueltig();
