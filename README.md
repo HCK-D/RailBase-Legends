@@ -92,5 +92,7 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |
+| `manifest.webmanifest`, `assets/app/` | App: Name, Farben und Symbole (installierbar, Grundlage für die Android-APK) |
+| `sw.js` | Offline-Speicher der App: immer zuerst das Netz, ohne Netz die letzte Kopie |
 | `werkzeuge/vorschau.ps1` | kleiner Webserver für die Vorschau |
 | `Vorschau starten.bat` | startet die Vorschau per Doppelklick |

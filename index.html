@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#121315">
+  <!-- App: installierbar (Manifest, Symbole); daraus entsteht auch die Android-App (APK) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/app/favicon-48.png">
+  <link rel="apple-touch-icon" href="assets/app/symbol-apple-180.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="RB Legends">
   <title>RailBase Legends · Beta</title>
   <meta name="description" content="RailBase Legends (Beta): Packs öffnen, Schweizer Bahn-Karten sammeln, alle 24 Stunden ein Gratis-Pack und das Glücksrad.">
   <script>(function(){var t='dark';try{t=localStorage.getItem('sk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}document.documentElement.setAttribute('data-theme',t)})()</script>
@@ -591,6 +597,12 @@
 <script src="js/oeffnen.js"></script>
 <script src="js/rad.js"></script>
 <script src="js/effekte.js"></script>
+<script>
+// App: Offline-Speicher (sw.js) nur auf der echten Seite mit https, nicht in der Vorschau und nicht im Artefakt
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !location.hostname.includes('claude')) {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
 
 <script>
 // Rein visuelle Effekte. Keine Änderung an Preisen, Karten oder Speicherständen.

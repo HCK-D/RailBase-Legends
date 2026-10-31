@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "RailBase Legends",
+  "short_name": "RB Legends",
+  "description": "Packs öffnen, Schweizer Bahn-Karten sammeln, jeden Tag ein Gratis-Pack und das Glücksrad.",
+  "lang": "de-CH",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121315",
+  "theme_color": "#121315",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "assets/app/symbol-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/app/symbol-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/app/symbol-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/app/symbol-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
