@@ -415,3 +415,23 @@
   color: var(--accent-ink);
   font-weight: 700;
 }
+
+/* App für Android: gleicher Aufbau wie der Eintrag oben, aber in RailBase-Rot */
+.app-laden {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), var(--surface)) !important;
+  text-decoration: none;
+}
+
+.app-laden .tb-eintrag-icon {
+  background: linear-gradient(180deg, #ff4251, #c3101e);
+  color: #fff;
+  box-shadow: 0 3px 0 #7d0a14;
+}
+
+/* in der installierten App braucht es den Knopf nicht */
+@media (display-mode: standalone) {
+  .app-laden {
+    display: none !important;
+  }
+}

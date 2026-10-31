@@ -4,3 +4,8 @@ Thumbs.db
 design/
 # leeres Test-Repository aus GitHub Desktop, gehört nicht zum Spiel
 Railbase-legends/
+# Android-Schlüssel und Passwörter aus PWABuilder: nie hochladen (liegen auf dem Desktop in RailBase-APK)
+*.keystore
+*.jks
+signing-key-info.txt
+*.aab

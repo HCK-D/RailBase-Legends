@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "ch.railbaselegends.app",
+        "sha256_cert_fingerprints": ["70:89:C7:DE:12:44:1D:65:63:68:0E:FF:F8:80:8E:49:F1:DC:3F:FB:A1:8B:88:18:5C:E3:BB:F8:6F:6C:51:8B"]
+      }
+    }]

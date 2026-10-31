@@ -1057,6 +1057,13 @@ document.addEventListener('DOMContentLoaded', () => {
   $('rubin-kaufen').addEventListener('click', kaufeRubin);
   $('reset-btn').addEventListener('click', setzeAlleZurueck);
   $('test-paket').hidden = !TEST_ERLAUBT;
+  // App-Knopf unter «Mehr»: die APK gibt es nur für Android; auf dem iPhone der Weg über Safari
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+    $('app-laden').removeAttribute('href');
+    $('app-laden').removeAttribute('download');
+    $('app-laden').querySelector('b').textContent = 'Als App auf dem iPhone';
+    $('app-laden-text').textContent = 'In Safari: Teilen → Zum Home-Bildschirm';
+  }
   $('test-paket-knopf').addEventListener('click', holeTestPaket);
   document.querySelectorAll('[data-design]').forEach((b) => b.addEventListener('click', () => waehleDesign(b.dataset.design)));
   waehleDesign(document.documentElement.getAttribute('data-theme'));
