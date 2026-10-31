@@ -20,9 +20,41 @@
   transition: opacity .4s ease;
 }
 
-/* Schriftzug und Funken dürfen keinen seitlichen Scrollbalken erzeugen */
+/* Schriftzug und Funken dürfen keinen seitlichen Scrollbalken erzeugen.
+   Feste dunkle Grundfarbe unter dem Bild: kommt das Handy beim Zeichnen nicht nach, bleibt ein Stück
+   dunkel, statt dass die Startseite durchschimmert. */
 .opener {
   overflow-x: hidden;
+  background-color: #070a10;
+}
+
+/* Während das Pack offen ist, wird die App dahinter nicht gezeichnet und ihre Animationen ruhen.
+   Auf dem Handy lief sonst der Grafikspeicher voll (Startseite und Aufdeck-Effekte gleichzeitig), und beim
+   Aufdecken flackerte die Startseite in Stücken durch. Ausgeblendet wird erst nach dem Einblenden (.35 s). */
+body.pack-offen > .handy {
+  visibility: hidden;
+  transition: visibility 0s linear .35s;
+}
+
+body.pack-offen > .handy *,
+body.pack-offen > .handy ::before,
+body.pack-offen > .handy ::after {
+  animation-play-state: paused !important;
+}
+
+/* Beim Aufdecken steht der Hintergrund still: kein drehender Strahlenkreis über den ganzen Bildschirm und
+   kein unscharfer, drehender Platinum-Ring hinter dem Stapel. Das Licht der Karte selbst bleibt voll. */
+.opener.einzeln::before {
+  animation: none;
+}
+
+#opener.einzeln[data-stufe] .op-stage::before {
+  filter: none;
+  animation: strahl-atmen 4s infinite;
+}
+
+#opener[data-stufe="platin"].einzeln .op-stage::before {
+  background: radial-gradient(rgba(210, 190, 255, .4), transparent 65%);
 }
 
 /* ---------- Grosser Schriftzug: «Rare!», «Legendary!», «Level 5!» ---------- */

@@ -30,8 +30,15 @@ const Oeffnen = (() => {
     packId = id;
     phase = 'pack';
     $('op-titel').textContent = `${p.titel} · ${p.name}`;
-    $('op-img').src = bildGross(p);
-    $('op-img').alt = `${p.titel} Pack ${p.name}`;
+    // Bis das neue Bild bereit ist, bleibt das Pack unsichtbar (sonst blitzt kurz das zuletzt geöffnete Pack auf)
+    const img = $('op-img');
+    const quelle = bildGross(p);
+    img.style.visibility = 'hidden';
+    img.src = quelle;
+    img.decode().catch(() => {}).finally(() => {
+      if (img.getAttribute('src') === quelle) img.style.visibility = '';
+    });
+    img.alt = `${p.titel} Pack ${p.name}`;
     $('op-tipp').textContent = 'Tippen zum Aufreissen';
     $('op-status').textContent = '';
     $('op-pack').hidden = false;
@@ -49,7 +56,8 @@ const Oeffnen = (() => {
     $('op-fortschritt').classList.remove('aufstieg');
     zeigeSchliessen('Später öffnen');
     $('opener').hidden = false;
-    document.body.classList.add('op-offen');
+    // pack-offen: die App dahinter ruht (css/spielgefuehl.css)
+    document.body.classList.add('op-offen', 'pack-offen');
     $('op-pack').focus();
     Gefuehl.ton('auf');
   }
@@ -64,8 +72,12 @@ const Oeffnen = (() => {
         return { html: k.outerHTML, rect: k.getBoundingClientRect(), neu: li.classList.contains('neu') };
       })
       : [];
-    $('opener').hidden = true;
-    document.body.classList.remove('op-offen');
+    // Erst die App dahinter wieder zeichnen lassen, zwei Bilder später das Fenster schliessen.
+    // Sonst blitzt sie auf dem Handy kurz leer oder in Stücken auf.
+    document.body.classList.remove('op-offen', 'pack-offen');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (phase === 'zu') $('opener').hidden = true;
+    }));
     packId = null;
     phase = 'zu';
     aktualisiereAlles();
