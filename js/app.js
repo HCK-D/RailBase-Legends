@@ -6,7 +6,7 @@
 const PACKS = [
   { id: 'standard', stufe: 'standard', titel: 'Basis', name: 'Schweizer Bahn' },
   { id: 'silber-1', stufe: 'silber', titel: 'Silver', name: 'Alpenpanorama' },
-  { id: 'silber-2', stufe: 'silber', titel: 'Silver', name: 'Herbsttal' },
+  { id: 'silber-2', stufe: 'silber', titel: 'Silver', name: 'Historischer Bahnhof' },
   { id: 'gold-1', stufe: 'gold', titel: 'Gold', name: 'Schweizer Viadukt' },
   { id: 'gold-2', stufe: 'gold', titel: 'Gold', name: 'Lavaux' },
   { id: 'platin-1', stufe: 'platin', titel: 'Platinum', name: 'Alpentunnel' },

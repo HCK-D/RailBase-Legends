@@ -314,13 +314,7 @@ function karteHtml(id, optionen = {}) {
     </article>`;
 }
 
-// Rückseite (für das Aufdecken)
+// Rückseite (für das Aufdecken): Bild «Graphit mit Logo», Rahmen per CSS (css/karten.css)
 function rueckseiteHtml() {
-  return `
-    <div class="k-rueck" aria-hidden="true">
-      <div class="k-rueck-licht"></div>
-      <img class="k-rueck-r" src="assets/logo/railbase-r.png" alt="" draggable="false">
-      <span class="k-rueck-wort">RailBase</span>
-      <span class="k-rueck-sub">Legends</span>
-    </div>`;
+  return '<div class="k-rueck" aria-hidden="true"></div>';
 }
