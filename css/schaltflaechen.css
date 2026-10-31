@@ -1,0 +1,284 @@
+/* =====================================================================
+   Schaltflächen und Animationen (Feinschliff)
+   Wird nach style.css geladen. Nur Optik, keine Spiel-Logik.
+   Bewegung wird bei «reduzierte Bewegung» durch style.css abgeschaltet.
+   ===================================================================== */
+
+/* ---------- Gemeinsam: alle Knöpfe reagieren gleich ---------- */
+.btn,.btn-haupt{position:relative;overflow:hidden;isolation:isolate;
+  transition:transform .18s var(--spring),filter .2s ease,box-shadow .25s ease,background-color .2s ease,border-color .2s ease,color .2s ease}
+.btn:focus-visible,.btn-haupt:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* Fokus-Rahmen nur bei Tastatur-Bedienung (js/effekte.js setzt .tastatur), sonst nie: auf Handys erschien
+   sonst ein roter Rahmen um das Pack und ein weisser um die Karte, weil das Spiel den Fokus selbst setzt */
+:root:not(.tastatur) :focus-visible,:root:not(.tastatur) :focus-visible *{outline:none!important}
+
+/* ---------- Rote Haupt-Knöpfe: Glanz läuft beim Drüberfahren drüber ---------- */
+.btn-haupt::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);
+  background-size:260% 100%;background-position:130% 0;transition:background-position .75s ease}
+.btn-haupt:hover:not(:disabled)::before{background-position:-30% 0}
+
+/* Symbol im Knopf (Pack, Rad, Geschenk) hüpft kurz */
+.btn-haupt svg{transition:transform .3s var(--spring)}
+.btn-haupt:hover:not(:disabled) svg{transform:translateY(-3px) rotate(-8deg)}
+.btn-haupt:active:not(:disabled) svg{transform:translateY(1px) scale(.92)}
+
+/* Deaktivierter Knopf bleibt ruhig */
+.btn-haupt:disabled::before{display:none}
+
+/* ---------- Knopf-Welle: kleiner Lichtkreis dort, wo getippt wird ---------- */
+.btn.welle::after,.btn-haupt.welle::after{content:"";position:absolute;left:var(--rx,50%);top:var(--ry,50%);
+  width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:currentColor;
+  pointer-events:none;animation:knopf-welle .6s ease-out forwards}
+@keyframes knopf-welle{from{scale:1;opacity:.35}to{scale:22;opacity:0}}
+
+/* ---------- Ghost-Knöpfe (Speichern, Später, Zurücksetzen) ---------- */
+.btn.ghost:hover:not(:disabled){background:var(--surface-2);border-color:var(--fg-2)}
+.btn.ghost:active:not(:disabled){background:var(--line)}
+
+/* Speichern-Knopf: sanfter Schatten beim Drüberfahren */
+.btn:not(.ghost):hover:not(:disabled){filter:brightness(1.06);box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 28%,transparent)}
+
+/* ---------- Pfeile im Karussell: leuchten auf und wachsen leicht ---------- */
+.pfeil{transition:transform .2s var(--spring),background-color .2s ease,box-shadow .25s ease,border-color .2s ease}
+.pfeil:hover{transform:translateY(-50%) scale(1.08);background:var(--accent);border-color:#fff;
+  box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent),0 10px 20px rgba(0,0,0,.3)}
+.pfeil:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* ---------- Reiter (Basis, Silver, Gold, Platinum) ---------- */
+.reiter button{transition:color .2s ease,background-color .25s ease,box-shadow .25s ease,transform .2s var(--spring)}
+.reiter button:hover:not([aria-selected="true"]){color:var(--accent-ink)}
+.reiter button:active{transform:scale(.96)}
+.reiter button[aria-selected="true"]{animation:reiter-an .35s var(--spring)}
+@keyframes reiter-an{from{transform:scale(.94)}to{transform:none}}
+
+/* ---------- Album-Filter: kleine Rückmeldung ---------- */
+button[data-filter]{transition:transform .18s var(--spring),background-color .2s ease,color .2s ease,border-color .2s ease}
+button[data-filter]:hover{transform:translateY(-1px)}
+button[data-filter]:active{transform:scale(.95)}
+
+/* ---------- Untere Leiste: Symbol hebt sich beim Drüberfahren ---------- */
+.tabbar a:hover svg{transform:translateY(-2px) scale(1.08)}
+.tabbar a:focus-visible{outline:3px solid var(--accent);outline-offset:-4px;border-radius:10px}
+
+/* ---------- Gewinn-Fenster: Knöpfe kommen einzeln rein ---------- */
+.gw-knoepfe>*{animation:knopf-rein .5s var(--spring) both}
+.gw-knoepfe>*:nth-child(2){animation-delay:.12s}
+@keyframes knopf-rein{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+
+/* =====================================================================
+   Runde 3: stärkere Farben, mehr Spiel-Dynamik, Packs und Album
+   ===================================================================== */
+
+/* ---------- Kontrast: kräftigere Farben, klarere Schrift ---------- */
+:root,:root[data-theme="light"]{
+  --fg:#0B0C0E;--fg-2:#3A4149;--line:rgba(20,22,24,.22);
+  --surface:#FFFFFF;--surface-2:#D9DEE3;
+  --accent:#E10D16;--accent-ink:#B8000B;--accent-soft:rgba(225,13,22,.14);
+  --btn-1:#EE1520;--btn-2:#B0000E;--btn-kante:#5E0007;
+  --bg:linear-gradient(180deg,#F7F8F9 0%,#C3CAD1 100%);
+  --sz-himmel-1:#9CC4E4;--sz-berg-1:#7F93A6;
+}
+:root[data-theme="dark"]{
+  --fg:#FFFFFF;--fg-2:#C9CFD6;--line:rgba(255,255,255,.2);
+  --surface:#17191C;--surface-2:#2C3036;
+  --accent:#FF1A24;--accent-ink:#FF5560;--accent-soft:rgba(255,26,36,.2);
+  --btn-1:#FF2B34;--btn-2:#B80010;--btn-kante:#6A0008;
+  --bg:linear-gradient(180deg,#1C1E22 0%,#050506 100%);
+}
+.tabbar a[aria-current="page"]{color:var(--accent-ink);font-weight:800}
+.reiter button[aria-selected="true"]{color:#fff}
+
+/* ---------- Album: die ganze Seite scrollt (nach unten wischen) ---------- */
+#v-album:not([hidden]){display:block;height:auto;min-height:var(--frei);overflow:visible}
+#v-album .seite{display:block;flex:none;min-height:0;padding-bottom:40px!important}
+#v-album .karten-grid{flex:none!important;overflow:visible!important;padding-bottom:8px}
+#v-album .empty{flex:none}
+
+/* ---------- Mehr Dynamik ---------- */
+/* Fortschrittsbalken (Sammler-Level) glänzt laufend */
+.xp-balken i,.xp-balken span{position:relative;overflow:hidden}
+.xp-balken i::after,.xp-balken span::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff99 50%,transparent 70%);background-size:250% 100%;animation:xp-glanz 2.4s linear infinite}
+@keyframes xp-glanz{from{background-position:150% 0}to{background-position:-100% 0}}
+
+/* Aktives Karussell-Pack hebt sich leicht und wird bunter */
+/* Nur Helligkeit beim Drüberfahren. Grösse und Deckkraft setzt das Skript beim Scrollen, daher kurze, lineare Übergänge */
+.karussell li[data-index] img{will-change:transform,opacity;transition:transform .15s linear,opacity .15s linear,filter .2s ease}
+.karussell li[data-index]:hover img{filter:brightness(1.1) drop-shadow(0 18px 14px #0005)}
+
+/* Karten im Album: beim Drüberfahren springen sie hoch, seltene glänzen stärker */
+.karten-grid .karte{transition:transform .3s var(--spring),box-shadow .3s ease,filter .3s ease}
+.karten-grid .karte.rar-legendary:hover,.karten-grid .karte.rar-special:hover,.karten-grid .karte.rar-mythic:hover{box-shadow:0 0 0 3px #fff,0 0 30px var(--rar)}
+
+/* Filter-Chips in der Seltenheits-Reihe leuchten, wenn ausgewählt */
+.rar[aria-pressed="true"]{animation:rar-an .4s var(--spring)}
+@keyframes rar-an{from{transform:scale(.92)}to{transform:none}}
+
+/* Gewinn-Fenster: Titel springt rein */
+.gw-titel{animation:gw-titel-rein .6s var(--spring) both .15s}
+@keyframes gw-titel-rein{from{opacity:0;transform:translateY(-18px) scale(1.15)}to{opacity:1;transform:none}}
+
+/* ---------- Gewinn-Fenster: neue Animation fürs Pack ----------
+   Ablauf: Pack fällt mit Abprall in die Mitte, ein Lichtblitz und ein Ring
+   gehen davon aus, der Text folgt, danach glimmt das Pack in seiner Farbe. */
+.gw-box::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 150px,#fff 0%,color-mix(in srgb,var(--gw-farbe) 55%,transparent) 28%,transparent 62%);
+  animation:gw-blitz 1s ease-out .62s both}
+@keyframes gw-blitz{0%{opacity:0}18%{opacity:.95}100%{opacity:0}}
+.gw-box::after{content:"";position:absolute;left:50%;top:150px;z-index:4;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;
+  border:4px solid var(--gw-farbe);box-shadow:0 0 24px var(--gw-farbe);pointer-events:none;opacity:0;
+  animation:gw-ring 1.1s cubic-bezier(.2,.7,.3,1) .7s both}
+@keyframes gw-ring{0%{opacity:.95;transform:scale(.5)}100%{opacity:0;transform:scale(10)}}
+.preis-nichts .gw-box::before,.preis-nichts .gw-box::after,.preis-nochmal .gw-box::before,.preis-nochmal .gw-box::after{display:none}
+
+.gw-pack{animation:gw-pack-fall 1s linear .12s both,gw-glimmer 2.8s ease-in-out 1.25s infinite!important}
+@keyframes gw-pack-fall{
+  0%{opacity:0;transform:translateY(-70vh) rotate(-22deg) scale(.7)}
+  55%{opacity:1;transform:translateY(10px) rotate(4deg) scale(1.06)}
+  75%{transform:translateY(-8px) rotate(-2deg) scale(1)}
+  90%{transform:translateY(3px) rotate(.5deg)}
+  100%{opacity:1;transform:none}
+}
+@keyframes gw-glimmer{
+  0%,100%{filter:drop-shadow(0 0 6px var(--gw-farbe)) drop-shadow(0 18px 34px rgba(0,0,0,.45))}
+  50%{filter:drop-shadow(0 0 26px var(--gw-farbe)) drop-shadow(0 18px 34px rgba(0,0,0,.45))}
+}
+
+/* Texte kommen nacheinander */
+.gw-kicker{animation:gw-text-rein .5s var(--ease-out) both .35s}
+.gw-text{animation:gw-text-rein .5s var(--ease-out) both .5s}
+@keyframes gw-text-rein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Funken: je besser der Preis, desto weiter fliegen sie */
+.gw-funken i{animation:funke 1.6s cubic-bezier(.2,.7,.3,1) .7s both}
+.preis-gold .gw-funken i,.preis-platin .gw-funken i{width:10px;height:10px}
+
+/* ---------- Gewinn: ohne grossen Hintergrundblock ----------
+   Das Pack, die Strahlen und die Funken stehen direkt über dem abgedunkelten Hintergrund. */
+.gewinn .gw-box{background:transparent!important;box-shadow:none!important;border:0!important;color:#fff;--ticket-fg:#fff}
+.gewinn .gw-text{color:#D9DEE4}
+.gewinn .btn.ghost.gw-spaeter{color:#fff;border-color:rgba(255,255,255,.4)}
+.gewinn .gw-kicker{color:var(--gw-farbe)}
+.gewinn .gw-titel{text-shadow:0 2px 0 #0008,0 0 24px color-mix(in srgb,var(--gw-farbe) 60%,transparent)}
+
+/* ---------- Gewinn: vier Animationen nach Pack-Stufe ----------
+   basis = leicht, silver = schön, gold = mehr, platin = extrem.
+   Nochmal bleibt ruhig (eigene Regel oben). */
+
+/* Basis: ein Ring, ein leichter Wackler am Ende */
+.stufe-standard .gw-pack{animation:gw-pack-fall 1s linear .12s both,gw-glimmer 2.8s ease-in-out 1.25s infinite!important}
+
+/* Silver: Pack fällt, wackelt schön aus, Strahlen drehen sich, silberner Glanz */
+.stufe-silber .gw-strahlen{animation:dreh-langsam 12s linear infinite;opacity:.9}
+.stufe-silber .gw-pack{animation:gw-pack-fall 1s cubic-bezier(.25,1.5,.5,1) .12s both,gw-wackeln 1.2s ease-in-out 1.1s 2,gw-glimmer 2.4s ease-in-out 2.4s infinite!important}
+.stufe-silber .gw-box::after{animation-name:gw-ring;animation-duration:1.2s}
+
+/* Gold: Pack dreht sich beim Fallen, schneller Strahlenkranz, zwei Ringe, goldener Blitz */
+.stufe-gold .gw-strahlen{animation:dreh-langsam 6s linear infinite;opacity:1}
+.stufe-gold .gw-pack{animation:gw-pack-drehfall 1.1s cubic-bezier(.25,1.45,.5,1) .12s both,gw-wackeln 1s ease-in-out 1.2s 2,gw-glimmer 2s ease-in-out 2.4s infinite!important}
+.stufe-gold .gw-box::before{animation:gw-blitz 1.1s ease-out .62s both,gw-blitz 1s ease-out 1.5s both}
+.stufe-gold .gw-box::after{animation:gw-ring 1.1s cubic-bezier(.2,.7,.3,1) .7s both,gw-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.2s both}
+
+/* Platin: alles auf einmal: Pack dreht und springt, Beben, zwei Blitze, drei Ringe, schnelle Strahlen */
+.stufe-platin .gw-strahlen{animation:dreh-langsam 2.6s linear infinite;opacity:1}
+.stufe-platin .gw-pack{animation:gw-pack-drehfall 1.2s cubic-bezier(.2,1.6,.4,1) .12s both,gw-wackeln 0.9s ease-in-out 1.3s 3,gw-glimmer 1.6s ease-in-out 2.8s infinite!important;--gw-glanz:#8FD3FF}
+.stufe-platin .gw-box{animation:gw-auftauchen .65s var(--spring),gw-beben .7s linear .7s}
+.stufe-platin .gw-box::before{animation:gw-blitz 1.2s ease-out .62s both,gw-blitz 1s ease-out 1.1s both,gw-blitz .9s ease-out 1.7s both}
+.stufe-platin .gw-box::after{animation:gw-ring 1.1s cubic-bezier(.2,.7,.3,1) .7s both,gw-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.05s both,gw-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.4s both}
+.stufe-platin .gw-pack{filter:drop-shadow(0 0 10px #8FD3FF) drop-shadow(0 18px 34px rgba(0,0,0,.5))}
+
+@keyframes gw-pack-drehfall{
+  0%{opacity:0;transform:translateY(-70vh) rotate(-30deg) scale(.6)}
+  50%{opacity:1;transform:translateY(12px) rotateY(540deg) rotate(6deg) scale(1.08)}
+  75%{transform:translateY(-10px) rotateY(720deg) rotate(-2deg) scale(1)}
+  100%{opacity:1;transform:rotateY(720deg)}
+}
+@keyframes gw-wackeln{
+  0%,100%{transform:rotate(0)}
+  20%{transform:rotate(-5deg) scale(1.03)}
+  40%{transform:rotate(5deg) scale(1.03)}
+  60%{transform:rotate(-3deg)}
+  80%{transform:rotate(2deg)}
+}
+@keyframes gw-beben{
+  0%,100%{translate:0 0}
+  10%{translate:-9px 5px}25%{translate:8px -6px}40%{translate:-7px 4px}
+  55%{translate:5px -3px}70%{translate:-2px 2px}
+}
+
+/* ---------- Kartenrückseite: RailBase-R auf Rot-Schwarz mit Schimmer ---------- */
+:root[data-theme] .flip .k-rueck{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3.5cqw;position:relative;overflow:hidden;
+  background:repeating-linear-gradient(135deg,#ffffff06 0 2px,transparent 2px 14px),radial-gradient(ellipse at 50% 42%,#8a0f1c 0%,#3a0a12 40%,#0b0d11 80%)!important;
+  box-shadow:inset 0 0 0 .6cqw #c9ced4,inset 0 0 0 2.4cqw #0d1014,0 15px 50px #0006!important}
+:root[data-theme] .flip .k-rueck::after{content:none!important}
+.k-rueck-licht{position:absolute;left:-60%;top:-60%;width:220%;height:220%;pointer-events:none;z-index:0;
+  background:conic-gradient(from 0deg,transparent 0deg 22deg,#ffffff1f 30deg,transparent 42deg 180deg,#ffffff14 200deg,transparent 215deg 360deg);
+  animation:rueck-licht 9s linear infinite}
+@keyframes rueck-licht{to{transform:rotate(360deg)}}
+.k-rueck-r{position:relative;z-index:1;width:62cqw;height:auto;filter:drop-shadow(0 0 4cqw #ff2a33aa) drop-shadow(0 3cqw 3cqw #0009);animation:rueck-schweben 4.2s ease-in-out infinite}
+@keyframes rueck-schweben{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5cqw)}}
+.k-rueck-wort{position:relative;z-index:1;font:900 10cqw/1 "Barlow Condensed",sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#fff;text-shadow:0 0 2.5cqw #ff2a33}
+.k-rueck-sub{position:relative;z-index:1;font:700 4.2cqw/1 "Source Sans 3",sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#C9CED4}
+
+/* Startseite: der rote Knopf «Tippen zum Öffnen» ist weg. Das Pack selbst bleibt antippbar. */
+.hero-tipp{display:none!important}
+
+/* Glücksrad: der rote Knopf mit «R» in der Mitte ist weg. Das Logo steht jetzt auf der weissen Leiste. */
+.rad-buehne::after{display:none!important}
+
+/* ---------- Logo «RailBase Legends» in der Kopfzeile (etwas höher, damit «Legends» lesbar bleibt) ---------- */
+.brand .mark{display:block;height:34px;width:auto;aspect-ratio:auto;color:inherit}
+.brand .wm{display:none}
+/* Schmale Handys: das Logo wird gleichmässig kleiner statt gequetscht, Münzen und Level bleiben ganz */
+.brand .mark{max-width:100%;object-fit:contain;object-position:left center}
+.kopf-rechts{flex:none}
+/* Schmale Handys: kein Platz für das «Beta»-Schild (es lag sonst unter der Münz-Anzeige), das Logo bekommt die ganze Breite */
+@media (max-width:479px){.brand .beta-tag{display:none}}
+/* Kopf-Logo: im schwarzen Design die Variante mit weissem «Rail» und weissen Karten */
+:root[data-theme="dark"] .brand .mark-hell,
+:root:not([data-theme="dark"]) .brand .mark-dunkel{display:none}
+
+/* ---------- Öffnen: Effekte je Seltenheit ---------- */
+.op-slot{position:relative}
+.fx-funke{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:var(--farbe);box-shadow:0 0 10px var(--farbe),0 0 2px #fff;pointer-events:none;z-index:20;animation:fx-funke var(--dauer,1s) cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes fx-funke{0%{opacity:1;transform:translate(0,0) scale(1.2)}70%{opacity:.9}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2)}}
+.fx-ring{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px;border-radius:50%;border:3px solid var(--farbe);box-shadow:0 0 22px var(--farbe);pointer-events:none;z-index:19;animation:fx-ring .9s ease-out forwards}
+@keyframes fx-ring{from{transform:scale(.4);opacity:1}to{transform:scale(7);opacity:0}}
+.opener.fx-blitz::after{content:"";position:fixed;inset:0;z-index:70;pointer-events:none;background:radial-gradient(circle at 50% 45%,var(--blitz,#fff) 0%,transparent 60%);animation:fx-blitz .85s ease-out forwards}
+@keyframes fx-blitz{0%{opacity:.85}100%{opacity:0}}
+.opener.fx-beben{animation:fx-beben .5s linear}
+@keyframes fx-beben{0%,100%{transform:translate(0,0)}10%{transform:translate(-7px,4px)}25%{transform:translate(6px,-5px)}40%{transform:translate(-5px,3px)}55%{transform:translate(4px,-3px)}70%{transform:translate(-2px,2px)}}
+/* Gewöhnlich: nur ein kurzer Zucker, Seltenes wird stärker */
+.flip.offen.neu .flip-innen{animation:fx-zucken .4s ease-out}
+@keyframes fx-zucken{0%{scale:.96}50%{scale:1.03}100%{scale:1}}
+/* Special: der Rahmen bekommt einen Regenbogen-Schimmer */
+.flip.offen.special .karte{animation:fx-regenbogen 3s linear infinite}
+@keyframes fx-regenbogen{to{filter:hue-rotate(360deg)}}
+
+/* ---------- Ruckeln beim Scrollen beseitigen ----------
+   Weichzeichner über scrollendem Inhalt kosten bei jedem Bild viel Rechenzeit.
+   Die Kopfzeile bekommt eine fast undurchsichtige Fläche statt Unschärfe. */
+.topbar{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--surface)}
+/* Festes Hintergrundbild neu zeichnen beim Scrollen kostet viel: Hintergrund scrollt mit */
+.handy{background-attachment:scroll}
+/* Album: Karten ausserhalb des Bildschirms werden nicht gezeichnet */
+.karten-grid li{content-visibility:auto;contain-intrinsic-size:auto 340px}
+
+/* Packs: Schatten als feste Fläche statt Filter. Der Filter wurde bei jedem Scroll-Schritt neu berechnet. */
+.karussell img{filter:none;box-shadow:0 16px 24px rgba(0,0,0,.3)}
+.karussell li[data-index]:hover img{filter:brightness(1.1)}
+
+/* Album: die Seite kommt von oben herein (vorher von unten) */
+@keyframes album-von-oben{from{opacity:0;transform:translateY(-36px)}to{opacity:1;transform:none}}
+
+/* Alle Seiten gleiten weich herein: von rechts, von links, sonst von unten sanft */
+@keyframes gleit-rechts{from{opacity:0;transform:translate3d(28vw,0,0)}to{opacity:1;transform:none}}
+@keyframes gleit-links{from{opacity:0;transform:translate3d(-28vw,0,0)}to{opacity:1;transform:none}}
+@keyframes gleit-hoch{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
+/* Album kommt genauso herein wie Start, Packs, Rad, Konto und Mehr */
+#v-start.view,#v-packs.view,#v-rad.view,#v-album.view,#v-konto.view,#v-mehr.view,#v-freunde.view{animation:gleit-hoch .55s cubic-bezier(.22,.9,.3,1)}
+#v-start.view.von-rechts,#v-packs.view.von-rechts,#v-rad.view.von-rechts,#v-album.view.von-rechts,#v-konto.view.von-rechts,#v-mehr.view.von-rechts,#v-freunde.view.von-rechts{animation-name:gleit-rechts}
+#v-start.view.von-links,#v-packs.view.von-links,#v-rad.view.von-links,#v-album.view.von-links,#v-konto.view.von-links,#v-mehr.view.von-links,#v-freunde.view.von-links{animation-name:gleit-links}
+
+/* Weiches Scrollen überall (Karussell und Anker nutzen ihr eigenes Gleiten) */
+html{scroll-behavior:smooth}

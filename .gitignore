@@ -1,2 +1,6 @@
 .DS_Store
 Thumbs.db
+# Design-Vorlagen und Sicherungen bleiben nur auf dem Computer
+design/
+# leeres Test-Repository aus GitHub Desktop, gehört nicht zum Spiel
+Railbase-legends/

@@ -1,9 +1,10 @@
-# RailBase Sammelkarten – Beta
+# RailBase Legends – Beta
 
 Ein Sammelkarten-Spiel im Stil von RailBase: Packs öffnen, Karten sammeln, jeden Tag ein Gratis-Pack.
-Eigenes Projekt, nicht mit Railbase.ch verbunden. Name und Domain kommen später.
+Eigenes Projekt, nicht mit Railbase.ch verbunden. Der Name ist «RailBase Legends» (Logo: assets/logo/railbase-legends*.png).
 
-Das Projekt bleibt vorerst nur auf diesem Computer. Auf GitHub kommt es erst, wenn das Ergebnis gut ist.
+Online über GitHub Pages unter **https://railbase-legends.ch** (Datei `CNAME`). Jeder Push auf `main` geht sofort live.
+Sicherungen und Design-Vorlagen (`design/`) bleiben nur auf dem Computer (`.gitignore`).
 
 ## Vorschau öffnen
 
@@ -62,7 +63,8 @@ Wird die Garantie gebraucht, ersetzt eine zufällige Karte der Mindest-Kategorie
 XP pro Karte (`XP_PRO_KARTE`): Common 5, Uncommon 10, Rare 20, Epic 40, Mythic 80, Legendary 150, Special 250.
 Level: Level 1 braucht 100 XP, jedes weitere Level 100 XP mehr (`levelVon`).
 
-Glücksrad (`js/rad.js`, `FELDER`): 12 Felder – 5× Nichts, 3× Basis, 2× Silver, 1× Gold, 1× Platinum.
+Glücksrad (`js/rad.js`, `FELDER`): 12 Felder – 4× 5 Coins, 2× 10 Coins, 2× 20 Coins, 2× Basis, 1× Silver, 1× Gold.
+Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 
 ## Was noch kommt
 
@@ -84,7 +86,7 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/karten.js` | Kategorien, Chancen, Garantie, XP, Karten-Aussehen |
 | `js/daten/kartenliste.js` | alle 308 Karten |
 | `AGENTS.md` | Regeln für Codex und andere KI-Assistenten (was beim Design geändert werden darf) |
-| `design/mockups/` | Design-Vorlagen |
+| `design/` | Design-Vorlagen und Sicherungen, nur lokal (nicht auf GitHub) |
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |
 | `js/rad.js` | Glücksrad |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |

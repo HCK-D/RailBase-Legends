@@ -1,0 +1,311 @@
+/* ---------- Karten-Design ----------
+   Aufbau (js/karten.js, karteHtml): Rahmen in der Farbe der Seltenheit, helle Innenfläche,
+   oben links die Nummer und oben rechts die Seltenheit als Laschen, die ins Bild greifen,
+   grosses Bild (Alpen-Foto, Bahndamm, Fahrleitung, Zug), unten Bahn, Name, Fahrzeug und Flagge.
+   Diese Datei kommt zuletzt und ersetzt die älteren Karten-Regeln in style.css.
+   1cqw = 1 % der Kartenbreite. */
+
+.karte {
+  --k-tinte: #1d2125;
+  --flaeche: color-mix(in srgb, var(--rar) 7%, #fbfbfc);
+  --lasche-r: 2.8cqw;
+  --zug: #f2f3f4;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 2.2cqw;
+  border: 0;
+  border-radius: 5.5cqw;
+  background: var(--rahmen, var(--rar));
+  box-shadow:
+    inset 0 0 0 .35cqw rgba(255, 255, 255, .5),
+    0 1.6cqw 4cqw rgba(0, 0, 0, .28);
+}
+
+/* Rahmen je Seltenheit: Metall-Verlauf in der Kategorie-Farbe */
+.karte.rar-common { --rahmen: linear-gradient(140deg, #f1f3f5, #a9b2ba 28%, #f7f8f9 50%, #9ca5ae 74%, #e3e7ea); }
+.karte.rar-uncommon { --rahmen: linear-gradient(140deg, #8fe0ad, #2e9e5b 30%, #b4ecc8 52%, #21804a 76%, #6fd093); }
+.karte.rar-rare { --rahmen: linear-gradient(140deg, #9cc0ff, #2f6fd6 30%, #c4dbff 52%, #2252a8 76%, #78a6f3); }
+.karte.rar-epic { --rahmen: linear-gradient(140deg, #d7b0ff, #8a3fd1 30%, #ead5ff 52%, #6526a3 76%, #b67ff0); }
+.karte.rar-mythic { --rahmen: linear-gradient(140deg, #ff9c86, #c2402a 28%, #f0b07a 50%, #b87333 70%, #7a2314); }
+.karte.rar-legendary { --rahmen: linear-gradient(140deg, #fff3c4, #d4a017 28%, #fff8dc 48%, #b8860b 70%, #f6d365); }
+.karte.rar-special {
+  --flaeche: #fbfaf7;
+  border-color: transparent;
+  /* Verlauf beginnt und endet gleich, so läuft er ohne Kante im Kreis */
+  background: linear-gradient(90deg, #FF5F6D, #FFC371, #47E891, #4FACFE, #B06AB3, #FF5F6D) 0 0 / 300% 100%;
+  animation: schillern 6s linear infinite;
+}
+
+/* Licht im Bild: je seltener, desto besonderer die Stimmung */
+.karte.rar-rare { --k-licht: linear-gradient(180deg, rgba(80, 150, 255, .22), transparent 55%); }
+.karte.rar-epic { --k-licht: linear-gradient(180deg, rgba(140, 60, 230, .32), rgba(255, 120, 200, .08) 45%, transparent 70%); }
+.karte.rar-mythic { --k-licht: linear-gradient(180deg, rgba(255, 110, 50, .42), rgba(200, 60, 40, .12) 55%, transparent 80%); }
+.karte.rar-legendary { --k-licht: radial-gradient(circle at 78% 14%, rgba(255, 236, 150, .85), rgba(255, 196, 70, .3) 30%, transparent 62%); }
+.karte.rar-special { --k-licht: linear-gradient(90deg, rgba(255, 95, 109, .32), rgba(255, 195, 113, .2), rgba(71, 232, 145, .26), rgba(79, 172, 254, .32), rgba(176, 106, 179, .32), rgba(255, 95, 109, .32)); }
+
+/* Zugfarbe: Triebzüge weiss mit Bahn-Streifen, Loks in der Bahn-Farbe,
+   Rangier- und Bauzüge gelb, historische Fahrzeuge dunkelgrün im alten Foto */
+.karte.zug-lok { --zug: var(--bahn); }
+/* der Container-Wagen hinter der Lok nur bei Cargo-Karten */
+.karte { --fracht: none; }
+.karte.k-cargo { --fracht: inline; }
+.karte.zug-rangier { --zug: #f0b323; }
+.karte.k-alt { --zug: #4e6a3e; }
+
+/* ---------- Innenfläche ---------- */
+.k-flaeche {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 2cqw;
+  border-radius: 3.8cqw;
+  background: var(--flaeche);
+  box-shadow: 0 0 0 .3cqw rgba(0, 0, 0, .12);
+}
+
+/* ---------- Bild ---------- */
+.k-bild {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  border: 0;
+  border-radius: 3cqw;
+  background: #8fb4d4;
+  color: inherit;
+}
+
+.karte.rar-special .k-bild {
+  background: #8fb4d4;
+  animation: none;
+}
+
+/* das Alpen-Foto, bei jeder Karte ein anderer Ausschnitt (--bx) */
+.k-bild::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  clip-path: none;
+  background: var(--welt) var(--bx, 50%) 18% / auto 145% no-repeat;
+}
+
+.karte.k-alt .k-bild::before {
+  filter: sepia(.85) saturate(.7) contrast(.95);
+}
+
+/* Lichtstimmung der Seltenheit */
+.k-bild::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--k-licht, none);
+  pointer-events: none;
+}
+
+.karte.rar-special .k-bild::after {
+  background-size: 300% 100%;
+  animation: schillern 8s linear infinite;
+}
+
+.k-szene {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* etwa jeder zweite Zug fährt nach links */
+.karte.k-spiegel .k-szene {
+  transform: scaleX(-1);
+}
+
+.karte.k-alt .k-szene {
+  filter: sepia(.45) saturate(.85);
+}
+
+/* ---------- Laschen oben: Nummer links, Seltenheit rechts ---------- */
+.k-lasche {
+  position: absolute;
+  top: 2cqw;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  height: 8.6cqw;
+  background: var(--flaeche);
+}
+
+.k-lasche-l {
+  left: 2cqw;
+  padding: 0 2.6cqw 0 1.6cqw;
+  border-bottom-right-radius: var(--lasche-r);
+}
+
+.k-lasche-r {
+  right: 2cqw;
+  padding: 0 1.2cqw 0 2cqw;
+  border-bottom-left-radius: var(--lasche-r);
+}
+
+/* runde Übergänge zwischen Lasche und Bild */
+.k-lasche::before,
+.k-lasche::after {
+  content: "";
+  position: absolute;
+  width: var(--lasche-r);
+  height: var(--lasche-r);
+  pointer-events: none;
+}
+
+.k-lasche-l::before { top: 0; left: 100%; }
+.k-lasche-l::after { top: 100%; left: 0; }
+.k-lasche-l::before,
+.k-lasche-l::after {
+  background: radial-gradient(circle at 100% 100%, transparent calc(var(--lasche-r) - .3px), var(--flaeche) var(--lasche-r));
+}
+
+.k-lasche-r::before { top: 0; right: 100%; }
+.k-lasche-r::after { top: 100%; right: 0; }
+.k-lasche-r::before,
+.k-lasche-r::after {
+  background: radial-gradient(circle at 0 100%, transparent calc(var(--lasche-r) - .3px), var(--flaeche) var(--lasche-r));
+}
+
+.k-nr {
+  font: 800 5.8cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .04em;
+  color: #2a2f35;
+}
+
+.k-rar {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.3cqw;
+  padding: 1.3cqw 2.6cqw 1.3cqw 2cqw;
+  border-radius: 99px;
+  background: var(--rar-bild, var(--rar));
+  color: #fff;
+  font: 700 4.8cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .04em;
+  text-transform: none;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+}
+
+/* :not(#_) hebt die Regel über «#v-album .rar-stein» */
+.k-rar .rar-stein:not(#_) {
+  width: 2.6cqw;
+  height: 2.6cqw;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 1.4cqw rgba(255, 255, 255, .8);
+  transform: none;
+  animation: none;
+}
+
+/* ---------- Text unten ---------- */
+.k-text {
+  position: relative;
+  display: grid;
+  gap: .9cqw;
+  min-width: 0;
+  padding: 2.6cqw 11cqw .8cqw 1cqw;
+}
+
+.k-chips {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  min-width: 0;
+}
+
+.k-bahn {
+  padding: .9cqw 2.2cqw;
+  border-radius: 1.4cqw;
+  background: var(--bahn);
+  color: #fff;
+  font: 800 4.8cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+/* geplant oder bestellt */
+.k-status {
+  position: static;
+  padding: .6cqw 1.8cqw;
+  border: .35cqw solid currentColor;
+  border-radius: 1.4cqw;
+  background: none;
+  color: #a35d00;
+  font: 700 3.8cqw/1 "Source Sans 3", sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* --zeichen = Länge des Namens: kurze Namen gross, lange kleiner, immer gleich hoch */
+.k-name {
+  display: -webkit-box;
+  height: 10.6cqw;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  color: var(--k-tinte);
+  font: 800 clamp(5.6cqw, calc(150cqw / var(--zeichen, 8)), 10.6cqw) / 10.6cqw "Barlow Condensed", sans-serif;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+/* sehr lange Namen: zwei kleine Zeilen in derselben Höhe */
+.k-name.sehr-lang {
+  -webkit-line-clamp: 2;
+  font-size: 5.3cqw;
+  line-height: 5.3cqw;
+}
+
+.k-unter {
+  margin: 0;
+  overflow: hidden;
+  color: #59616a;
+  font: 600 4.8cqw/1.15 "Source Sans 3", sans-serif;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Schweizer Flagge unten rechts */
+.k-flagge {
+  position: absolute;
+  right: 3.4cqw;
+  bottom: 3.6cqw;
+  width: 8cqw;
+  height: 8cqw;
+  border-radius: 1.5cqw;
+  background:
+    linear-gradient(#fff, #fff) center / 62% 19% no-repeat,
+    linear-gradient(#fff, #fff) center / 19% 62% no-repeat,
+    #da291c;
+  box-shadow: 0 .5cqw 1.2cqw rgba(0, 0, 0, .2);
+}
+
+/* wie oft man die Karte hat, unten rechts im Bild */
+.k-anzahl {
+  right: 2cqw;
+  bottom: 2cqw;
+  z-index: 4;
+  padding: 1.1cqw 2.6cqw;
+  font-size: 6.2cqw;
+}
+
+/* Glanz liegt über der ganzen Karte, auch über dem Rahmen */
+.k-glanz {
+  border-radius: inherit;
+}

@@ -1,0 +1,477 @@
+/* RB Coins (gold) und Rubin-Coins: Bilder aus assets/muenzen, Anzeige oben und Shop */
+
+.muenze {
+  --m: 40px;
+  display: inline-block;
+  flex: none;
+  width: var(--m);
+  height: var(--m);
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .3));
+}
+
+.muenze.klein {
+  --m: 26px;
+}
+
+/* Oben rechts: Münzstand neben dem Konto-Knopf */
+.kopf-rechts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.muenz-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px 0 5px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  font: 800 17px/1 "Barlow Condensed", sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .2s var(--spring), border-color .2s;
+}
+
+/* Münzstand ist ein Link zum Shop */
+.muenz-chip:hover {
+  border-color: #c9a54e;
+}
+
+.muenz-chip:active {
+  transform: scale(.94);
+}
+
+/* Rückfrage vor einem Kauf (statt confirm) */
+.frage {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 8, 16, .6);
+  backdrop-filter: blur(4px);
+  animation: viewin .2s var(--ease-out);
+}
+
+.frage-box {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 360px);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+  animation: frage-rein .35s var(--spring);
+}
+
+@keyframes frage-rein {
+  from { opacity: 0; transform: translateY(20px) scale(.94); }
+}
+
+.frage-text {
+  margin: 0;
+  font: 700 18px/1.35 "Source Sans 3", sans-serif;
+  text-align: center;
+}
+
+.frage-knoepfe {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* «Einem Freund schenken»: schlichter Textknopf unter Abbrechen und Kaufen */
+.frage-extra {
+  justify-self: center;
+  padding: 6px 10px;
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font: 700 15px/1.3 "Source Sans 3", sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.frage-extra:disabled {
+  color: var(--fg-2);
+  text-decoration: none;
+  cursor: default;
+}
+
+/* Pack verschenken: Liste der Freunde und der Geschenk-Code */
+.geschenk-freunde {
+  display: grid;
+  gap: 8px;
+  max-height: 40vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.geschenk-freunde .btn {
+  width: 100%;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 18px;
+  letter-spacing: .06em;
+}
+
+.geschenk-code {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+}
+
+.geschenk-code code {
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px dashed #c9a54e;
+  border-radius: 10px;
+  background: rgba(255, 211, 77, .1);
+  color: var(--fg);
+  font: 800 17px/1.2 "Barlow Condensed", sans-serif;
+  letter-spacing: .04em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.geschenk-code small {
+  color: var(--fg-2);
+  font-size: 13px;
+}
+
+/* Teilen über …: liegt über dem Geschenk-Fenster, aus dem es geöffnet werden kann */
+#teilen {
+  z-index: 95;
+}
+
+/* runde Symbole in den Farben der Apps */
+.teilen-ziele {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.teilen-ziel {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: 600 12px/1.2 "Source Sans 3", sans-serif;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.teilen-ziel i {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+  transition: transform .2s var(--spring);
+}
+
+.teilen-ziel:active i {
+  transform: scale(.9);
+}
+
+.tz-wa { background: #25d366; }
+.tz-tg { background: #2aabee; }
+.tz-sms { background: #6c7a89; }
+.tz-mail { background: #d71920; }
+.tz-kopie { background: #3a4048; }
+
+.teilen-text {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-flach);
+  color: var(--fg-2);
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (max-width: 340px) {
+  .teilen-ziele { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Teilen-Knopf mit Symbol */
+#id-teilen,
+#geschenk-teilen {
+  gap: 6px;
+}
+
+/* ---------- Shop ----------
+   Sonniges Alpen-Foto oben, darauf milchige Glas-Kästen: Guthaben in einer Zeile,
+   dann Rubin-Coins und die Packs (Bild links; rechts Name, Vorrat, Preis und Knopf). */
+#v-shop {
+  --glas: color-mix(in srgb, var(--surface) 80%, transparent);
+  --glas-rand: rgba(255, 255, 255, .75);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Foto hinter dem Titel, links hell, nach unten ausgeblendet */
+#v-shop::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: min(70vh, 560px);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .45) 55%, rgba(255, 255, 255, 0) 85%),
+    url('../assets/welt/alpenpanorama.png') 78% 30% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
+}
+
+:root[data-theme="dark"] #v-shop {
+  --glas: color-mix(in srgb, var(--surface) 82%, transparent);
+  --glas-rand: rgba(255, 255, 255, .1);
+}
+
+:root[data-theme="dark"] #v-shop::before {
+  background:
+    linear-gradient(90deg, rgba(12, 15, 19, .85), rgba(12, 15, 19, .45) 55%, rgba(12, 15, 19, .15) 85%),
+    url('../assets/welt/alpenpanorama.png') 78% 30% / cover no-repeat;
+  filter: brightness(.8) saturate(.85);
+}
+
+#v-shop .titel-block {
+  padding-bottom: 14px;
+}
+
+#v-shop .titel-block p {
+  margin-top: 2px;
+  color: var(--fg);
+  font-size: 16px;
+}
+
+/* Glas-Kasten für Guthaben und alle Zeilen */
+.shop-guthaben,
+.shop-liste li {
+  border: 1px solid var(--glas-rand);
+  background: var(--glas);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  backdrop-filter: blur(12px) saturate(1.3);
+  box-shadow: 0 6px 18px rgba(20, 32, 46, .12);
+}
+
+/* Guthaben: beide Währungen nebeneinander, dazwischen ein feiner Strich */
+#v-shop .shop-guthaben {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 18px;
+}
+
+.sg-zeile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sg-zeile + .sg-zeile {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.shop-guthaben .muenze {
+  --m: 38px;
+}
+
+.sg-wert {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shop-guthaben b {
+  color: var(--fg);
+  font: 800 24px/1 "Barlow Condensed", sans-serif;
+}
+
+.sg-wert small,
+.shop-preis small {
+  color: var(--fg-2);
+  font-size: 12.5px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.shop-liste {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Abstand zwischen der Rubin-Zeile und den Packs */
+.shop-liste + .shop-liste {
+  margin-top: 10px;
+}
+
+.shop-liste li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 18px;
+}
+
+.shop-liste img {
+  justify-self: center;
+  width: 64px;
+  height: auto;
+  border-radius: 6px;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .25));
+}
+
+/* Rubin-Münze statt Pack-Bild: rund und etwas kleiner */
+.shop-liste .muenze,
+.shop-preis .muenze {
+  border-radius: 50%;
+}
+
+.shop-rubin > .muenze {
+  width: 56px;
+  height: 56px;
+}
+
+.shop-preis .muenze {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .25));
+}
+
+.shop-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shop-text > b {
+  color: var(--fg);
+  font: 800 22px/1.05 "Barlow Condensed", sans-serif;
+}
+
+/* Pack-Name, darunter ein feiner Strich */
+.shop-name {
+  padding-bottom: 5px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid var(--line);
+  color: var(--fg-2);
+  font-size: 13.5px;
+}
+
+.shop-vorrat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.shop-vorrat[hidden] {
+  display: none;
+}
+
+.shop-vorrat svg {
+  width: 15px;
+  height: 15px;
+  color: var(--fg-2);
+}
+
+.shop-kauf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.shop-preis {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.shop-preis > span {
+  display: grid;
+  gap: 1px;
+}
+
+.shop-preis b {
+  color: var(--fg);
+  font: 800 20px/1 "Barlow Condensed", sans-serif;
+}
+
+.shop-kauf .btn {
+  flex: none;
+  min-width: 100px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #e8202f, #b80d1b);
+  box-shadow: 0 4px 10px rgba(184, 13, 27, .3), inset 0 1px 0 rgba(255, 255, 255, .25);
+  font-size: 16px;
+}
+
+/* zu wenig Münzen: blasser, rosa Knopf */
+.shop-kauf .btn:disabled {
+  background: #f8d9dd;
+  box-shadow: none;
+  color: #d9707f;
+  opacity: 1;
+  cursor: default;
+  transform: none;
+}
+
+:root[data-theme="dark"] .shop-kauf .btn:disabled {
+  background: rgba(227, 38, 46, .16);
+  color: rgba(255, 140, 150, .7);
+}
+
+.tk-shop {
+  margin-top: 10px;
+}
+
+/* Doppelte Karte verwerten: zweiter Knopf, damit er sich vom Kaufen unterscheidet */
+.kauf-knopf.verwerten:not(:disabled) {
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--accent);
+}

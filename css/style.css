@@ -1,4 +1,4 @@
-/* RailBase Sammelkarten – Beta
+/* RailBase Legends – Beta
    Fürs Handy gebaut. Zwei Designs: Silber (data-theme="light") und Schwarz (data-theme="dark").
    Am Computer steht die App als Handy-Spalte in der Mitte. */
 
@@ -188,8 +188,6 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .karussell li:first-child{margin-left:27%}
 .karussell li:last-child{margin-right:27%}
 .karussell img{width:min(78%,180px);height:auto;border-radius:6px;box-shadow:0 18px 30px rgba(0,0,0,.35);transform:scale(var(--s,1));opacity:var(--o,1);transition:transform .15s linear,opacity .15s linear;cursor:pointer}
-.karussell .vorrat{margin-top:10px;padding:3px 10px;white-space:nowrap;border-radius:999px;background:var(--surface-2);color:var(--fg-2);font:700 14px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.04em;opacity:var(--o,1)}
-.karussell .vorrat.hat{background:var(--accent);color:#fff}
 .pfeil{position:absolute;top:44%;z-index:2;display:grid;place-items:center;width:44px;height:44px;border:2px solid rgba(255,255,255,.85);border-radius:50%;background:rgba(10,11,12,.7);color:#fff;cursor:pointer;transform:translateY(-50%);transition:transform .2s var(--spring)}
 .pfeil:active{transform:translateY(-50%) scale(.88)}
 .pfeil-links{left:10px}.pfeil-rechts{right:10px}
@@ -215,6 +213,9 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .rad-buehne{position:relative;width:min(84vw,380px);margin:16px auto 26px}
 .rad{display:block;width:100%;height:auto;border-radius:50%;background:var(--surface);box-shadow:0 0 0 8px var(--surface),0 0 0 10px var(--line),var(--shadow-lift);will-change:transform}
 :root[data-theme="dark"] .rad{box-shadow:0 0 0 8px #1F2225,0 0 0 10px #E3262E,0 0 40px rgba(227,38,46,.45)}
+/* Logo: im schwarzen Design die Variante mit weisser Schrift und weissen Strichen */
+:root[data-theme="dark"] .rad-logo-hell,
+:root:not([data-theme="dark"]) .rad-logo-dunkel{display:none}
 .rad text{font-family:"Barlow Condensed",sans-serif;letter-spacing:.03em}
 .rad-zeiger{position:absolute;top:-18px;left:50%;z-index:2;width:32px;height:40px;transform:translateX(-50%);background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))}
 .rad-unten{display:grid;justify-items:center;gap:18px;padding:0 16px}
@@ -385,7 +386,7 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
 .hinweis.sichtbar{transform:translate(-50%,0);opacity:1}
 
 /* ---------- Menü unten ---------- */
-.tabbar{position:fixed;left:50%;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:480px;height:calc(76px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--nav);border-top:1px solid var(--line);transform:translateX(-50%);box-shadow:0 -6px 20px rgba(0,0,0,.08)}
+.tabbar{position:fixed;left:50%;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:480px;height:calc(76px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--nav);border-top:1px solid var(--line);transform:translateX(-50%);box-shadow:0 -6px 20px rgba(0,0,0,.08)}
 .tabbar a{position:relative;display:grid;place-items:center;align-content:center;gap:4px;min-width:0;color:var(--fg);font:500 15px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .tabbar a+a::before{content:"";position:absolute;left:0;top:22px;bottom:22px;width:1px;background:var(--line)}
 .tabbar svg{transition:transform .2s var(--spring)}
@@ -495,7 +496,7 @@ h2{margin:0;font-weight:800;font-size:26px;line-height:1.05}
   .karten-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
 
   /* Konto und Mehr: schmale Spalte */
-  #v-konto .seite,#v-mehr .seite,#v-konto .titel-block,#v-mehr .titel-block{max-width:680px}
+  #v-konto .seite,#v-mehr .seite,#v-freunde .seite,#v-konto .titel-block,#v-mehr .titel-block,#v-freunde .titel-block{max-width:680px}
 
   /* Pack öffnen: Übersicht mit 5 Karten in einer Reihe */
   .op-box{max-width:980px}
@@ -590,7 +591,7 @@ body{font-family:"Source Sans 3","Segoe UI",sans-serif}
  #v-packs{max-width:1080px;margin:auto}.reiter{max-width:530px;margin:6px auto 0}.karussell img{width:min(75%,190px)}
  .karussell-bereich{margin-top:20px}.ticket{max-width:580px}.punkte-reihe{margin:12px 0 20px}
  #v-rad{padding:0 60px}.rad-buehne{width:380px;margin:45px auto}.rad-unten{max-width:390px}.rad-unten .btn-haupt{height:64px}
- #v-konto .seite,#v-mehr .seite,#v-konto .titel-block,#v-mehr .titel-block{margin-left:auto;margin-right:auto}
+ #v-konto .seite,#v-mehr .seite,#v-freunde .seite,#v-konto .titel-block,#v-mehr .titel-block,#v-freunde .titel-block{margin-left:auto;margin-right:auto}
  .karten-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px}
  .op-karten{gap:18px}.op-karten li{width:calc((100% - 72px)/5)}
  .hinweis{bottom:30px}
@@ -704,7 +705,7 @@ input,select{font-family:inherit}
 .k-bild{background:linear-gradient(0deg,color-mix(in srgb,var(--rar) 55%,#0b172c),transparent),var(--welt) center/cover}
 .k-zug{filter:drop-shadow(0 3px 4px #0009)}
 .k-rueck{background:linear-gradient(145deg,#111a2ce6,#080e18b3),var(--welt) center/cover;border-color:#9caab8;box-shadow:inset 0 0 0 .6cqw #c1a265,inset 0 0 0 3cqw #11161b,0 15px 50px #0008}
-.k-rueck::after{content:"RAILBASE · COLLECTION";position:absolute;bottom:12%;color:#e1c996;font:700 5cqw/1 "Segoe UI",sans-serif;letter-spacing:.1em}
+.k-rueck::after{content:"RAILBASE · LEGENDS";position:absolute;bottom:12%;color:#e1c996;font:700 5cqw/1 "Segoe UI",sans-serif;letter-spacing:.1em}
 .game-partikel{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:5}
 .game-partikel i{position:absolute;left:50%;top:44%;width:5px;height:9px;background:var(--funken,#ffe1a3);box-shadow:0 0 10px var(--funken,#ffe1a3);animation:funken-flug .95s ease-out both;animation-delay:var(--delay)}
 @keyframes funken-flug{0%{opacity:0;transform:translate(0,0) scale(.2)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.4)}}
@@ -770,7 +771,7 @@ input,select{font-family:inherit}
    Album, Konto und Mehr: siehe Block weiter unten (im Album scrollt nur die Karten-Liste). */
 :root{--kopf-h:62px;--nav-h:76px;--frei:calc(100dvh - var(--kopf-h) - var(--nav-h))}
 main{padding-bottom:var(--nav-h)!important}
-#v-album .seite,#v-konto .seite,#v-mehr .seite{padding-bottom:28px}
+#v-album .seite,#v-konto .seite,#v-mehr .seite,#v-freunde .seite{padding-bottom:28px}
 
 /* Seitenwechsel: die hereingleitende Seite bleibt innerhalb der App (nichts steht mehr über den Rand) */
 .handy{overflow-x:clip}
@@ -861,30 +862,35 @@ main{overflow:clip} /* auch das kurze Hereingleiten von unten erzeugt keinen Scr
 
 /* ===== Album, Konto und Mehr passen auch in den Bildschirm =====
    Album: nur die Karten-Liste scrollt in ihrem eigenen Bereich, die Seite selbst nicht. */
-#v-album:not([hidden]),#v-konto:not([hidden]),#v-mehr:not([hidden]){display:flex;flex-direction:column;box-sizing:border-box;height:var(--frei);overflow:hidden}
-#v-album>*,#v-konto>*,#v-mehr>*{flex:none}
+#v-album:not([hidden]),#v-konto:not([hidden]),#v-mehr:not([hidden]),#v-freunde:not([hidden]){display:flex;flex-direction:column;box-sizing:border-box;height:var(--frei);overflow:hidden}
+#v-album>*,#v-konto>*,#v-mehr>*,#v-freunde>*{flex:none}
 #v-album .seite{flex:1 1 0;min-height:0;display:flex;flex-direction:column;padding-bottom:8px!important}
 #v-album .seite>*{flex:none}
-#v-album .stats{display:flex!important;justify-content:space-around;gap:6px;margin-bottom:10px!important;padding:8px 10px!important}
+/* etwas kompakter: weniger Luft oben und zwischen den Blöcken, damit mehr Karten sichtbar sind */
+#v-album .titel-block{padding-top:12px;padding-bottom:8px}
+#v-album .stats{display:flex!important;justify-content:space-around;gap:6px;margin-bottom:8px!important;padding:6px 10px!important}
 #v-album .stats div{padding:0!important;border:0!important;background:none!important;text-align:center}
-#v-album .stats b{font-size:22px!important}
+#v-album .stats b{font-size:20px!important}
 #v-album .stats span{font-size:11.5px!important}
-#v-album .sam-h{font-size:16px!important;margin:0 0 6px!important}
+#v-album .sam-fortschritt{margin-bottom:8px}
+#v-album .sam-h{font-size:15px!important;margin:0 0 4px!important}
 #v-album .sam-h:first-of-type{display:none}
 /* Kategorien als schmale Reihe zum seitlichen Wischen */
-#v-album .rar-liste{display:flex!important;gap:8px;overflow-x:auto;margin:0 0 10px!important;padding-bottom:4px;scrollbar-width:thin}
+#v-album .rar-liste{display:flex!important;gap:8px;overflow-x:auto;margin:0 0 8px!important;padding-bottom:4px;scrollbar-width:thin}
 #v-album .rar-liste li{flex:none}
-#v-album .rar{display:flex!important;align-items:center;gap:8px;width:auto;padding:7px 12px!important;white-space:nowrap}
+#v-album .rar{display:flex!important;align-items:center;gap:8px;width:auto;padding:6px 11px!important;white-space:nowrap}
 #v-album .rar-stein{width:16px;height:16px}
 #v-album .rar b{font-size:15px!important}
-#v-album .album-filter{margin-bottom:10px!important;padding:8px!important;gap:8px!important}
-#v-album .album-filter input[type="search"],#v-album .album-filter select{height:38px}
-#v-album .karten-grid{flex:1 1 0!important;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0!important;padding:4px 2px 12px;align-content:start}
+#v-album .album-filter{margin-bottom:8px!important;padding:6px 8px!important;gap:6px!important}
+#v-album .album-filter input[type="search"],#v-album .album-filter select{height:36px}
+#v-album .karten-grid{flex:1 1 0!important;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0!important;padding:4px 2px 12px;align-content:start;gap:10px}
 #v-album .empty{flex:1 1 0}
 
-#v-konto .seite,#v-mehr .seite{flex:1 1 0;min-height:0;overflow-y:auto;padding-bottom:8px!important}
-#v-konto .panel,#v-mehr .panel{padding:12px 14px!important;margin-bottom:10px!important;gap:8px!important}
-#v-konto .panel p,#v-mehr .panel p{font-size:13px}
+#v-konto .seite,#v-mehr .seite,#v-freunde .seite{flex:1 1 0;min-height:0;overflow-y:auto;padding-bottom:8px!important}
+#v-konto .panel,#v-mehr .panel,#v-freunde .panel{padding:12px 14px!important;margin-bottom:10px!important;gap:8px!important}
+#v-konto .panel p,#v-mehr .panel p,#v-freunde .panel p{font-size:13px}
+/* Freunde: die eigene ID gross und gut lesbar */
+#v-freunde .id-zeile code{font:800 22px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em}
 #v-konto .avatar.gross{width:46px;height:46px;font-size:24px}
 #v-konto .profil b{font-size:22px}
 /* Profil und Name: ein Kasten, Eingabe und Speichern nebeneinander */
@@ -912,3 +918,162 @@ main{overflow:clip} /* auch das kurze Hereingleiten von unten erzeugt keinen Scr
   #v-konto .seite{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
   #v-konto .seite>.panel:first-child{grid-column:1 / -1}
 }
+
+/* ===== Schmale Handys und grosse Schrift: nichts ragt über den Rand =====
+   Eingabefelder, Raster und Texte dürfen schmaler werden und umbrechen (z. B. bei vergrösserter Schrift auf dem Handy). */
+.panel,.panel>*{min-width:0}
+.panel p,.panel b,.panel span,.menu-list span{overflow-wrap:break-word}
+.field{min-width:0}
+.field input{width:100%;min-width:0}
+#konto-form{grid-template-columns:minmax(0,1fr) auto}
+#v-konto .profil>div{min-width:0}
+.design-wahl{grid-template-columns:repeat(2,minmax(0,1fr))}
+.design-wahl button{min-width:0}
+#v-mehr .menu-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#v-mehr .menu-list li,#v-mehr .menu-list a,#v-mehr .menu-list span{min-width:0}
+/* sehr schmal: Knopf unter das Eingabefeld */
+@media (max-width:340px){
+  #konto-form{grid-template-columns:1fr}
+  .freunde form{flex-wrap:wrap}
+  .freunde form .field{flex:1 1 100%}
+  #konto-form .btn,.freunde form .btn{width:100%}
+}
+
+/* ===== Start und Packs auf einer Seite =====
+   Die Alpen-Bühne bleibt. Darin von oben nach unten: Überschrift, Reiter, Karussell auf dem Podest,
+   Vorrat-Zeile und die Badge mit dem nächsten Schritt. Keine Pfeile: gewischt wird direkt auf den Packs. */
+#v-start .buehne{display:flex!important;flex-direction:column;align-items:stretch;gap:10px;padding-bottom:14px}
+#v-start .buehne>*{flex:none}
+#v-start .buehne-txt{position:relative!important;top:auto!important;left:auto!important;width:auto!important;padding:16px 16px 0!important}
+#v-start .eyebrow{display:none}
+#v-start .reiter{align-self:center;width:calc(100% - 32px);max-width:430px;margin:0!important}
+#v-start .karussell-bereich{flex:1 1 0;min-height:0;margin:0!important;padding:0!important;background:none!important;container-type:size}
+/* Lichtkegel über dem Podest */
+#v-start .karussell-bereich::before{content:"";position:absolute;left:50%;bottom:44px;width:min(92%,380px);height:90%;translate:-50% 0;pointer-events:none;
+  background:conic-gradient(from 170deg at 50% 100%,transparent,#ffffff30,transparent 20%,transparent 75%,#ffffff22,transparent);mask-image:linear-gradient(transparent,#000);animation:strahl-atmen 5s ease-in-out infinite}
+#v-start .karussell-bereich>.podest{position:absolute;left:50%;bottom:6px;z-index:0;width:min(70%,300px);height:72px;translate:-50% 0}
+#v-start .podest-top{height:52px}
+#v-start .podest-seite{top:26px;height:46px}
+#v-start .karussell{position:relative;z-index:1;height:100%;padding:0;align-items:stretch}
+/* Die Packs stehen auf dem Podest (Mitte der Podest-Oberseite). Keine Namen darunter: die Vorrat-Zeile sagt alles,
+   so bekommt das Pack mehr Platz */
+#v-start .karussell li{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:52px}
+#v-start .karussell img{width:auto!important;max-width:92%;height:clamp(80px,calc(100cqh - 64px),360px);transform-origin:50% 100%}
+#v-start .pk-info{display:grid;justify-items:center;gap:6px}
+#v-start .punkte-reihe{margin:0!important}
+#v-start .tk-vorrat{margin:0;padding:5px 14px;border-radius:999px;background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--fg-2);backdrop-filter:blur(6px)}
+#v-start .tk-vorrat.hat{color:var(--accent-ink)}
+/* Badge steht jetzt unter den Packs und ist ein Knopf */
+#v-start .badge{position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;align-self:center;cursor:pointer}
+#v-start .badge:disabled{cursor:default}
+#v-start .badge:not(:disabled):hover{filter:brightness(1.05)}
+/* Niedrige Bildschirme (z. B. kleine Handys): weniger Text, damit das Pack gross bleibt */
+@media (max-height:700px){
+  #v-start .buehne{gap:6px}
+  #v-start .buehne-txt p{display:none}
+  #v-start .reiter button{height:36px}
+  #v-start .punkte-reihe{display:none}
+}
+
+/* ===== Level oben: runder Avatar mit rotem XP-Ring, daneben Level, Balken und XP =====
+   Dunkle Kapsel mit Silberrand in beiden Designs (Vorlage vom Besitzer). --xp setzt js/app.js (zeichneKopf). */
+.level-chip{--xp:0%;display:flex;align-items:center;gap:7px;height:44px;margin-left:auto;padding:0 12px 0 2px;border:1.5px solid #9aa3ad;border-radius:999px;
+  background:linear-gradient(180deg,#252a31,#13161a);color:#f3f4f5;text-decoration:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 4px 12px rgba(0,0,0,.3);transition:transform .2s var(--spring)}
+.level-chip:active{transform:scale(.96)}
+.level-chip .avatar{flex:none;width:38px;height:38px;border:3px solid transparent;border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,#7a0f16,#2b0507 72%) padding-box,conic-gradient(#ff2d3d var(--xp),rgba(255,255,255,.14) 0) border-box;
+  color:#fff;font:800 19px/1 "Barlow Condensed",sans-serif;box-shadow:0 0 10px rgba(255,40,55,.45)}
+.lc-text{display:grid;gap:3px;min-width:58px}
+.lc-zeile{display:flex;align-items:baseline;gap:5px;line-height:1}
+.lc-wort{color:#c9cfd6;font:600 9px/1 "Source Sans 3",sans-serif;letter-spacing:.32em;text-transform:uppercase}
+.level-chip .lvl{margin:0;padding:0;border:0;border-radius:0;background:none;color:#fff;font:800 17px/1 "Barlow Condensed",sans-serif;letter-spacing:0}
+.lc-balken{display:block;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.lc-balken i{display:block;width:0;height:100%;border-radius:4px;background:linear-gradient(90deg,#c3141c,#ff3341);box-shadow:0 0 6px rgba(255,51,65,.8);transition:width .8s var(--spring)}
+.lc-xp{color:#aeb6bf;font:600 9px/1 "Source Sans 3",sans-serif;letter-spacing:.04em;white-space:nowrap}
+/* Silber-Design: helle, weisse Kapsel mit dunkler Schrift; roter XP-Ring und Balken bleiben */
+:root:not([data-theme="dark"]) .level-chip{border-color:#c3cad1;background:linear-gradient(180deg,#ffffff,#e9edf0);color:#15171a;
+  box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(30,40,55,.18)}
+:root:not([data-theme="dark"]) .level-chip .avatar{background:radial-gradient(circle at 50% 35%,#ffffff,#e3e7eb 75%) padding-box,conic-gradient(#ff2d3d var(--xp),rgba(20,22,24,.12) 0) border-box;
+  color:#15171a;box-shadow:0 0 8px rgba(255,40,55,.3)}
+:root:not([data-theme="dark"]) .lc-wort{color:#5a626a}
+:root:not([data-theme="dark"]) .level-chip .lvl{color:#15171a}
+:root:not([data-theme="dark"]) .lc-balken{background:rgba(20,22,24,.1)}
+:root:not([data-theme="dark"]) .lc-xp{color:#5a626a}
+
+/* ===== Album: Titel mit kleiner, unauffälliger Info-Schaltfläche rechts ===== */
+.titel-zeile{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.info-knopf{flex:none;display:grid;place-items:center;width:28px;height:28px;padding:0;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--fg-2);font:italic 700 15px/1 Georgia,"Times New Roman",serif;cursor:pointer;opacity:.75;transition:opacity .2s,border-color .2s}
+.info-knopf:hover{opacity:1;border-color:var(--fg-2)}
+.info-fenster{position:fixed;inset:0;z-index:85;display:grid;place-items:center;padding:20px;background:rgba(4,8,16,.6);backdrop-filter:blur(4px);animation:viewin .2s var(--ease-out)}
+.info-box{display:grid;gap:14px;width:min(100%,420px);max-height:calc(100dvh - 40px);overflow-y:auto;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--fg);box-shadow:0 24px 60px rgba(0,0,0,.45);animation:frage-rein .35s var(--spring)}
+.info-box h2{font-size:26px}
+.info-liste{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.info-liste li{display:grid;gap:2px;color:var(--fg-2);font-size:15px;line-height:1.4}
+.info-liste b{color:var(--fg);font-size:15px}
+
+/* ===== Menü: Rad, Album, Start, Shop, Mehr =====
+   Start steht in der Mitte als runder Knopf, der über den Balken hinausragt (nur auf dem Handy).
+   Die Kappe hat die Farbe des Balkens: so hebt sich der Balken mit dem Knopf an. */
+:root,:root[data-theme="light"]{--nav-kappe:#F7F8F9}
+:root[data-theme="dark"]{--nav-kappe:#121315}
+.tabbar{grid-template-columns:repeat(5,1fr)}
+.nav-kappe{display:none}
+.nav-rund{display:contents}
+@media (max-width:1099px){
+  .tabbar{overflow:visible!important}
+  .tabbar:has(.nav-mitte[aria-current="page"])::before{opacity:0}
+  .tabbar a.nav-mitte{z-index:1;align-content:end;padding-bottom:11px}
+  .nav-kappe{display:block;position:absolute;left:50%;top:-29px;z-index:-1;width:80px;height:80px;border-radius:50%;translate:-50% 0;background:var(--nav-kappe);
+    box-shadow:0 0 0 1px var(--line),0 -6px 14px rgba(0,0,0,.12);clip-path:inset(-30px -30px calc(100% - 31px) -30px)}
+  /* weiche Übergänge, wo die Kappe in den Balken übergeht */
+  .tabbar a.nav-mitte::before,.tabbar a.nav-mitte::after{content:"";display:block!important;position:absolute;top:-11px;right:auto;bottom:auto;z-index:-1;width:12px;height:12px;border-radius:0;opacity:1;pointer-events:none}
+  .tabbar a.nav-mitte::before{left:calc(50% - 45px);background:radial-gradient(circle at 0 0,transparent 11.5px,var(--nav-kappe) 12px)}
+  .tabbar a.nav-mitte::after{left:calc(50% + 33px);background:radial-gradient(circle at 100% 0,transparent 11.5px,var(--nav-kappe) 12px)}
+  /* Knopf etwas kleiner und höher, damit die Schrift «Start» darunter frei steht */
+  .nav-rund{position:absolute;left:50%;top:-24px;display:grid;place-items:center;width:52px;height:52px;border:2px solid #fff;border-radius:50%;translate:-50% 0;
+    background:linear-gradient(180deg,#ff4251,#f10c24 48%,#bd0014);color:#fff;box-shadow:inset 0 2px 2px #ffffff80,0 6px 14px rgba(160,10,20,.4);transition:scale .25s var(--spring),box-shadow .25s}
+  .nav-rund svg{width:26px;height:26px}
+  .tabbar a.nav-mitte[aria-current="page"] .nav-rund{scale:1.06;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent),inset 0 2px 2px #ffffff80,0 8px 18px rgba(160,10,20,.45)}
+  .tabbar a.nav-mitte:active .nav-rund{scale:.94}
+  .tabbar a.nav-mitte.punkt span::after{top:-22px!important;left:calc(50% + 14px)}
+  /* Schrift «Start» unter dem roten Knopf: in Schriftfarbe statt Rot, damit sie gut lesbar ist */
+  .tabbar a.nav-mitte,.tabbar a.nav-mitte[aria-current="page"]{color:var(--fg)}
+  .tabbar a.nav-mitte span{font-weight:800}
+  .tabbar a.nav-mitte{padding-bottom:9px!important}
+  /* Hinweis bleibt über dem erhöhten Knopf */
+  .hinweis{bottom:calc(116px + env(safe-area-inset-bottom,0px))}
+}
+
+/* Lesbare Gewinnsymbole, ruhiger Mittelpunkt und sichtbares Sammelziel. */
+#v-rad .rad-buehne.bereit .rad{animation:none}
+#v-rad .rad text{font-size:9px;letter-spacing:0;stroke:none}
+#v-rad .rad-buehne::after{content:'RB';width:20%;font-size:clamp(22px,4vw,38px);background:radial-gradient(circle at 30% 20%,#71879a,#172b3b 70%);text-shadow:0 2px #000;border-width:4px}
+#v-rad .rad-unten{gap:10px;width:100%;max-width:480px;margin:0 auto}
+#v-rad #rad-btn{background:linear-gradient(#f8fbff,#c9d6e0);color:#162c3e;border:1px solid #fff;text-shadow:none;box-shadow:0 3px 0 #748897,0 8px 20px #0003;height:44px!important;font-size:19px!important;max-width:320px}
+#v-rad #rad-btn:disabled{opacity:.75;box-shadow:none}
+.rad-bonus{display:flex;align-items:center;gap:14px;width:100%;padding:12px 16px;border:1px solid #d9e7f5;border-radius:14px;background:linear-gradient(115deg,#f2f8fff2,#d8e5f2eb);box-shadow:0 8px 24px #0b203e30;color:#142b41;text-align:left}
+.rad-bonus img{width:35px;height:59px;object-fit:contain;filter:drop-shadow(0 3px 3px #0005)}
+.rad-bonus>div{flex:1;min-width:0;display:grid;gap:3px}
+.rad-bonus strong{font-size:16px}.rad-bonus span{font-size:12px;font-weight:700}.rad-bonus small{font-size:11px}
+.rad-bonus progress{display:block;width:100%;height:7px;border:0;border-radius:10px;overflow:hidden;background:#aebdce}
+.rad-bonus progress::-webkit-progress-bar{background:#aebdce}.rad-bonus progress::-webkit-progress-value{background:linear-gradient(90deg,#b8860b,#ffd54a)}
+.rad-bonus progress::-moz-progress-bar{background:linear-gradient(90deg,#b8860b,#ffd54a)}
+/* Info zum Rad: kleine, unauffällige Schaltfläche rechts unten (der Hintergrund ist dort dunkel) */
+.rad-fuss{display:flex;justify-content:flex-end;width:100%}
+#v-rad .rad-fuss .info-knopf{width:26px;height:26px;font-size:14px;border-color:rgba(255,255,255,.5);background:rgba(8,22,38,.35);color:#fff;opacity:.75}
+#v-rad .rad-fuss .info-knopf:hover{opacity:1;border-color:#fff}
+.info-liste .rad-info-chancen{display:grid;gap:4px;margin:4px 0 0;padding:0;list-style:none}
+.info-liste .rad-info-chancen li{display:flex;justify-content:space-between;gap:10px;padding-bottom:3px;border-bottom:1px dashed var(--line);font-size:14px}
+.info-liste .rad-info-chancen li span:first-child{color:var(--fg);font-weight:700}
+#v-rad:not([hidden]){overflow-y:auto!important;min-height:580px!important}
+#v-rad .rad-platz{min-height:240px}
+#v-rad .titel-block{padding-top:14px!important;padding-bottom:0!important}
+#v-rad .titel-block h1{font-size:clamp(30px,4vw,44px)!important}
+/* Münz-Gewinn: runder Schatten statt Kasten (das Bild ist rund ausgeschnitten) */
+#gewinn[class*="preis-coin"] .gw-pack{width:130px;height:130px;object-fit:contain;border-radius:50%;box-shadow:none}
+:root[data-theme="dark"] .rad-bonus{background:linear-gradient(115deg,#1b2e43,#273952);color:#eaf3ff;border-color:#5a7493}
+@media(prefers-reduced-motion:reduce){#v-rad *,#v-rad *::before,#v-rad *::after{animation:none!important}}
+
+:root[data-theme='dark'] #v-rad .rad-bonus :is(strong,span,small){color:#eaf3ff!important}
+:root[data-theme='dark'] #v-rad .titel-block :is(h1,p){color:#f3f8ff!important;text-shadow:0 2px 6px #0a1d35}

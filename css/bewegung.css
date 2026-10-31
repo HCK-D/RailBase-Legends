@@ -1,0 +1,156 @@
+/* Bewegung: Blöcke gleiten beim Öffnen einer Seite nacheinander ein, Hover-Rückmeldung, Zahlen und Münzen.
+   Nur CSS, keine Spiel-Logik. Gilt für die Seiten in .view; die Ansicht selbst animiert schon in style.css. */
+
+/* Beim Öffnen einer Seite gleiten die Blöcke nacheinander hoch.
+   "backwards" statt "both": nach dem Einblenden bleibt die Hover-Bewegung frei. */
+.view:not([hidden]) > .seite > .panel,
+.view:not([hidden]) > .seite > .stats,
+.view:not([hidden]) > .seite > .sam-h,
+.view:not([hidden]) > .seite > .rar-liste,
+.view:not([hidden]) > .seite > .shop-liste,
+.view:not([hidden]) > .seite > .titel-block,
+.view:not([hidden]) .menu-list > li {
+  animation: bew-hoch .5s var(--ease-out) backwards;
+}
+
+.view:not([hidden]) > .seite > :nth-child(2),
+.view:not([hidden]) .menu-list > li:nth-child(2) { animation-delay: 60ms; }
+.view:not([hidden]) > .seite > :nth-child(3),
+.view:not([hidden]) .menu-list > li:nth-child(3) { animation-delay: 120ms; }
+.view:not([hidden]) > .seite > :nth-child(4),
+.view:not([hidden]) .menu-list > li:nth-child(4) { animation-delay: 180ms; }
+.view:not([hidden]) > .seite > :nth-child(5),
+.view:not([hidden]) .menu-list > li:nth-child(5) { animation-delay: 240ms; }
+.view:not([hidden]) > .seite > :nth-child(6),
+.view:not([hidden]) .menu-list > li:nth-child(6) { animation-delay: 300ms; }
+.view:not([hidden]) > .seite > :nth-child(7),
+.view:not([hidden]) .menu-list > li:nth-child(7) { animation-delay: 360ms; }
+.view:not([hidden]) > .seite > :nth-child(8),
+.view:not([hidden]) .menu-list > li:nth-child(8) { animation-delay: 420ms; }
+
+@keyframes bew-hoch {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Mehr-Menü: Kacheln rücken beim Drüberfahren ein Stück vor und drücken sich beim Tippen */
+.menu-list li > a {
+  transition: transform .25s var(--spring), background-color .25s;
+}
+
+.menu-list li > a:hover {
+  transform: translateX(4px);
+}
+
+.menu-list li > a:active {
+  transform: scale(.97);
+}
+
+/* Shop: Pack-Zeile hebt sich, das Bild kippt leicht */
+.shop-liste li {
+  transition: transform .25s var(--spring), box-shadow .25s;
+}
+
+.shop-liste li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .14);
+}
+
+.shop-liste img {
+  transition: transform .35s var(--spring);
+}
+
+.shop-liste li:hover img {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+/* Zahlen im Album und im Konto poppen beim Öffnen auf */
+.view:not([hidden]) .stats b {
+  animation: bew-zahl .6s var(--spring) backwards;
+  animation-delay: 200ms;
+}
+
+@keyframes bew-zahl {
+  from { opacity: 0; transform: scale(.6); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Münzen drehen sich langsam, damit sie wie echte Münzen wirken */
+.muenz-chip .muenze,
+.shop-guthaben .muenze {
+  animation: bew-muenze 5s ease-in-out infinite;
+}
+
+@keyframes bew-muenze {
+  0%, 60%, 100% { transform: rotateY(0); }
+  75% { transform: rotateY(180deg); }
+}
+
+/* Fortschritt: der Balken füllt sich, wenn die Seite aufgeht. Die Level-Zahl springt kurz auf */
+#xp-balken {
+  transform-origin: left center;
+  animation: bew-fuellen 1s var(--ease-out) backwards;
+}
+
+@keyframes bew-fuellen {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.level-zahl {
+  animation: bew-zahl .7s var(--spring) backwards;
+  animation-delay: 150ms;
+}
+
+/* Der gewählte Rarity-Knopf im Album leuchtet sanft in seiner Farbe */
+.rar[aria-pressed="true"] {
+  animation: bew-leuchten 2.4s ease-in-out infinite;
+}
+
+@keyframes bew-leuchten {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--rar) 50%, transparent); }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--rar) 25%, transparent), 0 0 16px color-mix(in srgb, var(--rar) 45%, transparent); }
+}
+
+/* Münzstand blinkt kurz auf, wenn sich der Betrag ändert (JS setzt die Klasse "stoss") */
+.muenz-chip.stoss {
+  animation: muenz-stoss .6s var(--spring);
+}
+
+@keyframes muenz-stoss {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 #f5c84288; }
+  35% { transform: scale(1.12); box-shadow: 0 0 0 6px #f5c84233; }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 #f5c84200; }
+}
+
+/* Album: beim Filtern gleiten die Karten, die neu erscheinen, nacheinander ein */
+.karten-grid li:not([hidden]) {
+  animation: karte-in .4s var(--ease-out) backwards;
+  animation-delay: min(calc(var(--i, 0) * 35ms), 420ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #xp-balken,
+  .level-zahl,
+  .rar[aria-pressed="true"],
+  .muenz-chip.stoss,
+  .karten-grid li:not([hidden]),
+  .view:not([hidden]) > .seite > .panel,
+  .view:not([hidden]) > .seite > .stats,
+  .view:not([hidden]) > .seite > .sam-h,
+  .view:not([hidden]) > .seite > .rar-liste,
+  .view:not([hidden]) > .seite > .shop-liste,
+  .view:not([hidden]) > .seite > .titel-block,
+  .view:not([hidden]) .menu-list > li,
+  .view:not([hidden]) .stats b,
+  .muenz-chip .muenze,
+  .shop-guthaben .muenze {
+    animation: none;
+  }
+
+  .menu-list li > a,
+  .shop-liste li,
+  .shop-liste img {
+    transition: none;
+  }
+}

@@ -1,6 +1,7 @@
 # Anleitung für KI-Assistenten (Codex, Claude …)
 
-Projekt: **RailBase Sammelkarten – Beta**. Ein Sammelkarten-Spiel als Webseite: Packs öffnen,
+Projekt: **RailBase Legends – Beta** (früher «RailBase Sammelkarten»; der Ordner heisst weiter sammelkarten-beta).
+Ein Sammelkarten-Spiel als Webseite: Packs öffnen,
 Karten sammeln, Gratis-Pack und Glücksrad alle 24 Stunden. Reines HTML, CSS und JavaScript,
 kein Build-Schritt, keine Bibliotheken. Sprache der Seite und der Kommentare: Deutsch (Schweiz, «ss» statt «ß»).
 
@@ -27,6 +28,7 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 | `css/style.css` | alles (Farben, Schriften, Abstände, Animationen, Layout) |
 | `index.html` | Aufbau, Klassen, Texte, Icons, neue Elemente – aber **IDs und `data-*`-Attribute behalten** (siehe unten) |
 | `js/karten.js` → Funktionen `karteHtml()` und `rueckseiteHtml()` | Aufbau der Karten-Vorderseite und -Rückseite |
+| `css/karten.css` | Aussehen der Karten-Vorderseite (Rahmen je Seltenheit, Laschen, Bild-Szene, Bahn-Chip, Flagge). Die Zug-Zeichnungen stehen als `<symbol>` in `js/karten.js` (`SZENE_SPRITE`), die Bahn-Farben in `BAHN_FARBE`. Klassen `.karte`, `.rar-*`, `.fehlt`, `.k-glanz`, `.k-anzahl` und `data-karte` behalten |
 | `assets/` | neue Bilder (am besten `.webp`) |
 
 ## Was NICHT geändert werden darf
@@ -39,11 +41,11 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 
 ### IDs, die der Code braucht (müssen im HTML bleiben)
 
-Kopf: `avatar`, `lvl`
+Kopf: `avatar`, `lvl` (nur die Zahl), `lvl-balken`, `lvl-xp` (Level-Kapsel `.level-chip`, Ring über `--xp`)
 Mehr (Sammler-Level): `level-zahl`, `xp-level`, `xp-balken`, `xp-zahl`
-Start: `start-badge` (mit einem `<use>` und einem `<span>` darin), `start-btn`, `start-btn-txt`
-Packs: `pk-reiter`, `pk-karussell`, `pk-zurueck`, `pk-weiter`, `pk-stelle`, `pk-punkte`,
-`tk-btn`, `tk-btn-txt`, `tk-vorrat` (kleine Zeile unter dem Knopf: Vorrat und Garantie)
+Start (mit den Packs auf derselben Seite): `start-badge` (Knopf mit einem `<use>` und einem `<span>` darin),
+`pk-reiter`, `pk-karussell`, `pk-stelle`, `pk-punkte`, `tk-vorrat` (kleine Zeile unter dem Karussell: Vorrat und Garantie).
+Keine Pfeile und kein «Pack öffnen»-Knopf: gewischt wird auf den Packs, das Pack in der Mitte antippen öffnet es.
 Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt`, `rad-info`
 Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-oeffnen-icon`, `gw-oeffnen-txt`, `gw-spaeter`
 Album: `st-entdeckt`, `st-karten`, `st-geoeffnet`, `rar-liste`, `al-suche`, `al-bahn`, `al-nur-meine`,
@@ -55,7 +57,10 @@ Sonstiges: `app`, `hinweis`
 
 ### Attribute und Klassen, die der Code setzt oder liest
 
-- Seiten: `data-view="start|packs|rad|album|konto|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`
+- Seiten: `data-view="start|rad|album|shop|konto|freunde|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`.
+  Freunde und Konto erreicht man über Mehr (Freunde oben links, Konto und Design oben rechts)
+- Menü-Reihenfolge: Rad, Album, Start, Shop, Mehr. Start ist `.nav-mitte` mit `.nav-kappe` (hebt den Balken an)
+  und `.nav-rund` (runder Knopf über dem Balken, nur auf dem Handy)
 - Design-Wahl: `data-design="light|dark"`; das aktive Design steht als `data-theme` auf `<html>`
   (`light` = Silber, `dark` = Schwarz)
 - Menü: Klasse `punkt` = roter Punkt «etwas ist bereit»
@@ -64,10 +69,46 @@ Sonstiges: `app`, `hinweis`
 - Reiter: `button[data-stufe]` mit `aria-selected`
 - Album-Kategorien: `button[data-filter]` mit `aria-pressed`
 - Karten: `.karte.rar-<seltenheit>`, `.fehlt` (noch nicht gefunden), `.k-anzahl` (×2 …)
-- Aufdecken: `.flip`, `.flip-innen`, `.flip-seite`, `.flip-vorne`, `.flip-rueck`, Zustände `.offen`, `.selten`, `.neu`, `.weg`, `.flip-rein`
-- Pack-Animation: `.op-shake`, `.op-reisst`; Übersicht `li.neu`
+- Aufdecken: `.flip`, `.flip-innen`, `.flip-seite`, `.flip-vorne`, `.flip-rueck`, Zustände `.offen`, `.selten`, `.neu`, `.weg`,
+  `.flip-stapel` (erste Karte), `.flip-naechste`, `.ahnung` (ab Rare), `.spannung` (kurz vor dem Umdrehen einer seltenen Karte).
+  Ab Epic `.ahnung-hoch` und beim Tippen `.laedt` (Aufladen, Dauer `AUFLADEN` in js/oeffnen.js): Lichtball `.fx-glut`
+  (Special `.bunt`), Lichtpunkte `.fx-sog`, ab Mythic Strahlen `.fx-strahlen.vorab` → `.voll`; am `#opener` `.fx-laedt`.
+  Während der Einzelkarten hat `#opener` die Klasse `.einzeln` und scrollt nicht (Effekte ragen über den Rand).
+  Hinter der obersten Karte liegt der Stapel `.op-stapel` mit `.op-stapel-karte`.
+- Pack-Animation als Szene: `.op-druck` (gedrückt) → `.op-feder` → `.op-shake` (Naht reisst) → `.op-reisst` (Hülle fällt) → Stapel `.stapel-rein`.
+  Licht je Stufe über `data-stufe` am `#opener` und an den Karussell-`li` (`--licht`, `--staerke`). Übersicht `li.neu`, Fortschritt
+  `opf-neu`, `opf-sammlung`, `opf-sammel-balken`; neue Karten fliegen beim Schliessen ins Album (`Gefuehl.insAlbum`)
 - Rad: `#rad-buehne.bereit` (kann gedreht werden), `.dreht` (dreht gerade); Gewinn-Fenster: `.preis-standard|silber|gold|platin|nichts`
 - Seitenwechsel: `.view`, `.von-rechts`, `.von-links`
+
+## Spielgefühl (Töne, Vibration, Effekte)
+
+- `js/spielgefuehl.js` (`Gefuehl`): Töne (im Browser erzeugt, keine Ton-Dateien), Vibration, Konfetti,
+  grosse Schriftzüge, Neigen der Karten mit Holo-Glanz, Gross-Ansicht einer Karte
+- `css/spielgefuehl.css`: das Aussehen dazu (Vorahnung auf der Kartenrückseite, Banner, Konfetti, Glanz, «Neu»-Sticker)
+- Ein/aus: Konto → «Töne und Vibration» (`ton-an`, gespeichert als `app.daten.ton`)
+- Neu gefundene Karten: `app.daten.ungesehen` (Sticker «Neu» und ganz oben im Album, bis man das Album verlässt)
+- IDs: `kv`, `kv-buehne`, `kv-karte`, `kv-info`, `kv-zu` (Gross-Ansicht), `op-stage`, `op-fortschritt`, `opf-level`,
+  `opf-xp`, `opf-balken`, `opf-sammlung` (XP-Balken nach dem Öffnen), `st-balken`, `st-prozent` (Album-Fortschritt)
+
+## Tägliche Belohnungen
+
+- `js/taeglich.js` (`Taeglich`): Login-Serie über 7 Tage (`SERIE_BELOHNUNGEN`) und 3 Tagesaufgaben pro Tag
+  (`AUFGABEN`, die erste immer, zwei wechseln täglich), Bonus für alle Aufgaben (`AUFGABEN_BONUS`). Alle Mengen sind Platzhalter.
+- Ein Tag ist ein Kalendertag auf dem Gerät. Wer einen Tag auslässt, fängt die Serie wieder bei Tag 1 an.
+- Gespeichert in `app.daten.taeglich` (siehe `store.js`). Gezählt wird mit `Taeglich.zaehle('packs' | 'rad' | 'neu' | 'selten' | 'verwerten' | 'kauf')`.
+- Fenster: `tb`, `tb-serie`, `tb-tage`, `tb-holen`, `tb-holen-txt`, `tb-aufgaben`, `tb-bonus`, `tb-bonus-bild`, `tb-bonus-text`,
+  `tb-bonus-knopf`, `tb-neu`, `tb-zu`. Eintrag auf der Mehr-Seite: `tb-oeffnen`, `tb-eintrag-text`. Aussehen: `css/taeglich.css`.
+- Das Fenster geht einmal am Tag von selbst auf, wenn die Serien-Belohnung bereit ist. Sonst: Start-Badge «Tagesbelohnung bereit» oder Mehr.
+
+## Freunde und Geschenke
+
+- Freunde-Seite (`#freunde`): eigene ID mit Teilen-Knopf (`id-teilen`, Teilen-Menü des Handys, sonst Kopieren),
+  Freund hinzufügen, Liste der Freunde. Geschenk einlösen (`geschenk-form`, `geschenk-eingabe`) steht im Konto unter Design.
+- Schenken: im Kauf-Fenster des Shops «Einem Freund schenken» (`frage-extra`), nur alle 48 Stunden (`app.daten.geschenkZeit`).
+  Ohne Server entsteht ein Geschenk-Code `RBG-…` (Pack, Empfänger-ID, Absender-ID, Prüfzeichen), den man teilt.
+  Nur der Empfänger kann ihn einlösen, jeden Code nur einmal (`app.daten.eingeloest`). Fenster: `geschenk`, `geschenk-text`,
+  `geschenk-freunde`, `geschenk-code-box`, `geschenk-code`, `geschenk-zu`, `geschenk-teilen`.
 
 ## Die 7 Karten-Seltenheiten (Farben laut Kartenliste)
 

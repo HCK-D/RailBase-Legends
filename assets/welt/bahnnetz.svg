@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 1000" preserveAspectRatio="xMidYMin meet">
+  <!-- Feines Bahnnetz für den Album-Hintergrund: Linien am Rand, die Mitte bleibt frei für die Karten -->
+  <g fill="none" stroke="#5b7b99" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".75">
+    <!-- links: Basel – Zürich – Bern – Lausanne – Genève -->
+    <path d="M70 0 L58 40 L40 150 L46 210 L28 290 L52 350 L44 430 L18 520 L12 610 L36 700 L22 800 L40 900 L30 1000"/>
+    <path d="M40 150 L95 120 L140 60 L160 0"/>
+    <path d="M28 290 L80 330 L100 400"/>
+    <path d="M0 470 L18 520"/>
+    <path d="M12 610 L60 650 L78 720"/>
+    <!-- rechts: St. Gallen – Luzern – Chur – Brig – Lugano -->
+    <path d="M330 0 L350 70 L372 140 L372 250 L400 300"/>
+    <path d="M372 250 L388 360 L340 450 L360 560 L310 690 L345 790 L330 900 L350 1000"/>
+    <path d="M372 140 L300 180 L265 120"/>
+    <path d="M388 360 L400 370"/>
+    <path d="M360 560 L400 600"/>
+    <path d="M310 690 L270 760"/>
+  </g>
+  <!-- Nebenstrecken gestrichelt -->
+  <g fill="none" stroke="#5b7b99" stroke-width="1.1" stroke-dasharray="3 5" opacity=".55">
+    <path d="M46 210 L0 240"/>
+    <path d="M52 350 L120 300"/>
+    <path d="M340 450 L280 420"/>
+    <path d="M345 790 L400 760"/>
+  </g>
+  <!-- Haltepunkte -->
+  <g fill="#ffffff" stroke="#5b7b99" stroke-width="1.6" opacity=".9">
+    <circle cx="40" cy="150" r="4.5"/>
+    <circle cx="28" cy="290" r="4.5"/>
+    <circle cx="12" cy="610" r="4.5"/>
+    <circle cx="372" cy="250" r="4.5"/>
+    <circle cx="388" cy="360" r="4.5"/>
+    <circle cx="360" cy="560" r="4.5"/>
+    <circle cx="330" cy="900" r="4.5"/>
+    <circle cx="58" cy="40" r="3"/>
+    <circle cx="95" cy="120" r="3"/>
+    <circle cx="52" cy="350" r="3"/>
+    <circle cx="18" cy="520" r="3"/>
+    <circle cx="60" cy="650" r="3"/>
+    <circle cx="36" cy="700" r="3"/>
+    <circle cx="40" cy="900" r="3"/>
+    <circle cx="372" cy="140" r="3"/>
+    <circle cx="300" cy="180" r="3"/>
+    <circle cx="340" cy="450" r="3"/>
+    <circle cx="310" cy="690" r="3"/>
+    <circle cx="345" cy="790" r="3"/>
+  </g>
+  <!-- Städtenamen -->
+  <g fill="#6c8299" font-family="'Segoe UI', Roboto, Arial, sans-serif" font-size="13" opacity=".95">
+    <text x="6" y="136">Zürich</text>
+    <text x="8" y="314">Bern</text>
+    <text x="22" y="633">Genève</text>
+    <text x="48" y="914">Lausanne</text>
+    <text x="394" y="236" text-anchor="end">Luzern</text>
+    <text x="378" y="384" text-anchor="end">Chur</text>
+    <text x="394" y="584" text-anchor="end">Brig</text>
+    <text x="320" y="924" text-anchor="end">Lugano</text>
+    <text x="64" y="30">Basel</text>
+    <text x="340" y="62" text-anchor="end">St. Gallen</text>
+  </g>
+</svg>
