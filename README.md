@@ -25,7 +25,9 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 - **308 echte Karten** aus `RailBase_Karten_Seltenheiten.docx` (Stand 29. Oktober 2026):
   291 Basiskarten aus 8 Bahnen (SBB, BLS, RhB, SOB, Zentralbahn, TPF, MOB, transN),
   12 Varianten und 5 Special-Karten, in `js/daten/kartenliste.js`.
-  **Im Spiel sind nur die 249 Karten mit Foto** (`js/daten/kartenfotos.js`). Die 59 ohne Foto stehen
+  Dazu **60 Karten von 6 neuen Bahnen** (AB, AVA, BOB, TMR, TPC, TRAVYS, RB292–RB351) aus dem
+  Zwischenstand von Railbase.ch (Zweig `spaeter-neue-bahnen`, noch nicht online).
+  **Im Spiel sind nur die 300 Karten mit Foto** (`js/daten/kartenfotos.js`). Die 68 ohne Foto stehen
   im Word-Dokument «RailBase_Legends_Karten_ohne_Foto.docx» und kommen zurück, sobald sie ein Foto haben.
 - Album mit allen Karten im Spiel: gesammelte farbig mit Anzahl, fehlende grau;
   Filter nach Kategorie und Bahn, Suche, «Nur gesammelte»
@@ -72,7 +74,7 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 
 - Chancen pro Pack festlegen (die Kartenliste legt nur die Seltenheit fest, nicht die Chancen)
 - Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
-- Fotos für die 59 Karten, die deshalb noch nicht im Spiel sind
+- Fotos für die 68 Karten, die deshalb noch nicht im Spiel sind
 - Handy-Optimierung
 - Login und Online-Datenbank (eher gegen Ende des Projekts)
 
@@ -86,8 +88,8 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `css/style.css` | Design Silber und Schwarz, Farben der Kategorien |
 | `js/app.js` | Seiten, Menü, Start, Packs-Karussell, Album, Konto, Level |
 | `js/karten.js` | Kategorien, Chancen, Garantie, XP, Karten-Aussehen |
-| `js/daten/kartenliste.js` | alle 308 Karten |
-| `js/daten/kartenfotos.js`, `assets/karten/fotos/` | Fotos von Railbase.ch auf 249 Karten, mit Fotograf und Lizenz (Bildnachweise unter «Mehr») |
+| `js/daten/kartenliste.js` | alle 368 Karten (auch die ohne Foto) |
+| `js/daten/kartenfotos.js`, `assets/karten/fotos/` | Fotos von Railbase.ch auf 300 Karten, mit Fotograf und Lizenz (Bildnachweise unter «Mehr») |
 | `AGENTS.md` | Regeln für Codex und andere KI-Assistenten (was beim Design geändert werden darf) |
 | `design/` | Design-Vorlagen und Sicherungen, nur lokal (nicht auf GitHub) |
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |

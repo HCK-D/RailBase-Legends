@@ -38,7 +38,7 @@ const XP_PRO_KARTE = [5, 10, 20, 40, 80, 150, 250];
 
 const KARTEN_PRO_PACK = 5;
 
-const BAHNEN = ['SBB', 'BLS', 'RhB', 'SOB', 'Zentralbahn', 'TPF', 'MOB', 'transN'];
+const BAHNEN = ['SBB', 'BLS', 'RhB', 'SOB', 'Zentralbahn', 'TPF', 'MOB', 'transN', 'AB', 'AVA', 'BOB', 'TMR', 'TPC', 'TRAVYS'];
 
 // Schneller Zugriff: Karte nach ID und alle Karten pro Kategorie
 const KARTE_NACH_ID = new Map(KARTEN.map((k) => [k.id, k]));
@@ -133,6 +133,7 @@ function belohnungenFuer(vonLevel, bisLevel) {
 const BAHN_FARBE = {
   SBB: '#E2001A', BLS: '#1B9447', RhB: '#B70E1E', SOB: '#2B4593',
   Zentralbahn: '#4A5560', TPF: '#0F6FB6', MOB: '#1D2D5C', transN: '#E4572E',
+  AB: '#C8102E', AVA: '#E98300', BOB: '#0B4EA2', TMR: '#9B1B30', TPC: '#2E8B3A', TRAVYS: '#0090C8',
 };
 
 // Welcher gezeichnete Zug ins Kartenbild kommt, je nach Bereich

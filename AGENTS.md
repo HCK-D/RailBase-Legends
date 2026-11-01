@@ -35,7 +35,7 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 
 - Die Spiel-Logik in `js/app.js`, `js/oeffnen.js`, `js/rad.js`, `js/store.js`
   (ausser reine Texte, die auf der Seite erscheinen)
-- `js/daten/kartenliste.js` (die 308 Karten, Quelle: Word-Dokument des Besitzers)
+- `js/daten/kartenliste.js` (308 Karten aus dem Word-Dokument des Besitzers und 60 Karten der 6 neuen Bahnen)
 - Chancen, Garantie, XP und Level in `js/karten.js` (Spielregeln, legt der Besitzer fest)
 - Der Speicher-Schlüssel `sk-beta-v1` und `sk-theme` im localStorage
 
@@ -129,7 +129,7 @@ Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bere
 
 ### Fotos auf den Karten
 
-Im Spiel sind nur Karten mit Foto von Railbase.ch, im Moment 249 von 308 (`assets/karten/fotos/<id>.webp`,
+Im Spiel sind nur Karten mit Foto von Railbase.ch, im Moment 300 von 368 (`assets/karten/fotos/<id>.webp`,
 520 × 589 px, schon auf das Bildfeld `.k-bild` zugeschnitten). Welche Karte ein Foto hat, und wer es gemacht hat,
 steht in `js/daten/kartenfotos.js`; `KARTEN` in `js/karten.js` filtert `ALLE_KARTEN` danach. Gesammelte Karten,
 die nicht mehr im Spiel sind, werden beim Start in RB Coins umgewandelt (`js/app.js`, Start).

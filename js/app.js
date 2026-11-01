@@ -1059,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('album-info-knopf').addEventListener('click', () => {
     $('album-info-werte').textContent = SELTENHEITEN.map((s, i) => `${s.name} ${SAMMELWERT[i]}`).join(', ');
     $('album-info-anzahl').textContent = KARTEN.length;
+    $('album-info-bahnen').textContent = new Set(KARTEN.map((k) => k.bahn)).size;
     $('album-info').hidden = false;
     document.body.classList.add('op-offen');
     $('album-info-zu').focus({ preventScroll: true });
