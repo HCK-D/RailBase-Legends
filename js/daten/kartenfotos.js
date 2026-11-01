@@ -2,7 +2,7 @@
    Bild: assets/karten/fotos/<id in Kleinbuchstaben>.webp (520 × 589 px, gleiches Seitenverhältnis wie .k-bild)
    foto: Fotograf, lizenz und lizenzUrl: Lizenz, quelle: Originaldatei. Ohne lizenz = eigenes Foto (HCKD).
    erlaubnis: Foto ohne freie Lizenz, der Besitzer hat die Erlaubnis (1. November 2026: Domino, Re 460, Re 420, Re 620, Re 193).
-   Karten ohne Eintrag zeigen weiter die Zeichnung (Zug vor dem Alpen-Foto). */
+   Nur Karten mit Eintrag sind im Spiel (KARTEN in js/karten.js). Neues Foto hier eintragen = Karte kommt ins Spiel. */
 
 const KARTEN_FOTOS = {
   RB001: {"foto":"Kecko from Rural area of Eastern Switzerland","lizenz":"CC BY 2.0","lizenzUrl":"https://creativecommons.org/licenses/by/2.0","quelle":"https://commons.wikimedia.org/wiki/File:SBB_Giruno_by_Stadler_(47086627004).jpg"},

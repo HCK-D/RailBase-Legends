@@ -24,8 +24,10 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 
 - **308 echte Karten** aus `RailBase_Karten_Seltenheiten.docx` (Stand 29. Oktober 2026):
   291 Basiskarten aus 8 Bahnen (SBB, BLS, RhB, SOB, Zentralbahn, TPF, MOB, transN),
-  12 Varianten und 5 Special-Karten, in `js/daten/kartenliste.js`
-- Album mit allen 308 Karten: gesammelte farbig mit Anzahl, fehlende grau;
+  12 Varianten und 5 Special-Karten, in `js/daten/kartenliste.js`.
+  **Im Spiel sind nur die 249 Karten mit Foto** (`js/daten/kartenfotos.js`). Die 59 ohne Foto stehen
+  im Word-Dokument «RailBase_Legends_Karten_ohne_Foto.docx» und kommen zurück, sobald sie ein Foto haben.
+- Album mit allen Karten im Spiel: gesammelte farbig mit Anzahl, fehlende grau;
   Filter nach Kategorie und Bahn, Suche, «Nur gesammelte»
 - Beim Öffnen: Name der Karte und «Neu!», wenn man sie noch nicht hatte
 
@@ -70,7 +72,7 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 
 - Chancen pro Pack festlegen (die Kartenliste legt nur die Seltenheit fest, nicht die Chancen)
 - Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
-- Fahrzeugbilder für die 59 Karten, die noch die Zeichnung zeigen
+- Fotos für die 59 Karten, die deshalb noch nicht im Spiel sind
 - Handy-Optimierung
 - Login und Online-Datenbank (eher gegen Ende des Projekts)
 

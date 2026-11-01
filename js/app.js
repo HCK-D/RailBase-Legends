@@ -999,10 +999,20 @@ function holeGratisPack() {
 // ---------- Start ----------
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Karten-IDs, die es in der Kartenliste nicht (mehr) gibt, aus dem Spielstand entfernen
-  const vorher = app.daten.karten.length;
-  app.daten.karten = app.daten.karten.filter((id) => karteVonId(id));
-  if (app.daten.karten.length !== vorher) speichern();
+  // Karten-IDs, die es im Spiel nicht (mehr) gibt, aus dem Spielstand entfernen.
+  // Karten ohne Foto (noch in ALLE_KARTEN) gibt es dabei zum Verwerten-Wert in RB Coins zurück.
+  const weg = app.daten.karten.filter((id) => !karteVonId(id));
+  if (weg.length) {
+    const ersatz = weg.reduce((summe, id) => {
+      const k = ALLE_KARTEN.find((x) => x.id === id);
+      return summe + (k ? SAMMELWERT[rangVon(k.seltenheit)] : 0);
+    }, 0);
+    app.daten.karten = app.daten.karten.filter((id) => karteVonId(id));
+    app.daten.ungesehen = app.daten.ungesehen.filter((id) => karteVonId(id));
+    app.daten.muenzen += ersatz;
+    speichern();
+    if (ersatz) setTimeout(() => zeigeHinweis(`+${ersatz} RB Coins für ${weg.length} entfernte Karten`), 1500);
+  }
 
   muenzenBonusPruefen();
 
@@ -1048,6 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   $('album-info-knopf').addEventListener('click', () => {
     $('album-info-werte').textContent = SELTENHEITEN.map((s, i) => `${s.name} ${SAMMELWERT[i]}`).join(', ');
+    $('album-info-anzahl').textContent = KARTEN.length;
     $('album-info').hidden = false;
     document.body.classList.add('op-offen');
     $('album-info-zu').focus({ preventScroll: true });

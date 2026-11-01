@@ -129,9 +129,10 @@ Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bere
 
 ### Fotos auf den Karten
 
-249 Karten zeigen ein Foto von Railbase.ch (`assets/karten/fotos/<id>.webp`, 520 × 589 px, schon auf das Bildfeld
-`.k-bild` zugeschnitten). Welche Karte ein Foto hat, und wer es gemacht hat, steht in `js/daten/kartenfotos.js`.
-Karten ohne Eintrag zeigen weiter die Zug-Zeichnung (`SZENE_SPRITE`).
+Im Spiel sind nur Karten mit Foto von Railbase.ch, im Moment 249 von 308 (`assets/karten/fotos/<id>.webp`,
+520 × 589 px, schon auf das Bildfeld `.k-bild` zugeschnitten). Welche Karte ein Foto hat, und wer es gemacht hat,
+steht in `js/daten/kartenfotos.js`; `KARTEN` in `js/karten.js` filtert `ALLE_KARTEN` danach. Gesammelte Karten,
+die nicht mehr im Spiel sind, werden beim Start in RB Coins umgewandelt (`js/app.js`, Start).
 
 Die Fotos stammen fast alle aus Wikimedia Commons (CC BY, CC BY-SA, CC0, gemeinfrei). Die Lizenzen verlangen den
 Namen des Fotografen und die Lizenz: darum die Liste unter Mehr → Bildnachweise (`#bild-info`).

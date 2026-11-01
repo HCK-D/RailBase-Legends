@@ -1,5 +1,9 @@
 /* Karten: die 7 Kategorien, Chancen pro Pack-Stufe, Ziehen, XP und die Karten-Skizze.
-   Die Karten selbst stehen in js/daten/kartenliste.js (KARTEN). */
+   Die Karten selbst stehen in js/daten/kartenliste.js (ALLE_KARTEN). */
+
+// Im Spiel sind nur Karten mit Foto (js/daten/kartenfotos.js). Die übrigen bleiben in der Kartenliste
+// und kommen zurück, sobald es ein Foto gibt. Liste für den Besitzer: Word-Dokument «Karten ohne Foto».
+const KARTEN = ALLE_KARTEN.filter((k) => KARTEN_FOTOS[k.id]);
 
 // Die 7 Karten-Kategorien, von häufig bis selten. Farben stehen in css/style.css (.rar-<id>).
 const SELTENHEITEN = [

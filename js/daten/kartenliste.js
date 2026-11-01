@@ -1,5 +1,7 @@
-/* Alle Karten des Spiels.
+/* Alle 308 Karten aus der Kartenliste.
    Quelle: RailBase_Karten_Seltenheiten.docx (Stand 29. Oktober 2026), automatisch übernommen.
+   Im Spiel sind nur die Karten mit Foto (KARTEN in js/karten.js, Fotos in js/daten/kartenfotos.js).
+   Die anderen bleiben hier stehen und kommen ins Spiel, sobald sie ein Foto haben.
    id:         Karten-ID (RB = Basiskarte, V = Variante, S = Special)
    name/zusatz: Fahrzeug und Beiname, z. B. "RABe 501" und "Giruno"
    bereich:    Personen, Cargo, Infra, Rangier, Historisch, Spezial, Variante oder Special
@@ -7,7 +9,7 @@
    status:     "geplant" oder "bestellt", wenn das Fahrzeug noch nicht fährt
    basis:      bei Varianten und Special die zugehörige Basiskarte */
 
-const KARTEN = [
+const ALLE_KARTEN = [
   { id: 'RB001', bahn: 'SBB', name: "RABe 501", zusatz: "Giruno", bereich: 'Personen', seltenheit: 'legendary' },
   { id: 'RB002', bahn: 'SBB', name: "RABDe 500", zusatz: "ICN", bereich: 'Personen', seltenheit: 'epic' },
   { id: 'RB003', bahn: 'SBB', name: "RABe 502", zusatz: "FV-Dosto", bereich: 'Personen', seltenheit: 'epic' },
