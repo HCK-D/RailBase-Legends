@@ -1,17 +1,33 @@
 /* Erfolge: Seite unter Mehr (#erfolge, js/erfolge.js), Eintrag auf der Mehr-Seite und Titel im Konto.
    Abholen-Knopf, Balken, Stand und Belohnung kommen aus css/taeglich.css (.tb-abholen, .tb-balken, .tb-stand, .tb-lohn). */
 
-/* ---------- Eintrag auf der Mehr-Seite: wie die Tagesbelohnung, aber blau ---------- */
-.erf-eintrag {
-  border-color: rgba(74, 163, 255, .6) !important;
-  background: linear-gradient(135deg, rgba(74, 163, 255, .16), var(--surface)) !important;
-  text-decoration: none;
+/* ---------- Eintrag in der Liste auf der Mehr-Seite: rote Zahl, wenn Belohnungen bereit sind ---------- */
+.menu-list .erf-zahl {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  margin: 0 8px 0 auto;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: #D71920;
+  color: #fff;
+  font: 800 13px/1 "Source Sans 3", sans-serif;
+  box-shadow: 0 0 0 2px var(--surface), 0 2px 6px rgba(215, 25, 32, .45);
 }
 
-.erf-eintrag .tb-eintrag-icon {
-  background: linear-gradient(180deg, #7fb6ff, #2f6fd6);
-  color: #fff;
-  box-shadow: 0 3px 0 #1b4590;
+.menu-list .erf-zahl[hidden] {
+  display: none;
+}
+
+.menu-list .erf-zahl.neu {
+  animation: erf-zahl-hops .6s var(--spring, ease-out);
+}
+
+@keyframes erf-zahl-hops {
+  0% { scale: .3; }
+  60% { scale: 1.25; }
+  100% { scale: 1; }
 }
 
 /* ---------- Kopf: wie viele geschafft ---------- */

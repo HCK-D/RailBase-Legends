@@ -28,7 +28,7 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 | `css/style.css` | alles (Farben, Schriften, Abstände, Animationen, Layout) |
 | `index.html` | Aufbau, Klassen, Texte, Icons, neue Elemente – aber **IDs und `data-*`-Attribute behalten** (siehe unten) |
 | `js/karten.js` → Funktionen `karteHtml()` und `rueckseiteHtml()` | Aufbau der Karten-Vorderseite und -Rückseite |
-| `css/karten.css` | Aussehen der Karten-Vorderseite (Rahmen je Seltenheit, Laschen, Bild-Szene, Bahn-Chip, Flagge). Die Zug-Zeichnungen stehen als `<symbol>` in `js/karten.js` (`SZENE_SPRITE`), die Bahn-Farben in `BAHN_FARBE`. Klassen `.karte`, `.rar-*`, `.fehlt`, `.k-glanz`, `.k-anzahl` und `data-karte` behalten |
+| `css/karten.css` | Aussehen der Karten-Vorderseite nach dem Entwurf «Sammel Karten» (Rahmen mit schrägen Ecken, Nummer- und Seltenheits-Lasche, Foto über die ganze Karte, schräges Feld mit Bahn, Name und Fahrzeug, Flaggen-Ecke) und die Effekte je Seltenheit (`.k-fx`). Farben je Seltenheit über `--rahmen`, `--k-akzent`, `--k-lasche`, `--k-feld`, `--k-name`, `--k-unter`. Die Bahn-Farben stehen in `BAHN_FARBE` (`js/karten.js`). Klassen `.karte`, `.rar-*`, `.fehlt`, `.k-glanz`, `.k-anzahl` und `data-karte` behalten |
 | `assets/` | neue Bilder (am besten `.webp`) |
 
 ## Was NICHT geändert werden darf
@@ -113,8 +113,9 @@ Sonstiges: `app`, `hinweis`
 - Gespeichert in `app.daten.erfolge` (`geschafft`, `abgeholt`, `zaehler`, siehe `store.js`), der gewählte Titel in `app.daten.titel`.
   Eine geschaffte Stufe bleibt geschafft, auch wenn der Wert später sinkt.
 - Seite `#erfolge`: `erf-anzahl`, `erf-bereit`, `erf-balken`, `erf-filter` (`button[data-gruppe]` mit `aria-pressed`),
-  `erf-liste` (`li.erf.bereit|offen|geheim|fertig`, `[data-abholen]`, `[data-ziel]`). Eintrag auf der Mehr-Seite:
-  `erf-oeffnen`, `erf-eintrag-text`. Aussehen: `css/erfolge.css`.
+  `erf-liste` (`li.erf.bereit|offen|geheim|fertig`, `[data-abholen]`, `[data-ziel]`). Eintrag in der Liste der Mehr-Seite
+  (nach «Rangliste»): `erf-oeffnen`, daneben die rote Zahl `erf-eintrag-text` (Belohnungen zum Abholen, Klasse `neu` = Hüpfer).
+  Aussehen: `css/erfolge.css`.
 
 ## Freunde und Geschenke
 
@@ -129,13 +130,13 @@ Sonstiges: `app`, `hinweis`
 
 | Klasse | Name | Farbe | Gestaltung |
 | --- | --- | --- | --- |
-| `.rar-common` | Common | Grau | schlichte Fahrzeugkarte |
-| `.rar-uncommon` | Uncommon | Grün | farbiger Rahmen |
-| `.rar-rare` | Rare | Blau | Glanz und Landschaftsmotiv |
-| `.rar-epic` | Epic | Violett | holografische Akzente |
-| `.rar-mythic` | Mythic | Rot und Kupfer | aufwendiges eigenes Motiv |
-| `.rar-legendary` | Legendary | Gold | Goldrahmen, bildfüllende Illustration |
-| `.rar-special` | Special | Prismatisch und Schwarz | exklusive Komposition, besonderer Rahmen |
+| `.rar-common` | Common | Grau | Silberrahmen, helles Feld, keine Effekte |
+| `.rar-uncommon` | Uncommon | Grün | grünes Feld, sanfter Lichtstreifen |
+| `.rar-rare` | Rare | Blau | dunkelblaues Feld, blauer Lichtstreifen, Lichtpunkte |
+| `.rar-epic` | Epic | Violett | dunkles Feld, Holo-Streifen, violetter Schimmer, funkelnde Sterne |
+| `.rar-mythic` | Mythic | Rot und Kupfer | schwarzes Feld, atmende Glut am Rand, aufsteigende Funken |
+| `.rar-legendary` | Legendary | Gold | Goldrahmen mit wanderndem Licht, helles Feld, Gold-Streifen, Gold-Glitzer |
+| `.rar-special` | Special | Prismatisch und Schwarz | vorerst Regenbogen-Rahmen und Regenbogen-Streifen; eigenes Design kommt später |
 
 Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bereich, Seltenheit.
 

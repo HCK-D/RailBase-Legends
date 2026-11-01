@@ -414,10 +414,18 @@ const Erfolge = (() => {
     pruefe();
     const anzahl = ALLE_STUFEN.filter((x) => geschafft(x.key)).length;
     const offen = ALLE_STUFEN.filter((x) => bereit(x.key)).length;
-    $('erf-eintrag-text').textContent = offen
-      ? `${offen} Belohnung${offen > 1 ? 'en' : ''} bereit zum Abholen!`
-      : `${anzahl} von ${ALLE_STUFEN.length} geschafft`;
-    $('erf-oeffnen').classList.toggle('bereit', offen > 0);
+    // Mehr-Seite: rote Zahl neben «Erfolge», sobald etwas zum Abholen bereit ist
+    const zahl = $('erf-eintrag-text');
+    if (zahl.textContent !== String(offen)) {
+      zahl.textContent = offen;
+      zahl.classList.remove('neu');
+      void zahl.offsetWidth; // Hüpfer neu starten, wenn die Zahl wächst
+      if (offen) zahl.classList.add('neu');
+    }
+    zahl.hidden = !offen;
+    $('erf-oeffnen').setAttribute('aria-label', offen
+      ? `Erfolge, ${offen} Belohnung${offen > 1 ? 'en' : ''} bereit`
+      : `Erfolge, ${anzahl} von ${ALLE_STUFEN.length} geschafft`);
     zeichneTitel();
     if (app.ansicht === 'erfolge') zeichneSeite(anzahl, offen);
   }

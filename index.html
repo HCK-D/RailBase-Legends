@@ -15,7 +15,7 @@
   <script>(function(){var t='dark';try{t=localStorage.getItem('sk-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}document.documentElement.setAttribute('data-theme',t)})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,800;0,900;1,900&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/schaltflaechen.css">
   <link rel="stylesheet" href="css/punkte.css">
@@ -50,9 +50,7 @@
   <symbol id="i-teilen" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H5.5A1.5 1.5 0 0 0 4 12.5v7A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5H18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   <symbol id="i-links" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-laden" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19.5h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
-  <symbol id="i-rechts" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-pokal" viewBox="0 0 24 24"><path d="M7 3.5h10v5.5a5 5 0 0 1-10 0z" fill="currentColor"/><path d="M7 5.5H4.5V7a3.2 3.2 0 0 0 3.2 3.2M17 5.5h2.5V7a3.2 3.2 0 0 1-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.6 13.6h2.8v3.4h-2.8zM7.5 17.5h9v3h-9z" fill="currentColor"/></symbol>
-</svg>
+  <symbol id="i-rechts" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
 
 <div class="handy">
 
@@ -352,12 +350,6 @@
         <span class="tb-eintrag-txt"><b>Tagesbelohnung und Aufgaben</b><small id="tb-eintrag-text"></small></span>
         <svg class="tb-eintrag-pfeil" width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg>
       </button>
-      <!-- Erfolge: eigene Seite (#erfolge, js/erfolge.js) -->
-      <a class="panel tb-eintrag erf-eintrag" id="erf-oeffnen" href="#erfolge">
-        <span class="tb-eintrag-icon" aria-hidden="true"><svg width="26" height="26"><use href="#i-pokal"/></svg></span>
-        <span class="tb-eintrag-txt"><b>Erfolge</b><small id="erf-eintrag-text"></small></span>
-        <svg class="tb-eintrag-pfeil" width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg>
-      </a>
       <!-- App für Android: APK aus PWABuilder in download/. Auf dem iPhone Hinweis auf Safari (js/app.js),
            in der installierten App ausgeblendet (css/taeglich.css) -->
       <a class="panel tb-eintrag app-laden" id="app-laden" href="download/railbase-legends.apk" download="RailBase-Legends.apk">
@@ -382,6 +374,8 @@
         <li><a href="#mehr" id="bild-info-knopf" role="button" aria-haspopup="dialog"><span>Bildnachweise</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Tauschen</span><small>bald</small></li>
         <li><span>Rangliste</span><small>bald</small></li>
+        <!-- Erfolge (#erfolge, js/erfolge.js): rote Zahl = Belohnungen zum Abholen -->
+        <li><a href="#erfolge" id="erf-oeffnen"><span>Erfolge</span><b class="erf-zahl" id="erf-eintrag-text" hidden></b><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Regeln und Chancen</span><small>bald</small></li>
         <li><span>Feedback an die Beta</span><small>bald</small></li>
       </ul>

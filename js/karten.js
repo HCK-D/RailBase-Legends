@@ -294,8 +294,10 @@ function fotoNachweisHtml(id) {
   return `Foto: ${link(f.quelle, f.foto)} · ${link(f.lizenzUrl, f.lizenz)} · zugeschnitten`;
 }
 
-// Vorderseite einer Karte: Rahmen in der Farbe der Seltenheit, oben zwei Laschen
-// (Nummer und Seltenheit), grosses Bild, unten Bahn, Name, Fahrzeug und Schweizer Flagge.
+// Vorderseite einer Karte (Design «Sammel Karten», css/karten.css): Rahmen mit schrägen Ecken in der Farbe
+// der Seltenheit, Foto über die ganze Karte, oben links die Nummer, oben rechts die Seltenheit,
+// unten ein schräges Feld mit Bahn, Name und Fahrzeug, rechts unten die Schweizer Flagge.
+// k-fx: Effekte der Seltenheit (Lichtstreifen, Funkeln, Glut), nur CSS.
 // optionen.anzahl: wie oft man die Karte hat (Album), optionen.fehlt: noch nicht gefunden
 function karteHtml(id, optionen = {}) {
   const k = karteVonId(id);
@@ -333,6 +335,7 @@ function karteHtml(id, optionen = {}) {
           <p class="k-unter">${esc(titel.klein)}</p>
         </div>
         <span class="k-flagge" aria-hidden="true"></span>
+        <span class="k-fx" aria-hidden="true"><i></i></span>
       </div>
       <div class="k-glanz" aria-hidden="true"></div>
     </article>`;

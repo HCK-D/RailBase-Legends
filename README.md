@@ -44,9 +44,11 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 - Pack öffnen: Pack wackelt und reisst auf, dann kommen die 5 Karten einzeln
   (tippen = aufdecken, wischen oder tippen = nächste Karte), am Schluss alle nebeneinander
 - 7 Karten-Kategorien: Common, Uncommon, Rare, Epic, Mythic, Legendary, Special
-- Karten-Skizze (Platzhalter-Design) mit Nummer, Kategorie, Bild, Name und Werten
+- Karten-Design nach dem Entwurf «Sammel Karten» (`css/karten.css`): Nummer und Seltenheit oben, Foto über die
+  ganze Karte, unten Bahn, Name und Fahrzeug. Effekte je Seltenheit: Lichtstreifen (Uncommon, Rare),
+  Holo-Schimmer und Sterne (Epic), Glut und Funken (Mythic), Gold-Glitzer (Legendary). Special bekommt später ein eigenes Design.
 - Album mit allen gezogenen Karten, Filter nach Kategorie
-- **Erfolge** (Mehr → Erfolge, `js/erfolge.js`): 34 Erfolge mit 61 Stufen in 6 Gruppen (Sammeln, Bahnen,
+- **Erfolge** (Mehr → Erfolge, mit roter Zahl, wenn Belohnungen bereit sind; `js/erfolge.js`): 34 Erfolge mit 61 Stufen in 6 Gruppen (Sammeln, Bahnen,
   Packs, Treue, Freunde, Geheim). Jede Stufe hat eine Belohnung (RB Coins, Rubine oder ein Pack),
   grosse Erfolge zusätzlich einen Titel, der im Konto unter dem Namen steht. Der Fortschritt kommt aus dem
   Spielstand, also zählt auch, was man vorher schon gesammelt hat. Ziele und Belohnungen sind Platzhalter.

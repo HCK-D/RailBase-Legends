@@ -1,139 +1,153 @@
-/* ---------- Karten-Design ----------
-   Aufbau (js/karten.js, karteHtml): Rahmen in der Farbe der Seltenheit, helle Innenfläche,
-   oben links die Nummer und oben rechts die Seltenheit als Laschen, die ins Bild greifen,
-   grosses Bild (Alpen-Foto, Bahndamm, Fahrleitung, Zug), unten Bahn, Name, Fahrzeug und Flagge.
+/* ---------- Karten-Design «Sammel Karten» ----------
+   Aufbau (js/karten.js, karteHtml): Rahmen mit schrägen Ecken in der Farbe der Seltenheit, Foto über die
+   ganze Karte, oben links die Nummer (schwarze Lasche), oben rechts die Seltenheit, unten ein schräges Feld
+   mit Bahn, Name und Fahrzeug, rechts unten die Schweizer Flagge. Dazu Effekte je Seltenheit (.k-fx).
+   Special bekommt später ein eigenes Design; bis dahin der Regenbogen-Rahmen.
    Diese Datei kommt zuletzt und ersetzt die älteren Karten-Regeln in style.css.
-   1cqw = 1 % der Kartenbreite. */
+   1cqw = 1 % der Kartenbreite, die Karte ist 100 × 140 cqw (5:7). */
 
 .karte {
-  --k-tinte: #1d2125;
-  --flaeche: color-mix(in srgb, var(--rar) 7%, #fbfbfc);
-  --lasche-r: 2.8cqw;
-  --zug: #f2f3f4;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: 2.2cqw;
-  border: 0;
-  border-radius: 5.5cqw;
-  background: var(--rahmen, var(--rar));
-  box-shadow:
-    inset 0 0 0 .35cqw rgba(255, 255, 255, .5),
-    0 1.6cqw 4cqw rgba(0, 0, 0, .28);
-}
-
-/* Rahmen je Seltenheit: Metall-Verlauf in der Kategorie-Farbe */
-.karte.rar-common { --rahmen: linear-gradient(140deg, #f1f3f5, #a9b2ba 28%, #f7f8f9 50%, #9ca5ae 74%, #e3e7ea); }
-.karte.rar-uncommon { --rahmen: linear-gradient(140deg, #8fe0ad, #2e9e5b 30%, #b4ecc8 52%, #21804a 76%, #6fd093); }
-.karte.rar-rare { --rahmen: linear-gradient(140deg, #9cc0ff, #2f6fd6 30%, #c4dbff 52%, #2252a8 76%, #78a6f3); }
-.karte.rar-epic { --rahmen: linear-gradient(140deg, #d7b0ff, #8a3fd1 30%, #ead5ff 52%, #6526a3 76%, #b67ff0); }
-.karte.rar-mythic { --rahmen: linear-gradient(140deg, #ff9c86, #c2402a 28%, #f0b07a 50%, #b87333 70%, #7a2314); }
-.karte.rar-legendary { --rahmen: linear-gradient(140deg, #fff3c4, #d4a017 28%, #fff8dc 48%, #b8860b 70%, #f6d365); }
-.karte.rar-special {
-  --flaeche: #fbfaf7;
-  border-color: transparent;
-  /* Verlauf beginnt und endet gleich, so läuft er ohne Kante im Kreis */
-  background: linear-gradient(90deg, #FF5F6D, #FFC371, #47E891, #4FACFE, #B06AB3, #FF5F6D) 0 0 / 300% 100%;
-  animation: schillern 6s linear infinite;
-}
-
-/* Licht im Bild: je seltener, desto besonderer die Stimmung */
-.karte.rar-rare { --k-licht: linear-gradient(180deg, rgba(80, 150, 255, .22), transparent 55%); }
-.karte.rar-epic { --k-licht: linear-gradient(180deg, rgba(140, 60, 230, .32), rgba(255, 120, 200, .08) 45%, transparent 70%); }
-.karte.rar-mythic { --k-licht: linear-gradient(180deg, rgba(255, 110, 50, .42), rgba(200, 60, 40, .12) 55%, transparent 80%); }
-.karte.rar-legendary { --k-licht: radial-gradient(circle at 78% 14%, rgba(255, 236, 150, .85), rgba(255, 196, 70, .3) 30%, transparent 62%); }
-.karte.rar-special { --k-licht: linear-gradient(90deg, rgba(255, 95, 109, .32), rgba(255, 195, 113, .2), rgba(71, 232, 145, .26), rgba(79, 172, 254, .32), rgba(176, 106, 179, .32), rgba(255, 95, 109, .32)); }
-
-/* Zugfarbe: Triebzüge weiss mit Bahn-Streifen, Loks in der Bahn-Farbe,
-   Rangier- und Bauzüge gelb, historische Fahrzeuge dunkelgrün im alten Foto */
-.karte.zug-lok { --zug: var(--bahn); }
-/* der Container-Wagen hinter der Lok nur bei Cargo-Karten */
-.karte { --fracht: none; }
-.karte.k-cargo { --fracht: inline; }
-.karte.zug-rangier { --zug: #f0b323; }
-.karte.k-alt { --zug: #4e6a3e; }
-
-/* ---------- Innenfläche ---------- */
-.k-flaeche {
-  position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-  padding: 2cqw;
-  border-radius: 3.8cqw;
-  background: var(--flaeche);
-  box-shadow: 0 0 0 .3cqw rgba(0, 0, 0, .12);
-}
-
-/* ---------- Bild ---------- */
-.k-bild {
+  /* Umriss mit schrägen Ecken: aussen (Rahmen) und innen (Foto und Feld) */
+  --k-umriss: polygon(4.2cqw 0, calc(100% - 4.2cqw) 0, 100% 4.2cqw, 100% calc(100% - 4.2cqw),
+    calc(100% - 4.2cqw) 100%, 4.2cqw 100%, 0 calc(100% - 4.2cqw), 0 4.2cqw);
+  --k-umriss-innen: polygon(3.2cqw 0, calc(100% - 3.2cqw) 0, 100% 3.2cqw, 100% calc(100% - 3.2cqw),
+    calc(100% - 3.2cqw) 100%, 3.2cqw 100%, 0 calc(100% - 3.2cqw), 0 3.2cqw);
+  /* Farben je Seltenheit (unten überschrieben): Akzent, heller Akzent, Lasche, Feld, Name, Unterzeile */
+  --k-akzent: #9aa3ad;
+  --k-akzent-2: #f4f6f8;
+  --k-lasche: linear-gradient(90deg, #7b848d, #a9b1b9);
+  --k-feld: linear-gradient(180deg, #fdfdfd, #eceff2);
+  --k-name: #15171a;
+  --k-unter: #59616a;
+  --k-status: #a35d00;
   position: relative;
   display: block;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  isolation: isolate;
+  padding: 0;
+  overflow: visible;
   border: 0;
-  border-radius: 3cqw;
-  background: #8fb4d4;
-  color: inherit;
+  border-radius: 0;
+  background: none;
+  color: var(--k-name);
+  /* nur unten ein weicher Schatten, damit er nicht über die schrägen Ecken hinausragt */
+  box-shadow: 0 2.4cqw 3cqw -1.8cqw rgba(0, 0, 0, .4);
 }
 
-.karte.rar-special .k-bild {
-  background: #8fb4d4;
-  animation: none;
-}
-
-/* das Alpen-Foto, bei jeder Karte ein anderer Ausschnitt (--bx) */
-.k-bild::before {
+/* Rahmen: Metall-Verlauf in der Farbe der Seltenheit */
+.karte::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
-  clip-path: none;
-  background: var(--welt) var(--bx, 50%) 18% / auto 145% no-repeat;
-}
-
-.karte.k-alt .k-bild::before {
-  filter: sepia(.85) saturate(.7) contrast(.95);
-}
-
-/* Lichtstimmung der Seltenheit */
-.k-bild::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: var(--k-licht, none);
+  clip-path: var(--k-umriss);
+  background: var(--rahmen);
   pointer-events: none;
 }
 
-.karte.rar-special .k-bild::after {
-  background-size: 300% 100%;
-  animation: schillern 8s linear infinite;
+.karte.rar-common {
+  --rahmen: linear-gradient(140deg, #f4f6f7, #a7b0b8 28%, #fafbfb 50%, #98a1aa 74%, #e6e9ec);
 }
 
-.k-szene {
+.karte.rar-uncommon {
+  --rahmen: linear-gradient(140deg, #8fe0ad, #2e9e5b 30%, #b4ecc8 52%, #21804a 76%, #6fd093);
+  --k-akzent: #20a058;
+  --k-akzent-2: #9ff0c0;
+  --k-lasche: linear-gradient(90deg, #12884a, #2fbf6c);
+  --k-feld: linear-gradient(180deg, #f4fbf7, #e2f3e9);
+  --k-name: #111613;
+  --k-unter: #46524b;
+}
+
+.karte.rar-rare {
+  --rahmen: linear-gradient(140deg, #9cc0ff, #2f6fd6 30%, #c4dbff 52%, #2252a8 76%, #78a6f3);
+  --k-akzent: #2f7cf6;
+  --k-akzent-2: #9cc8ff;
+  --k-lasche: linear-gradient(90deg, #1a52d0, #3d8bff);
+  --k-feld: linear-gradient(180deg, #15284f, #0a1530);
+  --k-name: #fff;
+  --k-unter: #cfe0ff;
+  --k-status: #ffc46b;
+}
+
+.karte.rar-epic {
+  --rahmen: linear-gradient(140deg, #d7b0ff, #8a3fd1 30%, #ead5ff 52%, #6526a3 76%, #b67ff0);
+  --k-akzent: #9b4dff;
+  --k-akzent-2: #dcc0ff;
+  --k-lasche: linear-gradient(90deg, #6a28cc, #a65fff);
+  --k-feld: linear-gradient(180deg, #1f1830, #120d1b);
+  --k-name: #fff;
+  --k-unter: #ddd0ff;
+  --k-status: #ffc46b;
+}
+
+.karte.rar-mythic {
+  --rahmen: linear-gradient(140deg, #ffb18a, #c2402a 28%, #f6b07a 50%, #b85a24 70%, #7a2314);
+  --k-akzent: #e8622a;
+  --k-akzent-2: #ffb47e;
+  --k-lasche: linear-gradient(90deg, #b3401b, #f28c3e);
+  --k-feld: linear-gradient(180deg, #1e1513, #0e0a09);
+  --k-name: #fff;
+  --k-unter: #eadfd8;
+  --k-status: #ffc46b;
+}
+
+.karte.rar-legendary {
+  --rahmen: linear-gradient(140deg, #fff3c4, #d4a017 28%, #fff8dc 48%, #b8860b 70%, #f6d365);
+  --k-akzent: #d4a017;
+  --k-akzent-2: #ffe28c;
+  --k-lasche: linear-gradient(90deg, #c38f0c, #f2c94c);
+  --k-feld: linear-gradient(180deg, #fffaf0, #f4ead1);
+  --k-name: #17140c;
+  --k-unter: #5d5646;
+}
+
+/* Special: eigenes Design kommt später. Bis dahin Regenbogen-Rahmen und dunkles Feld */
+.karte.rar-special {
+  --rahmen: linear-gradient(90deg, #FF5F6D, #FFC371, #47E891, #4FACFE, #B06AB3, #FF5F6D) 0 0 / 300% 100%;
+  --k-akzent: #b06ab3;
+  --k-akzent-2: #8fd3ff;
+  --k-lasche: linear-gradient(90deg, #FF5F6D, #FFC371, #47E891, #4FACFE, #B06AB3);
+  --k-feld: linear-gradient(180deg, #1b1c27, #0e0f16);
+  --k-name: #fff;
+  --k-unter: #e6e6f0;
+  --k-status: #ffc46b;
+  border-color: transparent;
+  background: none;
+  animation: none;
+}
+
+.karte.rar-special::before {
+  animation: schillern 6s linear infinite;
+}
+
+/* ---------- Innenfläche: Foto und Feld, mit schrägen Ecken ---------- */
+.k-flaeche {
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  inset: 1.5cqw;
+  z-index: 1;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  clip-path: var(--k-umriss-innen);
+  border-radius: 0;
+  background: #0d0f12;
+  box-shadow: none;
+}
+
+/* ---------- Foto: oben über die ganze Breite, unten liegt das Feld darüber ---------- */
+.k-bild {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   width: 100%;
-  height: 100%;
+  height: 84%;
+  overflow: hidden;
+  isolation: isolate;
+  border: 0;
+  border-radius: 0;
+  background: #8fb4d4;
 }
 
-/* etwa jeder zweite Zug fährt nach links */
-.karte.k-spiegel .k-szene {
-  transform: scaleX(-1);
-}
-
-.karte.k-alt .k-szene {
-  filter: sepia(.45) saturate(.85);
-}
-
-/* Foto von Railbase.ch statt Zeichnung (js/daten/kartenfotos.js): füllt das ganze Bild,
-   das Alpen-Foto dahinter fällt weg. Das Licht der Seltenheit (::after) liegt etwas schwächer darüber. */
 .k-foto {
   position: absolute;
   inset: 0;
@@ -146,99 +160,160 @@
   user-select: none;
 }
 
-.karte.k-mit-foto .k-bild::before {
+.karte.k-mit-foto .k-bild::before,
+.karte.k-mit-foto .k-bild::after {
   content: none;
 }
 
-.karte.k-mit-foto .k-bild::after {
-  opacity: .75;
+/* Karten ohne Foto (im Spiel gibt es keine mehr): Alpen-Foto mit gezeichnetem Zug */
+.k-bild::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  clip-path: none;
+  background: var(--welt) var(--bx, 50%) 18% / auto 145% no-repeat;
 }
 
-/* ---------- Laschen oben: Nummer links, Seltenheit rechts ---------- */
+.k-szene {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.karte.k-spiegel .k-szene {
+  transform: scaleX(-1);
+}
+
+/* ---------- Oben links: Nummer auf schwarzer Lasche, daneben ein schmaler Streifen ---------- */
 .k-lasche {
   position: absolute;
-  top: 2cqw;
-  z-index: 3;
+  top: 0;
+  z-index: 4;
   display: flex;
   align-items: center;
-  height: 8.6cqw;
-  background: var(--flaeche);
+  height: 11cqw;
+  background: none;
 }
 
-.k-lasche-l {
-  left: 2cqw;
-  padding: 0 2.6cqw 0 1.6cqw;
-  border-bottom-right-radius: var(--lasche-r);
-}
-
-.k-lasche-r {
-  right: 2cqw;
-  padding: 0 1.2cqw 0 2cqw;
-  border-bottom-left-radius: var(--lasche-r);
-}
-
-/* runde Übergänge zwischen Lasche und Bild */
 .k-lasche::before,
 .k-lasche::after {
   content: "";
   position: absolute;
-  width: var(--lasche-r);
-  height: var(--lasche-r);
+  top: 0;
+  bottom: 0;
+  z-index: -1;
   pointer-events: none;
 }
 
-.k-lasche-l::before { top: 0; left: 100%; }
-.k-lasche-l::after { top: 100%; left: 0; }
-.k-lasche-l::before,
-.k-lasche-l::after {
-  background: radial-gradient(circle at 100% 100%, transparent calc(var(--lasche-r) - .3px), var(--flaeche) var(--lasche-r));
+.k-lasche-l {
+  left: 0;
+  padding: .4cqw 7.6cqw 0 4.6cqw;
 }
 
-.k-lasche-r::before { top: 0; right: 100%; }
-.k-lasche-r::after { top: 100%; right: 0; }
-.k-lasche-r::before,
-.k-lasche-r::after {
-  background: radial-gradient(circle at 0 100%, transparent calc(var(--lasche-r) - .3px), var(--flaeche) var(--lasche-r));
+.k-lasche-l::before {
+  left: 0;
+  right: 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 4cqw) 100%, 0 100%);
+  background: linear-gradient(180deg, #26292e, #0b0c0e);
+}
+
+.k-lasche-l::after {
+  left: calc(100% - 2.8cqw);
+  width: 6cqw;
+  clip-path: polygon(4cqw 0, 5.6cqw 0, 1.6cqw 100%, 0 100%);
+  background: var(--k-akzent-2);
 }
 
 .k-nr {
-  font: 800 5.8cqw/1 "Barlow Condensed", sans-serif;
-  letter-spacing: .04em;
-  color: #2a2f35;
-}
-
-.k-rar {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.3cqw;
-  padding: 1.3cqw 2.6cqw 1.3cqw 2cqw;
-  border-radius: 99px;
-  background: var(--rar-bild, var(--rar));
   color: #fff;
-  font: 700 4.8cqw/1 "Barlow Condensed", sans-serif;
-  letter-spacing: .04em;
+  font: italic 800 7.6cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .02em;
+}
+
+/* ---------- Oben rechts: Seltenheit auf farbiger Lasche, davor ein Streifen ---------- */
+.k-lasche-r {
+  right: 0;
+  height: 12cqw;
+  padding: .4cqw 4.6cqw 0 10.4cqw;
+}
+
+.k-lasche-r::before {
+  left: 4.4cqw;
+  right: 0;
+  clip-path: polygon(4.4cqw 0, 100% 0, 100% 100%, 0 100%);
+  background: var(--k-lasche);
+}
+
+.k-lasche-r::after {
+  left: 0;
+  width: 6.4cqw;
+  clip-path: polygon(4.4cqw 0, 6.2cqw 0, 1.8cqw 100%, 0 100%);
+  background: var(--k-akzent);
+}
+
+.karte.rar-special .k-lasche-r::before {
+  background-size: 300% 100%;
+  animation: schillern 6s linear infinite;
+}
+
+/* :not(#_) hebt die Regeln über ältere Regeln für .k-rar und «#v-album .rar-stein» */
+.k-rar:not(#_) {
+  display: inline;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: #fff;
+  font: italic 800 8cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .01em;
   text-transform: none;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+  text-shadow: 0 .3cqw .9cqw rgba(0, 0, 0, .3);
 }
 
-/* :not(#_) hebt die Regel über «#v-album .rar-stein» */
 .k-rar .rar-stein:not(#_) {
-  width: 2.6cqw;
-  height: 2.6cqw;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 1.4cqw rgba(255, 255, 255, .8);
-  transform: none;
-  animation: none;
+  display: none;
 }
 
-/* ---------- Text unten ---------- */
+/* ---------- Unten: schräges Feld mit Bahn, Name und Fahrzeug ---------- */
 .k-text {
-  position: relative;
-  display: grid;
-  gap: .9cqw;
+  position: absolute;
+  top: 64.5%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1cqw;
   min-width: 0;
-  padding: 2.6cqw 11cqw .8cqw 1cqw;
+  padding: 0 17cqw 5.4cqw 5cqw;
+}
+
+/* hinten der Akzent-Streifen, darüber das Feld; beide mit schräger Oberkante */
+.k-text::before,
+.k-text::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.k-text::before {
+  clip-path: polygon(0 1.6cqw, 100% 23.4cqw, 100% 100%, 0 100%);
+  background: var(--k-akzent);
+}
+
+.k-text::after {
+  clip-path: polygon(0 5cqw, 100% 25.6cqw, 100% 100%, 0 100%);
+  background:
+    linear-gradient(var(--k-akzent), var(--k-akzent)) 4cqw calc(100% - 2cqw) / 54% .8cqw no-repeat,
+    var(--k-feld);
 }
 
 .k-chips {
@@ -246,16 +321,18 @@
   align-items: center;
   gap: 1.4cqw;
   min-width: 0;
+  margin-bottom: .6cqw;
 }
 
 .k-bahn {
-  padding: .9cqw 2.2cqw;
-  border-radius: 1.4cqw;
+  padding: 1.1cqw 2.8cqw .9cqw;
+  border-radius: 1.6cqw;
   background: var(--bahn);
   color: #fff;
-  font: 800 4.8cqw/1 "Barlow Condensed", sans-serif;
-  letter-spacing: .05em;
+  font: italic 800 5.6cqw/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .03em;
   white-space: nowrap;
+  box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .22);
 }
 
 /* geplant oder bestellt */
@@ -265,7 +342,7 @@
   border: .35cqw solid currentColor;
   border-radius: 1.4cqw;
   background: none;
-  color: #a35d00;
+  color: var(--k-status);
   font: 700 3.8cqw/1 "Source Sans 3", sans-serif;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -275,14 +352,16 @@
 /* --zeichen = Länge des Namens: kurze Namen gross, lange kleiner, immer gleich hoch */
 .k-name {
   display: -webkit-box;
-  height: 10.6cqw;
+  max-width: 100%;
+  height: 12.4cqw;
   margin: 0;
+  padding-right: 1cqw;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
-  color: var(--k-tinte);
-  font: 800 clamp(5.6cqw, calc(150cqw / var(--zeichen, 8)), 10.6cqw) / 10.6cqw "Barlow Condensed", sans-serif;
-  letter-spacing: .005em;
+  color: var(--k-name);
+  font: italic 800 clamp(5.6cqw, calc(140cqw / var(--zeichen, 8)), 12.4cqw) / 12.4cqw "Barlow Condensed", sans-serif;
+  letter-spacing: 0;
   text-transform: uppercase;
   word-break: break-word;
 }
@@ -290,46 +369,306 @@
 /* sehr lange Namen: zwei kleine Zeilen in derselben Höhe */
 .k-name.sehr-lang {
   -webkit-line-clamp: 2;
-  font-size: 5.3cqw;
-  line-height: 5.3cqw;
+  font-size: 6.2cqw;
+  line-height: 6.2cqw;
 }
 
 .k-unter {
+  max-width: 66cqw;
   margin: 0;
   overflow: hidden;
-  color: #59616a;
-  font: 600 4.8cqw/1.15 "Source Sans 3", sans-serif;
+  color: var(--k-unter);
+  font: italic 700 6cqw/1.1 "Barlow Condensed", sans-serif;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* Schweizer Flagge unten rechts */
+/* ---------- Rechts unten: Schweizer Flagge in einer schrägen Ecke ---------- */
 .k-flagge {
   position: absolute;
-  right: 3.4cqw;
-  bottom: 3.6cqw;
-  width: 8cqw;
-  height: 8cqw;
-  border-radius: 1.5cqw;
-  background:
-    linear-gradient(#fff, #fff) center / 62% 19% no-repeat,
-    linear-gradient(#fff, #fff) center / 19% 62% no-repeat,
-    #da291c;
-  box-shadow: 0 .5cqw 1.2cqw rgba(0, 0, 0, .2);
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 34cqw;
+  height: 30cqw;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
 }
 
-/* wie oft man die Karte hat, unten rechts im Bild */
+.k-flagge::before,
+.k-flagge::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* Streifen in der Farbe der Seltenheit entlang der schrägen Kante */
+.k-flagge::before {
+  width: 100%;
+  height: 100%;
+  background: var(--k-akzent);
+}
+
+.k-flagge::after {
+  width: calc(100% - 4.6cqw);
+  height: calc(100% - 4cqw);
+  background:
+    linear-gradient(#fff, #fff) 15.6cqw 15.6cqw / 10.6cqw 3.4cqw no-repeat,
+    linear-gradient(#fff, #fff) 19.2cqw 12cqw / 3.4cqw 10.6cqw no-repeat,
+    linear-gradient(135deg, #ff3b30, #d4021b 60%, #a30014);
+}
+
+/* wie oft man die Karte hat: oben rechts unter der Seltenheit */
 .k-anzahl {
-  right: 2cqw;
-  bottom: 2cqw;
+  top: 13.5cqw;
+  right: 2.6cqw;
+  bottom: auto;
   z-index: 4;
   padding: 1.1cqw 2.6cqw;
   font-size: 6.2cqw;
 }
 
-/* Glanz liegt über der ganzen Karte, auch über dem Rahmen */
-.k-glanz {
-  border-radius: inherit;
+/* Glanz (Neigen mit dem Finger, Gross-Ansicht) liegt über der ganzen Karte, in ihrem Umriss */
+.karte .k-glanz,
+.karte::after {
+  border-radius: 0;
+  clip-path: var(--k-umriss);
+}
+
+/* Schatten nur unten (die schrägen Ecken vertragen keinen Rundum-Schatten) */
+.karten-grid .karte:hover,
+.karten-grid .karte:is(.rar-legendary, .rar-special, .rar-mythic):hover,
+.karten-grid .karte.neigt {
+  box-shadow: 0 4cqw 5cqw -2.4cqw rgba(0, 0, 0, .45);
+}
+
+.kv-karte .karte {
+  box-shadow: 0 9cqw 10cqw -5cqw rgba(0, 0, 0, .7);
+}
+
+.flip.hoch.offen .karte {
+  box-shadow: none;
+}
+
+/* ---------- Effekte je Seltenheit ----------
+   .k-fx liegt über Foto und Feld: ::before ist ein Lichtstreifen, ::after und das <i> darin sind
+   Funken, Glitzer oder Glut. Nur transform und opacity bewegen sich, das läuft auch auf dem Handy flüssig.
+   Noch nicht gefundene Karten haben keine Effekte; «Bewegung reduzieren» schaltet sie ab (style.css). */
+.k-fx,
+.k-fx i {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.k-fx::before,
+.k-fx::after,
+.k-fx i::before,
+.k-fx i::after {
+  content: none;
+  position: absolute;
+  pointer-events: none;
+}
+
+.karte.fehlt .k-fx {
+  display: none;
+}
+
+/* Lichtstreifen, der schräg über die Karte zieht und dann eine Pause macht */
+.k-fx::before {
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, var(--k-streifen, rgba(255, 255, 255, .4)), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: k-streifen var(--k-streifen-zeit, 6s) ease-in-out var(--k-streifen-start, 0s) infinite;
+}
+
+@keyframes k-streifen {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  38%, 100% { transform: translateX(300%) skewX(-18deg); }
+}
+
+/* Uncommon: ein sanfter Lichtstreifen */
+.karte.rar-uncommon .k-fx::before {
+  content: "";
+  --k-streifen: rgba(220, 255, 235, .3);
+  --k-streifen-zeit: 7.5s;
+}
+
+/* Rare: kräftiger blauer Lichtstreifen und ein paar blaue Lichtpunkte */
+.karte.rar-rare .k-fx::before {
+  content: "";
+  --k-streifen: rgba(190, 220, 255, .5);
+  --k-streifen-zeit: 5s;
+}
+
+.karte.rar-rare .k-fx::after {
+  content: "";
+  inset: 0;
+  background:
+    radial-gradient(circle at 16% 20%, #fff 0 .4cqw, rgba(120, 180, 255, .8) .7cqw, transparent 1.6cqw),
+    radial-gradient(circle at 82% 34%, #fff 0 .35cqw, rgba(120, 180, 255, .8) .6cqw, transparent 1.4cqw),
+    radial-gradient(circle at 60% 12%, #fff 0 .3cqw, rgba(120, 180, 255, .7) .55cqw, transparent 1.2cqw);
+  opacity: 0;
+  animation: k-funkeln 3.4s ease-in-out infinite;
+}
+
+/* Epic: schimmernder Holo-Streifen, violetter Schimmer und funkelnde Sterne */
+.karte.rar-epic .k-fx::before {
+  content: "";
+  width: 70%;
+  --k-streifen: rgba(255, 110, 210, .32);
+  --k-streifen-zeit: 5.5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 100, 210, .3), rgba(120, 220, 255, .32), rgba(190, 120, 255, .32), transparent);
+}
+
+.karte.rar-epic .k-fx i {
+  background: linear-gradient(125deg, rgba(160, 80, 255, .22), rgba(80, 200, 255, .08) 40%, rgba(255, 90, 200, .16) 70%, rgba(160, 80, 255, .2));
+  animation: k-atmen 3.2s ease-in-out infinite alternate;
+}
+
+.karte.rar-epic .k-fx::after,
+.karte.rar-epic .k-fx i::after {
+  content: "";
+  inset: 0;
+  opacity: 0;
+  animation: k-funkeln 2.8s ease-in-out infinite;
+}
+
+.karte.rar-epic .k-fx::after {
+  background:
+    radial-gradient(circle at 14% 18%, #fff 0 .45cqw, rgba(200, 140, 255, .85) .75cqw, transparent 1.8cqw),
+    radial-gradient(circle at 70% 26%, #fff 0 .4cqw, rgba(200, 140, 255, .85) .7cqw, transparent 1.6cqw),
+    radial-gradient(circle at 40% 52%, #fff 0 .3cqw, rgba(200, 140, 255, .8) .6cqw, transparent 1.3cqw),
+    radial-gradient(circle at 88% 60%, #fff 0 .35cqw, rgba(200, 140, 255, .8) .6cqw, transparent 1.4cqw);
+}
+
+.karte.rar-epic .k-fx i::after {
+  animation-delay: -1.4s;
+  background:
+    radial-gradient(circle at 28% 36%, #fff 0 .35cqw, rgba(150, 200, 255, .85) .65cqw, transparent 1.5cqw),
+    radial-gradient(circle at 58% 8%, #fff 0 .4cqw, rgba(255, 150, 230, .85) .7cqw, transparent 1.6cqw),
+    radial-gradient(circle at 80% 44%, #fff 0 .3cqw, rgba(150, 200, 255, .8) .6cqw, transparent 1.3cqw);
+}
+
+/* Mythic: Glut am Rand, die atmet, und Funken, die nach oben steigen */
+.karte.rar-mythic .k-fx i {
+  box-shadow:
+    inset 0 0 6cqw rgba(255, 90, 20, .5),
+    inset 0 -14cqw 16cqw -10cqw rgba(255, 130, 40, .45);
+  animation: k-atmen 2.4s ease-in-out infinite alternate;
+}
+
+.karte.rar-mythic .k-fx::before,
+.karte.rar-mythic .k-fx::after {
+  content: "";
+  top: 40%;
+  right: 0;
+  bottom: -10%;
+  left: 0;
+  width: auto;
+  opacity: 0;
+  transform: none;
+  animation: k-funken-steigen 3.6s linear infinite;
+}
+
+.karte.rar-mythic .k-fx::before {
+  background:
+    radial-gradient(circle at 12% 92%, #fff4c8 0 .45cqw, rgba(255, 140, 40, .9) .8cqw, transparent 1.5cqw),
+    radial-gradient(circle at 34% 98%, #ffe39a 0 .35cqw, rgba(255, 110, 30, .9) .7cqw, transparent 1.3cqw),
+    radial-gradient(circle at 58% 90%, #fff4c8 0 .4cqw, rgba(255, 140, 40, .9) .75cqw, transparent 1.4cqw),
+    radial-gradient(circle at 86% 96%, #ffe39a 0 .35cqw, rgba(255, 110, 30, .9) .7cqw, transparent 1.3cqw);
+}
+
+.karte.rar-mythic .k-fx::after {
+  animation-delay: -1.8s;
+  background:
+    radial-gradient(circle at 22% 96%, #ffe39a 0 .35cqw, rgba(255, 110, 30, .9) .7cqw, transparent 1.3cqw),
+    radial-gradient(circle at 48% 100%, #fff4c8 0 .4cqw, rgba(255, 140, 40, .9) .75cqw, transparent 1.4cqw),
+    radial-gradient(circle at 72% 94%, #ffe39a 0 .3cqw, rgba(255, 110, 30, .9) .6cqw, transparent 1.2cqw);
+}
+
+/* Legendary: goldener Lichtstreifen, Gold-Glitzer und ein Rahmen, über den Licht läuft */
+.karte.rar-legendary::before {
+  background-size: 220% 220%;
+  animation: k-rahmen-gold 5s ease-in-out infinite alternate;
+}
+
+.karte.rar-legendary .k-fx::before {
+  content: "";
+  --k-streifen: rgba(255, 236, 160, .6);
+  --k-streifen-zeit: 4.2s;
+}
+
+.karte.rar-legendary .k-fx::after,
+.karte.rar-legendary .k-fx i::before,
+.karte.rar-legendary .k-fx i::after {
+  content: "";
+  inset: 0;
+  opacity: 0;
+  animation: k-funkeln 2.4s ease-in-out infinite;
+}
+
+.karte.rar-legendary .k-fx::after {
+  background:
+    radial-gradient(circle at 12% 16%, #fff 0 .5cqw, rgba(255, 215, 90, .9) .85cqw, transparent 2cqw),
+    radial-gradient(circle at 74% 22%, #fff 0 .4cqw, rgba(255, 215, 90, .9) .75cqw, transparent 1.7cqw),
+    radial-gradient(circle at 44% 46%, #fff 0 .35cqw, rgba(255, 215, 90, .85) .65cqw, transparent 1.5cqw),
+    radial-gradient(circle at 90% 56%, #fff 0 .4cqw, rgba(255, 215, 90, .85) .7cqw, transparent 1.6cqw);
+}
+
+.karte.rar-legendary .k-fx i::before {
+  animation-delay: -.8s;
+  background:
+    radial-gradient(circle at 28% 30%, #fff 0 .4cqw, rgba(255, 200, 60, .9) .7cqw, transparent 1.6cqw),
+    radial-gradient(circle at 62% 10%, #fff 0 .45cqw, rgba(255, 200, 60, .9) .8cqw, transparent 1.8cqw),
+    radial-gradient(circle at 18% 62%, #fff 0 .3cqw, rgba(255, 200, 60, .85) .6cqw, transparent 1.3cqw);
+}
+
+.karte.rar-legendary .k-fx i::after {
+  animation-delay: -1.6s;
+  background:
+    radial-gradient(circle at 52% 32%, #fff 0 .35cqw, rgba(255, 225, 120, .9) .65cqw, transparent 1.5cqw),
+    radial-gradient(circle at 84% 8%, #fff 0 .3cqw, rgba(255, 225, 120, .9) .6cqw, transparent 1.4cqw),
+    radial-gradient(circle at 34% 58%, #fff 0 .4cqw, rgba(255, 225, 120, .85) .7cqw, transparent 1.6cqw);
+}
+
+/* Special: vorerst ein Regenbogen-Streifen (das eigene Design kommt später) */
+.karte.rar-special .k-fx::before {
+  content: "";
+  width: 70%;
+  --k-streifen-zeit: 5s;
+  background: linear-gradient(90deg, transparent, rgba(255, 95, 109, .35), rgba(255, 195, 113, .35), rgba(71, 232, 145, .35), rgba(79, 172, 254, .35), rgba(176, 106, 179, .35), transparent);
+}
+
+@keyframes k-funkeln {
+  0%, 100% { opacity: 0; transform: scale(.85); }
+  45% { opacity: 1; transform: scale(1); }
+  60% { opacity: .9; transform: scale(1.02); }
+}
+
+@keyframes k-atmen {
+  from { opacity: .45; }
+  to { opacity: 1; }
+}
+
+@keyframes k-funken-steigen {
+  0% { opacity: 0; transform: translateY(0); }
+  15% { opacity: 1; }
+  80% { opacity: .8; }
+  100% { opacity: 0; transform: translateY(-48cqw); }
+}
+
+@keyframes k-rahmen-gold {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 100%; }
 }
 
 /* ---------- Kartenrückseite ----------
