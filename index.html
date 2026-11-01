@@ -511,9 +511,13 @@
   <div class="kv-buehne" id="kv-buehne">
     <div class="kv-karte" id="kv-karte"></div>
   </div>
-  <p class="kv-info" id="kv-info"></p>
-  <!-- Fotonachweis (Fotograf und Lizenz), nur bei Karten mit Foto -->
-  <p class="kv-foto" id="kv-foto" hidden></p>
+  <!-- Doppelte Karte verwerten: zeigt, wie viele RB Coins es gibt. Ab 2 Stück aktiv, eine Karte bleibt immer im Album.
+       Fotograf und Lizenz stehen unter Mehr → Bildnachweise. -->
+  <button class="kv-verwerten" type="button" id="kv-verwerten">
+    <img class="muenze" src="assets/muenzen/gold-rund.png" alt="" aria-hidden="true">
+    <span class="kv-verwerten-txt"><b>Verwerten</b><small id="kv-verwerten-info"></small></span>
+    <b class="kv-verwerten-preis" id="kv-verwerten-preis"></b>
+  </button>
   <p class="kv-tipp">Bewege die Karte mit dem Finger</p>
   <button class="btn ghost op-close" type="button" id="kv-zu">Schliessen</button>
 </div>

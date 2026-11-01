@@ -586,15 +586,15 @@ function zeichneAlbum() {
 }
 
 // Eine doppelte Karte verwerten: eine Kopie geht weg, dafür gibt es RB Coins.
-// knopf: von dort fliegen die Münzen zur Anzeige oben
+// knopf: von dort fliegen die Münzen zur Anzeige oben. Gibt true zurück, wenn verwertet wurde.
 async function verwerteDoppelte(id, knopf) {
   const k = karteVonId(id);
   const preis = wertVon(id);
   const zweiOderMehr = () => app.daten.karten.filter((x) => x === id).length >= 2;
-  if (!zweiOderMehr()) return;
+  if (!zweiOderMehr()) return false;
   const frageText = `Doppelte Karte „${k.name}“ verwerten und dafür ${preis} RB Coins bekommen? Eine Karte bleibt in deinem Album.`;
-  if (!(await frage(frageText, `+${preis} RB Coins`))) return;
-  if (!zweiOderMehr()) return;
+  if (!(await frage(frageText, `+${preis} RB Coins`))) return false;
+  if (!zweiOderMehr()) return false;
   app.daten.karten.splice(app.daten.karten.indexOf(id), 1);
   app.daten.muenzen += preis;
   if (knopf && knopf.isConnected) Gefuehl.muenzFlug(knopf, MUENZ_BILD.muenzen, Math.min(8, 2 + Math.ceil(preis / 10)));
@@ -602,6 +602,7 @@ async function verwerteDoppelte(id, knopf) {
   Taeglich.zaehle('verwerten');
   aktualisiereAlles();
   zeigeHinweis(`+${preis} RB Coins für ${k.name}.`);
+  return true;
 }
 
 // ---------- Shop ----------
@@ -1028,6 +1029,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gesammelte Karte antippen: gross ansehen und mit dem Finger neigen
     const karte = !e.target.closest('button') && e.target.closest('.karte:not(.fehlt)');
     if (karte) Gefuehl.zeigeKarte(karte.dataset.karte, besitz()[karte.dataset.karte] || 0);
+  });
+  // Grossansicht: Knopf «Verwerten» (ab 2 gleichen Karten, sonst nur ein Hinweis)
+  $('kv-verwerten').addEventListener('click', async (e) => {
+    const knopf = e.currentTarget;
+    const id = knopf.dataset.id;
+    if ((besitz()[id] || 0) < 2) {
+      zeigeHinweis('Verwerten geht erst ab 2 gleichen Karten.');
+      return;
+    }
+    if (await verwerteDoppelte(id, knopf)) Gefuehl.zeigeVerwerten(id, besitz()[id] || 0);
   });
   // Album: kleine Info-Schaltfläche neben dem Titel öffnet die Erklärung
   const albumInfoZu = () => {

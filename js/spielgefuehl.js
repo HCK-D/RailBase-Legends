@@ -326,14 +326,22 @@ const Gefuehl = (() => {
     const s = seltenheitVon(k.seltenheit);
     $('kv-karte').innerHTML = karteHtml(id);
     $('kv-karte').className = `kv-karte ruht rar-${s.id}`;
-    $('kv-info').textContent = `${s.name} · ${k.bahn} · ${anzahl}× in deiner Sammlung · Verwerten: ${wertVon(id)} RB Coins`;
-    $('kv-foto').innerHTML = fotoNachweisHtml(id);
-    $('kv-foto').hidden = !fotoVon(id);
+    zeigeVerwerten(id, anzahl);
     $('kv').hidden = false;
     document.body.classList.add('op-offen');
     ton('flip');
     vibriere(8);
     $('kv-zu').focus({ preventScroll: true });
+  }
+
+  // Knopf «Verwerten» unter der Karte: Preis immer sichtbar, aktiv erst ab 2 Stück
+  function zeigeVerwerten(id, anzahl) {
+    const knopf = $('kv-verwerten');
+    knopf.dataset.id = id;
+    knopf.classList.toggle('gesperrt', anzahl < 2);
+    $('kv-verwerten-preis').textContent = `+${wertVon(id)}`;
+    $('kv-verwerten-info').textContent = anzahl < 2 ? 'ab 2 Karten' : `${anzahl}× in deiner Sammlung`;
+    knopf.setAttribute('aria-label', `Verwerten für ${wertVon(id)} RB Coins, ${anzahl}× in deiner Sammlung`);
   }
 
   function schliesseKarte() {
@@ -396,5 +404,5 @@ const Gefuehl = (() => {
     });
   }
 
-  return { init, ton, radTicks, vibriere, konfetti, banner, muenzFlug, insAlbum, zeigeKarte };
+  return { init, ton, radTicks, vibriere, konfetti, banner, muenzFlug, insAlbum, zeigeKarte, zeigeVerwerten };
 })();

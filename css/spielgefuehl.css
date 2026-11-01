@@ -271,30 +271,71 @@ body.pack-offen > .handy ::after {
   50% { background-position: 80% 70%, 90% 90%; }
 }
 
-.kv-info {
-  max-width: 100%;
-  margin: 0;
-  overflow-wrap: break-word;
-  color: #e8eef5;
-  font: 700 16px/1.3 "Barlow Condensed", sans-serif;
-  letter-spacing: .04em;
-  text-align: center;
+/* Knopf «Verwerten» unter der Karte: Münze, Text und Preis in Gold.
+   Mit nur einer Karte gesperrt (blasser), ein Tippen zeigt dann nur einen Hinweis. */
+.kv-verwerten {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 300px);
+  padding: 8px 18px 8px 10px;
+  border: 1px solid rgba(255, 211, 77, .6);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 211, 77, .2), rgba(255, 211, 77, .06));
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .2s var(--spring), border-color .2s, background .2s;
 }
 
-/* Fotonachweis unter der Karte: klein, Links unterstrichen */
-.kv-foto {
-  max-width: min(100%, 420px);
-  margin: -4px 0 0;
+.kv-verwerten:active {
+  transform: scale(.97);
+}
+
+.kv-verwerten .muenze {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+
+.kv-verwerten-txt {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kv-verwerten-txt b {
+  font: 800 19px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.kv-verwerten-txt small {
   color: #a9b6c4;
   font-size: 12px;
-  line-height: 1.35;
-  text-align: center;
-  overflow-wrap: anywhere;
 }
 
-.kv-foto a {
-  color: inherit;
-  text-decoration: underline;
+.kv-verwerten-preis {
+  flex: none;
+  color: #ffd34d;
+  font: 800 26px/1 "Barlow Condensed", sans-serif;
+}
+
+.kv-verwerten-preis::after {
+  content: " Coins";
+  font-size: 15px;
+  letter-spacing: .03em;
+}
+
+.kv-verwerten.gesperrt {
+  border-color: rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .05);
+  cursor: default;
+}
+
+.kv-verwerten.gesperrt :is(.muenze, .kv-verwerten-preis, b) {
+  opacity: .5;
 }
 
 .kv-tipp {
@@ -698,6 +739,21 @@ body.pack-offen > .handy ::after {
 /* Während des Aufladens tritt alles andere zurück */
 .opener :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {
   transition: opacity .35s ease;
+}
+
+/* Die Zeile unter der Karte («Tippen zum Aufdecken», «Doppelt · Rare: …») ist nicht zu sehen,
+   sie bleibt nur für Vorlese-Programme (aria-live) */
+.opener .op-hilfe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .opener.fx-laedt :is(.op-titel, .op-zaehler, .op-hilfe, .op-knoepfe) {

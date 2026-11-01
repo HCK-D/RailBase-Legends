@@ -91,7 +91,7 @@ Sonstiges: `app`, `hinweis`
 - `css/spielgefuehl.css`: das Aussehen dazu (Vorahnung auf der Kartenrückseite, Banner, Konfetti, Glanz, «Neu»-Sticker)
 - Ein/aus: Konto → «Töne und Vibration» (`ton-an`, gespeichert als `app.daten.ton`)
 - Neu gefundene Karten: `app.daten.ungesehen` (Sticker «Neu» und ganz oben im Album, bis man das Album verlässt)
-- IDs: `kv`, `kv-buehne`, `kv-karte`, `kv-info`, `kv-zu` (Gross-Ansicht), `op-stage`, `op-fortschritt`, `opf-level`,
+- IDs: `kv`, `kv-buehne`, `kv-karte`, `kv-verwerten`, `kv-verwerten-info`, `kv-verwerten-preis`, `kv-zu` (Gross-Ansicht), `op-stage`, `op-fortschritt`, `opf-level`,
   `opf-xp`, `opf-balken`, `opf-sammlung` (XP-Balken nach dem Öffnen), `st-balken`, `st-prozent` (Album-Fortschritt)
 
 ## Tägliche Belohnungen
@@ -134,8 +134,8 @@ Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bere
 Karten ohne Eintrag zeigen weiter die Zug-Zeichnung (`SZENE_SPRITE`).
 
 Die Fotos stammen fast alle aus Wikimedia Commons (CC BY, CC BY-SA, CC0, gemeinfrei). Die Lizenzen verlangen den
-Namen des Fotografen und die Lizenz: darum der Nachweis unter der Grossansicht (`#kv-foto`) und die Liste unter
-Mehr → Bildnachweise (`#bild-info`). **Beides muss bleiben.** Neue Fotos nur mit freier Lizenz, vom Besitzer (HCKD)
+Namen des Fotografen und die Lizenz: darum die Liste unter Mehr → Bildnachweise (`#bild-info`).
+**Sie muss bleiben** (unter der Karte selbst steht auf Wunsch des Besitzers kein Nachweis mehr). Neue Fotos nur mit freier Lizenz, vom Besitzer (HCKD)
 oder mit seiner Erlaubnis (`erlaubnis: true`, bisher Domino, Re 460, Re 420, Re 620 und Re 193).
 
 ## Bildschirmgrössen
