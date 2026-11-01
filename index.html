@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="css/spielgefuehl.css">
   <link rel="stylesheet" href="css/taeglich.css">
   <link rel="stylesheet" href="css/erfolge.css">
+  <link rel="stylesheet" href="css/tauschen.css">
   <link rel="stylesheet" href="css/karten.css">
 </head>
 <body>
@@ -321,6 +322,30 @@
     </div>
   </section>
 
+  <!-- ===== TAUSCHEN (über Mehr erreichbar, js/tauschen.js) ===== -->
+  <section class="view" id="v-tauschen" data-view="tauschen" hidden>
+    <div class="titel-block links">
+      <h1>Tauschen</h1>
+      <p>Doppelte Karten gegen Karten deiner Freunde: gleiche Seltenheit, 1 gegen 1.</p>
+    </div>
+    <div class="seite">
+      <div class="panel tausch-status" id="tausch-status">
+        <b id="tausch-status-titel"></b>
+        <p id="tausch-status-text"></p>
+        <button class="btn" type="button" id="tausch-neu" hidden>Neuer Tausch</button>
+      </div>
+      <h2 class="sam-h">Anfragen</h2>
+      <ul class="tausch-anfragen" id="tausch-anfragen"></ul>
+      <p class="tausch-leer" id="tausch-anfragen-leer">Keine Anfragen.</p>
+      <h2 class="sam-h">Deine Wunschliste</h2>
+      <ul class="karten-grid tausch-raster" id="tausch-wunsch"></ul>
+      <p class="tausch-leer" id="tausch-wunsch-leer">Tippe im Album auf eine fehlende Karte, dann kommt sie auf deine Wunschliste. Später sehen deine Freunde, was du suchst.</p>
+      <h2 class="sam-h">Deine Tausch-Karten</h2>
+      <ul class="karten-grid tausch-raster" id="tausch-doppelte"></ul>
+      <p class="tausch-leer" id="tausch-doppelte-leer">Noch keine doppelten Karten. Special-Karten kann man nicht tauschen.</p>
+    </div>
+  </section>
+
   <!-- ===== ERFOLGE (über Mehr erreichbar, js/erfolge.js) ===== -->
   <section class="view" id="v-erfolge" data-view="erfolge" hidden>
     <div class="titel-block links">
@@ -372,7 +397,8 @@
         <li><a href="#konto"><span>Konto und Design</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><a href="#freunde"><span>Freunde</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><a href="#mehr" id="bild-info-knopf" role="button" aria-haspopup="dialog"><span>Bildnachweise</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
-        <li><span>Tauschen</span><small>bald</small></li>
+        <!-- Tauschen (#tauschen, js/tauschen.js): rote Zahl = Anfragen an dich -->
+        <li><a href="#tauschen" id="tausch-oeffnen"><span>Tauschen</span><b class="erf-zahl" id="tausch-zahl" hidden></b><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Rangliste</span><small>bald</small></li>
         <!-- Erfolge (#erfolge, js/erfolge.js): rote Zahl = Belohnungen zum Abholen -->
         <li><a href="#erfolge" id="erf-oeffnen"><span>Erfolge</span><b class="erf-zahl" id="erf-eintrag-text" hidden></b><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
@@ -596,6 +622,20 @@
   </div>
 </div>
 
+<!-- ===== TAUSCH-FENSTER (js/tauschen.js): Freund wählen, Karte wählen, eigene Karte wählen, senden ===== -->
+<div class="info-fenster tausch-fenster" id="tausch-fenster" hidden role="dialog" aria-modal="true" aria-labelledby="tausch-titel">
+  <div class="info-box">
+    <p class="tausch-schritt" id="tausch-schritt"></p>
+    <h2 id="tausch-titel"></h2>
+    <p class="tausch-text" id="tausch-text"></p>
+    <div class="tausch-inhalt" id="tausch-inhalt"></div>
+    <div class="tausch-knoepfe">
+      <button class="btn ghost" type="button" id="tausch-zurueck">Abbrechen</button>
+      <button class="btn" type="button" id="tausch-senden" hidden>Anfrage senden</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== INFO ZUM ALBUM ===== -->
 <div class="info-fenster" id="album-info" hidden role="dialog" aria-modal="true" aria-labelledby="album-info-titel">
   <div class="info-box">
@@ -604,6 +644,7 @@
       <li><b>Deine Sammlung</b><span><span id="album-info-anzahl">300</span> Karten aus <span id="album-info-bahnen">14</span> Bahnen, in 7 Seltenheiten von Common bis Special. Gesammelte Karten sind farbig, fehlende grau. Der Balken oben zeigt, wie viel du schon hast.</span></li>
       <li><b>Neu gefunden</b><span>Neue Karten stehen ganz oben und tragen den Sticker «Neu», bis du das Album verlässt.</span></li>
       <li><b>Karte ansehen</b><span>Tippe auf eine gesammelte Karte: Sie wird gross und bewegt sich mit deinem Finger.</span></li>
+      <li><b>Wunschliste</b><span>Tippe auf eine fehlende Karte: Sie bekommt ein Herz und kommt auf deine Wunschliste unter Mehr → Tauschen. Nochmals tippen nimmt sie wieder weg.</span></li>
       <li><b>Doppelte verwerten</b><span>Hast du eine Karte mehrmals, kannst du eine Kopie verwerten und bekommst RB Coins dafür. Eine Karte bleibt immer im Album. Wert in RB Coins: <span id="album-info-werte"></span>.</span></li>
       <li><b>Suchen und filtern</b><span>Tippe auf eine Kategorie, wähle eine Bahn oder suche nach Name oder Nummer, z. B. Giruno oder RB001. «Nur gesammelte» blendet fehlende Karten aus.</span></li>
     </ul>
@@ -646,6 +687,7 @@
 <script src="js/spielgefuehl.js"></script>
 <script src="js/taeglich.js"></script>
 <script src="js/erfolge.js"></script>
+<script src="js/tauschen.js"></script>
 <script src="js/app.js"></script>
 <script src="js/enthuellung.js"></script>
 <script src="js/oeffnen.js"></script>

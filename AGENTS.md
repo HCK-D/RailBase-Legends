@@ -57,8 +57,8 @@ Sonstiges: `app`, `hinweis`
 
 ### Attribute und Klassen, die der Code setzt oder liest
 
-- Seiten: `data-view="start|rad|album|shop|konto|freunde|erfolge|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`.
-  Freunde, Erfolge und Konto erreicht man über Mehr
+- Seiten: `data-view="start|rad|album|shop|konto|freunde|tauschen|erfolge|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`.
+  Freunde, Tauschen, Erfolge und Konto erreicht man über Mehr
 - Menü-Reihenfolge: Rad, Album, Start, Shop, Mehr. Start ist `.nav-mitte` mit `.nav-kappe` (hebt den Balken an)
   und `.nav-rund` (runder Knopf über dem Balken, nur auf dem Handy)
 - Design-Wahl: `data-design="light|dark"`; das aktive Design steht als `data-theme` auf `<html>`
@@ -116,6 +116,27 @@ Sonstiges: `app`, `hinweis`
   `erf-liste` (`li.erf.bereit|offen|geheim|fertig`, `[data-abholen]`, `[data-ziel]`). Eintrag in der Liste der Mehr-Seite
   (nach «Rangliste»): `erf-oeffnen`, daneben die rote Zahl `erf-eintrag-text` (Belohnungen zum Abholen, Klasse `neu` = Hüpfer).
   Aussehen: `css/erfolge.css`.
+
+## Tauschen (vorbereitet für die Online-Datenbank)
+
+- `js/tauschen.js` (`Tauschen`), Aussehen `css/tauschen.css`. Regeln: nur doppelte Karten, gleiche Seltenheit 1 gegen 1,
+  keine Special-Karten, höchstens 3 eigene offene Anfragen (`TAUSCH_MAX_OFFEN`), Anfragen verfallen nach 48 Stunden.
+  Die Prüfung steht in `tauschFehler()`; der Server muss dieselben Regeln noch einmal prüfen.
+- Alles, was später die Datenbank macht, läuft über ein Server-Objekt mit denselben Funktionen:
+  `bereit`, `freunde()`, `sammlungVon(id)`, `anfragen()`, `sende({ an, gibt, will })`, `antworte(id, ja)`, `zurueckziehen(id)`.
+  Heute gibt es zwei Fassungen: `SERVER_OHNE` (echte Seite: «Tauschen startet mit dem Anmelden») und `testServer()`
+  (nur Vorschau, `TEST_ERLAUBT`: ein Test-Freund im Browser, Speicher `sk-tausch-test`). Für die Datenbank kommt eine
+  dritte Fassung dazu; sonst muss am Tauschen nichts geändert werden.
+- Was die Datenbank dafür braucht: Tabelle der Spieler (Freunde-ID, Name, Karten, Wunschliste), Tabelle der Anfragen
+  (`id, von, an, gibt, will, status, zeit`) und eine Server-Funktion «annehmen», die in einem Schritt prüft und beide
+  Karten tauscht (nie im Browser). Die Wunschliste (`app.daten.wunschliste`) wird dann für Freunde sichtbar.
+- Seite `#tauschen`: `tausch-status` (`data-status="ohne|test|online"`), `tausch-status-titel`, `tausch-status-text`,
+  `tausch-neu`, `tausch-anfragen` (`li.tausch-anfrage.<status>`, `.eingehend`, `.tauscht` = Karten wechseln den Platz;
+  Knöpfe `[data-annehmen]`, `[data-ablehnen]`, `[data-zurueck]`), `tausch-anfragen-leer`, `tausch-wunsch`
+  (`[data-wunsch-weg]`), `tausch-wunsch-leer`, `tausch-doppelte`, `tausch-doppelte-leer`.
+  Fenster: `tausch-fenster`, `tausch-schritt`, `tausch-titel`, `tausch-text`, `tausch-inhalt` (`[data-freund]`, `[data-wahl]`),
+  `tausch-zurueck`, `tausch-senden`. Unter Mehr: `tausch-oeffnen` mit roter Zahl `tausch-zahl` (Anfragen an dich).
+- Wunschliste im Album: fehlende Karte antippen setzt oder entfernt sie (`Tauschen.wuensche(id)`), Sticker `li.ist-wunsch`.
 
 ## Freunde und Geschenke
 

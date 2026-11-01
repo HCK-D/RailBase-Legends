@@ -52,6 +52,10 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
   Packs, Treue, Freunde, Geheim). Jede Stufe hat eine Belohnung (RB Coins, Rubine oder ein Pack),
   grosse Erfolge zusätzlich einen Titel, der im Konto unter dem Namen steht. Der Fortschritt kommt aus dem
   Spielstand, also zählt auch, was man vorher schon gesammelt hat. Ziele und Belohnungen sind Platzhalter.
+- **Tauschen** (Mehr → Tauschen, `js/tauschen.js`): vorbereitet für die Online-Datenbank. Doppelte Karten gegen
+  Karten von Freunden, gleiche Seltenheit 1 gegen 1, ohne Special. Auf der echten Seite steht «Tauschen startet mit
+  dem Anmelden»; in der Vorschau spielt ein Test-Freund mit, damit man den Ablauf ausprobieren kann.
+  Die **Wunschliste** geht schon: im Album eine fehlende Karte antippen (Herz).
 - Menü unten: Start, Packs, Rad, Album, Mehr; roter Punkt, wenn etwas bereit ist
 - Auf dem Handy nach links oder rechts wischen, um die Seite zu wechseln
 
@@ -82,7 +86,8 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 - Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
 - Fotos für die 68 Karten, die deshalb noch nicht im Spiel sind
 - Handy-Optimierung
-- Login und Online-Datenbank (eher gegen Ende des Projekts)
+- Login und Online-Datenbank (eher gegen Ende des Projekts). Damit startet auch das Tauschen:
+  Für die Datenbank kommt in `js/tauschen.js` nur eine weitere Server-Fassung dazu (siehe AGENTS.md → Tauschen).
 
 Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eigenen Spielstand.
 
@@ -103,6 +108,7 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/rad.js` | Glücksrad |
 | `js/taeglich.js`, `css/taeglich.css` | Tagesbelohnung (Login-Serie) und Tagesaufgaben |
 | `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen und Titeln (Liste `ERFOLGE` am Anfang der Datei) |
+| `js/tauschen.js`, `css/tauschen.css` | Tauschen und Wunschliste; der Teil für die Datenbank steht im Server-Objekt |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |

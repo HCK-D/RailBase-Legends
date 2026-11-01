@@ -44,6 +44,7 @@ const Store = (() => {
       zaehler: {},       // was der Spielstand sonst nicht weiss, z. B. { verwertet: 3, gekauft: 1, serie: 7 }
     },
     titel: '',         // Titel aus den Erfolgen, steht im Konto unter dem Namen
+    wunschliste: [],   // Karten-IDs, die man sucht (Tauschen, js/tauschen.js; später für Freunde sichtbar)
   };
 
   function laden() {
@@ -61,6 +62,7 @@ const Store = (() => {
         taeglich: { ...structuredClone(STANDARD.taeglich), ...(daten.taeglich || {}) },
         erfolge: { ...structuredClone(STANDARD.erfolge), ...(daten.erfolge || {}) },
         eingeloest: Array.isArray(daten.eingeloest) ? daten.eingeloest.filter((k) => typeof k === 'string') : [],
+        wunschliste: Array.isArray(daten.wunschliste) ? daten.wunschliste.filter((k) => typeof k === 'string') : [],
       };
     } catch (e) {
       return structuredClone(STANDARD);

@@ -309,6 +309,7 @@ function aktualisiereAlles() {
   zeichneShop();
   Taeglich.zeichne();
   Erfolge.zeichne();
+  Tauschen.zeichne();
   zeichnePunkte();
 }
 
@@ -389,7 +390,8 @@ function zeichnePunkte() {
   document.querySelector('[data-tab="start"]').classList.toggle('punkt', gratisBereit() || vorratGesamt() > 0);
   document.querySelector('[data-tab="rad"]').classList.toggle('punkt', Rad.bereit());
   document.querySelector('[data-tab="album"]').classList.toggle('punkt', app.daten.ungesehen.length > 0);
-  document.querySelector('[data-tab="mehr"]').classList.toggle('punkt', Taeglich.etwasBereit() || Erfolge.etwasBereit());
+  document.querySelector('[data-tab="mehr"]').classList.toggle('punkt',
+    Taeglich.etwasBereit() || Erfolge.etwasBereit() || Tauschen.etwasBereit());
 }
 
 // ---------- Packs: Reiter, Karussell, Ticket ----------
@@ -561,10 +563,13 @@ function zeichneAlbum() {
 
   let gezeigt = 0;
   let gefundenHier = 0;
+  const wunsch = new Set(app.daten.wunschliste);
   [...grid.children].forEach((li) => {
     const k = karteVonId(li.dataset.id);
     const n = anzahl[k.id] || 0;
     li.classList.toggle('ist-neu', ungesehen.has(k.id));
+    // fehlende Karte auf der Wunschliste (antippen setzt oder entfernt sie, js/tauschen.js): Herz-Sticker
+    li.classList.toggle('ist-wunsch', n === 0 && wunsch.has(k.id));
     const schluessel = String(n);
     if (li.dataset.n !== schluessel) {
       // Doppelte Karte verwerten: das entscheidet die Person selbst. Fehlende Karten haben keinen Knopf.
@@ -1028,6 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Gefuehl.init();
   Taeglich.init();
   Erfolge.init();
+  Tauschen.init();
 
   $('start-badge').addEventListener('click', startKnopf);
   $('konto-form').addEventListener('submit', speichereName);
@@ -1044,6 +1050,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gesammelte Karte antippen: gross ansehen und mit dem Finger neigen
     const karte = !e.target.closest('button') && e.target.closest('.karte:not(.fehlt)');
     if (karte) Gefuehl.zeigeKarte(karte.dataset.karte, besitz()[karte.dataset.karte] || 0);
+    // Fehlende Karte antippen: auf die Wunschliste setzen oder wieder entfernen
+    const fehlt = !e.target.closest('button') && e.target.closest('.karte.fehlt');
+    if (fehlt) Tauschen.wuensche(fehlt.dataset.karte);
   });
   // Grossansicht: Knopf «Verwerten» (ab 2 gleichen Karten, sonst nur ein Hinweis)
   $('kv-verwerten').addEventListener('click', async (e) => {
