@@ -284,6 +284,7 @@ function fotoNachweisHtml(id) {
   const f = KARTEN_FOTOS[id];
   if (!f) return '';
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text));
+  if (f.erlaubnis) return `Foto: ${esc(f.foto)} · mit Erlaubnis`;
   if (!f.lizenz) return `Foto: ${esc(f.foto)} (eigenes Foto)`;
   return `Foto: ${link(f.quelle, f.foto)} · ${link(f.lizenzUrl, f.lizenz)} · zugeschnitten`;
 }

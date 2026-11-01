@@ -1,6 +1,7 @@
 /* Fotos auf den Karten: von Railbase.ch, dort meist aus Wikimedia Commons, zugeschnitten auf das Kartenbild.
    Bild: assets/karten/fotos/<id in Kleinbuchstaben>.webp (520 × 589 px, gleiches Seitenverhältnis wie .k-bild)
    foto: Fotograf, lizenz und lizenzUrl: Lizenz, quelle: Originaldatei. Ohne lizenz = eigenes Foto (HCKD).
+   erlaubnis: Foto ohne freie Lizenz, der Besitzer hat die Erlaubnis (1. November 2026: Domino, Re 460, Re 420, Re 620, Re 193).
    Karten ohne Eintrag zeigen weiter die Zeichnung (Zug vor dem Alpen-Foto). */
 
 const KARTEN_FOTOS = {
@@ -10,6 +11,8 @@ const KARTEN_FOTOS = {
   RB004: {"foto":"GleisReis","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:S15_ZVV_Jona.jpg"},
   RB005: {"foto":"Samson Ng . D201@EAL","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:RABe_514_DTZ_EMU_(54904500242).jpg"},
   RB006: {"foto":"The Nikon User","lizenz":"CC BY 2.0","lizenzUrl":"https://creativecommons.org/licenses/by/2.0","quelle":"https://commons.wikimedia.org/wiki/File:523_001_Muttenz.jpg"},
+  RB007: {"foto":"Railbase.ch","erlaubnis":true},
+  RB008: {"foto":"Railbase.ch","erlaubnis":true},
   RB009: {"foto":"Hoff1980","lizenz":"CC BY-SA 3.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/3.0","quelle":"https://commons.wikimedia.org/wiki/File:ETR_610_Brig.JPG"},
   RB010: {"foto":"S5A-0043","lizenz":"CC BY 2.0","lizenzUrl":"https://creativecommons.org/licenses/by/2.0","quelle":"https://commons.wikimedia.org/wiki/File:(CHE-Zurich)_SBB_CFF_FFS_450021_S24_@_Zurich_HB_2023-11-20.jpg"},
   RB011: {"foto":"Borknorg","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:IR-DostoRABe512.jpg"},
@@ -21,7 +24,10 @@ const KARTEN_FOTOS = {
   RB017: {"foto":"NAC","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:3_IR_2441_Zue-Chi_Zuerich_HB_101216.jpg"},
   RB018: {"foto":"Rolf Heinrich, Köln","lizenz":"CC BY 3.0","lizenzUrl":"https://creativecommons.org/licenses/by/3.0","quelle":"https://commons.wikimedia.org/wiki/File:482_007-2_K%C3%B6ln-Kalk_Nord_2016-01-09-02.jpg"},
   RB019: {"foto":"Markus Eigenheer from Genève, Schweiz","lizenz":"CC BY-SA 2.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/2.0","quelle":"https://commons.wikimedia.org/wiki/File:484_003_(Flickr_24803289866).jpg"},
+  RB020: {"foto":"Railbase.ch","erlaubnis":true},
+  RB021: {"foto":"Railbase.ch","erlaubnis":true},
   RB022: {"foto":"Manfred Kopka","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:SBB_Re_474_013.jpg"},
+  RB023: {"foto":"Quentin Rossier","erlaubnis":true},
   RB024: {"foto":"NAC","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:1_FFS_Re_421_374-0_Thun_120818.jpg"},
   RB025: {"foto":"Joachim Lutz","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:Alstom_H4_(Aem_940_020_A_W).jpg"},
   RB026: {"foto":"Markus Eigenheer from Genève, Schweiz","lizenz":"CC BY-SA 2.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/2.0","quelle":"https://commons.wikimedia.org/wiki/File:SBB_CFF_FFS_Infra_Am_843_001-9_(32144205427).jpg"},
@@ -236,6 +242,7 @@ const KARTEN_FOTOS = {
   S02: {"foto":"nzsteam","lizenz":"CC BY 2.0","lizenzUrl":"https://creativecommons.org/licenses/by/2.0","quelle":"https://commons.wikimedia.org/wiki/File:SBB_Ce_6_8_II_14253_2019-10-19_02.jpg"},
   S04: {"foto":"Kabelleger / David Gubler","lizenz":"CC BY-SA 3.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/3.0","quelle":"https://commons.wikimedia.org/wiki/File:RhB_ABe_8-12_Allegra_between_Lagalb_and_Ospizio_Bernina.jpg"},
   S05: {"foto":"Falk2","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:L02_516_Bf_Zweisimmen,_At_96_85_8300_183.jpg"},
+  V01: {"foto":"Railbase.ch","erlaubnis":true},
   V02: {"foto":"Fabian Grunder (FabiBerg)","lizenz":"CC BY-SA 3.0","lizenzUrl":"http://creativecommons.org/licenses/by-sa/3.0/","quelle":"https://commons.wikimedia.org/wiki/File:Tm_234_090-9.JPG"},
   V03: {"foto":"Von.schweiz","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:Le_Jorat.jpg"},
   V04: {"foto":"Vsler","lizenz":"CC BY-SA 4.0","lizenzUrl":"https://creativecommons.org/licenses/by-sa/4.0","quelle":"https://commons.wikimedia.org/wiki/File:528_Mika_201.jpg"},

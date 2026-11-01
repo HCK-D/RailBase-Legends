@@ -129,13 +129,14 @@ Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bere
 
 ### Fotos auf den Karten
 
-243 Karten zeigen ein Foto von Railbase.ch (`assets/karten/fotos/<id>.webp`, 520 × 589 px, schon auf das Bildfeld
+249 Karten zeigen ein Foto von Railbase.ch (`assets/karten/fotos/<id>.webp`, 520 × 589 px, schon auf das Bildfeld
 `.k-bild` zugeschnitten). Welche Karte ein Foto hat, und wer es gemacht hat, steht in `js/daten/kartenfotos.js`.
 Karten ohne Eintrag zeigen weiter die Zug-Zeichnung (`SZENE_SPRITE`).
 
 Die Fotos stammen fast alle aus Wikimedia Commons (CC BY, CC BY-SA, CC0, gemeinfrei). Die Lizenzen verlangen den
 Namen des Fotografen und die Lizenz: darum der Nachweis unter der Grossansicht (`#kv-foto`) und die Liste unter
-Mehr → Bildnachweise (`#bild-info`). **Beides muss bleiben.** Neue Fotos nur mit freier Lizenz oder vom Besitzer (HCKD).
+Mehr → Bildnachweise (`#bild-info`). **Beides muss bleiben.** Neue Fotos nur mit freier Lizenz, vom Besitzer (HCKD)
+oder mit seiner Erlaubnis (`erlaubnis: true`, bisher Domino, Re 460, Re 420, Re 620 und Re 193).
 
 ## Bildschirmgrössen
 
