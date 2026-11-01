@@ -329,20 +329,37 @@
       <p>Doppelte Karten gegen Karten deiner Freunde: gleiche Seltenheit, 1 gegen 1.</p>
     </div>
     <div class="seite">
-      <div class="panel tausch-status" id="tausch-status">
-        <b id="tausch-status-titel"></b>
-        <p id="tausch-status-text"></p>
-        <button class="btn" type="button" id="tausch-neu" hidden>Neuer Tausch</button>
+      <!-- kurzer Hinweis: Testmodus oder «startet mit dem Anmelden» -->
+      <p class="tausch-status" id="tausch-status"><b id="tausch-status-titel"></b><span id="tausch-status-text"></span></p>
+      <!-- drei Reiter: offene Anfragen, neuer Tausch mit Wunschliste und Tausch-Karten, vergangene Tausche -->
+      <div class="tausch-reiter" id="tausch-reiter" role="tablist" aria-label="Tauschen">
+        <button type="button" role="tab" data-reiter="anfragen" aria-selected="true">Anfragen<b class="tausch-reiter-zahl" id="tausch-reiter-zahl" hidden></b></button>
+        <button type="button" role="tab" data-reiter="tauschen" aria-selected="false">Tauschen</button>
+        <button type="button" role="tab" data-reiter="vergangen" aria-selected="false">Vergangen</button>
       </div>
-      <h2 class="sam-h">Anfragen</h2>
-      <ul class="tausch-anfragen" id="tausch-anfragen"></ul>
-      <p class="tausch-leer" id="tausch-anfragen-leer">Keine Anfragen.</p>
-      <h2 class="sam-h">Deine Wunschliste</h2>
-      <ul class="karten-grid tausch-raster" id="tausch-wunsch"></ul>
-      <p class="tausch-leer" id="tausch-wunsch-leer">Tippe im Album auf eine fehlende Karte, dann kommt sie auf deine Wunschliste. Später sehen deine Freunde, was du suchst.</p>
-      <h2 class="sam-h">Deine Tausch-Karten</h2>
-      <ul class="karten-grid tausch-raster" id="tausch-doppelte"></ul>
-      <p class="tausch-leer" id="tausch-doppelte-leer">Noch keine doppelten Karten. Special-Karten kann man nicht tauschen.</p>
+
+      <div class="tausch-teil" data-teil="anfragen" role="tabpanel">
+        <ul class="tausch-anfragen" id="tausch-anfragen"></ul>
+        <p class="tausch-leer" id="tausch-anfragen-leer">Keine offenen Anfragen. Einen neuen Tausch startest du unter «Tauschen».</p>
+      </div>
+
+      <div class="tausch-teil" data-teil="tauschen" role="tabpanel" hidden>
+        <button class="btn-haupt tausch-neu" type="button" id="tausch-neu" hidden>
+          <svg width="24" height="24" aria-hidden="true"><use href="#i-teilen"/></svg>
+          <span>Neuer Tausch</span>
+        </button>
+        <h2 class="sam-h">Deine Wunschliste</h2>
+        <ul class="karten-grid tausch-raster" id="tausch-wunsch"></ul>
+        <p class="tausch-leer" id="tausch-wunsch-leer">Tippe im Album auf eine fehlende Karte, dann kommt sie auf deine Wunschliste. Später sehen deine Freunde, was du suchst.</p>
+        <h2 class="sam-h">Deine Tausch-Karten</h2>
+        <ul class="karten-grid tausch-raster" id="tausch-doppelte"></ul>
+        <p class="tausch-leer" id="tausch-doppelte-leer">Noch keine doppelten Karten. Special-Karten kann man nicht tauschen.</p>
+      </div>
+
+      <div class="tausch-teil" data-teil="vergangen" role="tabpanel" hidden>
+        <ul class="tausch-vergangen" id="tausch-vergangen"></ul>
+        <p class="tausch-leer" id="tausch-vergangen-leer">Noch keine vergangenen Tausche.</p>
+      </div>
     </div>
   </section>
 
@@ -634,6 +651,20 @@
       <button class="btn" type="button" id="tausch-senden" hidden>Anfrage senden</button>
     </div>
   </div>
+</div>
+
+<!-- ===== TAUSCH-SZENE (js/tauschen.js): ganzer Bildschirm beim Senden und wenn ein Tausch angenommen wurde.
+     Deine Karte steigt aus dem Album, die Karte des Freundes kommt von oben, sie tauschen die Plätze,
+     die neue Karte fliegt ins Album. Phasen über data-phase, Aussehen in css/tauschen.css ===== -->
+<div class="tausch-szene" id="tausch-szene" hidden role="dialog" aria-modal="true" aria-labelledby="ts-text">
+  <div class="ts-licht" aria-hidden="true"></div>
+  <div class="ts-freund" aria-hidden="true"><span class="ts-avatar" id="ts-avatar"></span><b id="ts-freund-name"></b></div>
+  <div class="ts-karte ts-gibst" id="ts-gibst" aria-hidden="true"></div>
+  <span class="ts-symbol" aria-hidden="true">⇄</span>
+  <div class="ts-karte ts-bekommst" id="ts-bekommst" aria-hidden="true"></div>
+  <div class="ts-album" aria-hidden="true"><svg width="34" height="34"><use href="#i-album"/></svg><b>Dein Album</b><span class="ts-plus">+1</span></div>
+  <p class="ts-text" id="ts-text" aria-live="polite"></p>
+  <button class="btn-haupt ts-weiter" type="button" id="ts-weiter">Super!</button>
 </div>
 
 <!-- ===== INFO ZUM ALBUM ===== -->

@@ -14,6 +14,10 @@
  */
 
 const TAUSCH_MAX_OFFEN = 3;
+// Lichtfarbe der Tausch-Szene je Seltenheit der neuen Karte
+const TAUSCH_LICHT = {
+  common: '#cfd6dd', uncommon: '#3ddc84', rare: '#4f9bff', epic: '#b06bff', mythic: '#ff6a2a', legendary: '#ffd34d',
+};
 const TAUSCH_DAUER = 48 * 60 * 60 * 1000;
 const TEST_FREUND = 'RB-TEST-TAUS';
 
@@ -152,7 +156,7 @@ function testServer(geaendert) {
         a.status = Math.random() < 0.85 && fuehreAus(a) ? 'angenommen' : 'abgelehnt';
         sichern();
         geaendert({ ...a });
-      }, 2500);
+      }, 4000);
       return { ...a };
     },
     async antworte(id, ja) {
@@ -180,6 +184,8 @@ const Tauschen = (() => {
   let anfragen = [];      // zuletzt vom Server geladen
   let ladeNr = 0;
   let warOffen = false;   // war die Tausch-Seite beim letzten Zeichnen schon offen?
+  let reiter = 'anfragen'; // Anfragen, Tauschen oder Vergangen
+  let reiterGewaehlt = false; // hat man seit dem Öffnen der Seite selbst einen Reiter angetippt?
   let fenster = null;     // Tausch-Fenster: { schritt, freund, sammlung, will, gibt }
 
   const ich = () => app.daten.spielerId;
@@ -192,11 +198,14 @@ const Tauschen = (() => {
     return offenFuerMich() > 0;
   }
 
+  const standardReiter = () => (anfragen.some((a) => a.status === 'offen') ? 'anfragen' : 'tauschen');
+
   async function lade() {
     const nr = ++ladeNr;
     const liste = await server.anfragen();
     if (nr !== ladeNr) return;
     anfragen = liste;
+    if (app.ansicht === 'tauschen' && !reiterGewaehlt) waehleReiter(standardReiter());
     zeichne();
     zeichnePunkte();
   }
@@ -214,35 +223,110 @@ const Tauschen = (() => {
     }
   }
 
-  // Die beiden Karten tauschen in der Anfrage die Plätze, danach neu laden
-  function feiereTausch(id, text) {
-    Gefuehl.ton('gewinn');
-    Gefuehl.vibriere([30, 40, 80]);
-    Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], 60);
-    zeigeHinweis(text);
-    const li = app.ansicht === 'tauschen' && document.querySelector(`[data-anfrage="${id}"]`);
-    if (li) li.classList.add('tauscht');
-    setTimeout(() => { lade(); aktualisiereAlles(); }, li ? 1000 : 0);
-  }
-
-  // Der Test-Freund hat auf deine Anfrage geantwortet
+  // Der Test-Freund (später der Server) hat auf deine Anfrage geantwortet
   function geaendert(a) {
+    lade();
     if (a.status === 'angenommen') {
-      feiereTausch(a.id, `${nameVon(a.an)} hat angenommen: ${titelVon(a.will)} ist jetzt in deinem Album!`);
+      aktualisiereAlles();
+      spieleSzene('tausch', a);
     } else {
       zeigeHinweis(`${nameVon(a.an)} hat deinen Tausch abgelehnt.`);
-      lade();
     }
   }
 
   async function annehmen(id, knopf) {
     const a = await aktion(() => server.antworte(id, true), knopf);
     if (!a) return;
-    if (a.status === 'angenommen') feiereTausch(id, `Getauscht! ${titelVon(a.gibt)} ist jetzt in deinem Album.`);
-    else {
-      zeigeHinweis('Dieser Tausch geht nicht mehr: Eine der Karten ist nicht mehr doppelt da.');
-      lade();
+    lade();
+    aktualisiereAlles();
+    if (a.status === 'angenommen') spieleSzene('tausch', a);
+    else zeigeHinweis('Dieser Tausch geht nicht mehr: Eine der Karten ist nicht mehr doppelt da.');
+  }
+
+  // ---------- Tausch-Szene über den ganzen Bildschirm ----------
+  // «tausch»: deine Karte steigt aus dem Album, die Karte des Freundes kommt von oben, sie tauschen die Plätze,
+  // deine fliegt zum Freund, die neue ins Album. «gesendet»: beide Karten fliegen als Anfrage zum Freund.
+  // Antippen springt ans Ende. Kommen mehrere Szenen kurz nacheinander, warten sie, bis die vorige fertig ist.
+  const szenen = [];
+  let szene = null; // { art, uhren, ende }
+
+  function spieleSzene(art, a) {
+    szenen.push({ art, a });
+    naechsteSzene();
+  }
+
+  const fensterOffen = () => !$('opener').hidden || !$('gewinn').hidden || !$('kv').hidden || !$('tausch-fenster').hidden;
+
+  function naechsteSzene() {
+    if (szene || !szenen.length) return;
+    if (fensterOffen()) {
+      setTimeout(naechsteSzene, 800);
+      return;
     }
+    const { art, a } = szenen.shift();
+    const vonMir = a.von === ich();
+    const gibst = vonMir ? a.gibt : a.will;
+    const bekommst = vonMir ? a.will : a.gibt;
+    const wer = nameVon(vonMir ? a.an : a.von);
+    const neu = art === 'tausch' && besitz()[bekommst] === 1 && app.daten.ungesehen.includes(bekommst);
+    const el = $('tausch-szene');
+    $('ts-gibst').innerHTML = karteHtml(gibst);
+    $('ts-bekommst').innerHTML = karteHtml(bekommst);
+    $('ts-freund-name').textContent = wer;
+    $('ts-avatar').textContent = wer === 'Test-Freund' ? 'T' : wer.replace(/^RB-/, '').charAt(0);
+    el.dataset.art = art;
+    el.dataset.phase = 'start';
+    const farbe = TAUSCH_LICHT[karteVonId(bekommst).seltenheit] || '#ffd34d';
+    el.style.setProperty('--licht', farbe);
+    $('ts-text').textContent = '';
+    $('ts-weiter').hidden = true;
+    el.hidden = false;
+    document.body.classList.add('op-offen', 'pack-offen');
+    // Fotos schon laden, bevor die Karten ins Bild fliegen
+    el.querySelectorAll('img').forEach((img) => { img.loading = 'eager'; });
+
+    const phase = (name, text, ton) => {
+      el.dataset.phase = name;
+      if (text) $('ts-text').textContent = text;
+      if (ton) Gefuehl.ton(ton);
+    };
+    const ende = () => {
+      szene.uhren.forEach(clearTimeout);
+      szene.uhren = [];
+      if (art === 'gesendet') return schliesseSzene();
+      phase('fertig', `${titelVon(bekommst)} ist jetzt in deinem Album.${neu ? ' Neu in deiner Sammlung!' : ''}`);
+      $('ts-weiter').hidden = false;
+      $('ts-weiter').focus({ preventScroll: true });
+    };
+    const schritte = art === 'tausch'
+      ? [
+        [200, () => phase('raus', `Du gibst ${titelVon(gibst)}`, 'weg')],
+        [1400, () => phase('treffen', `${wer} gibt dir ${titelVon(bekommst)}`, 'flip')],
+        [2700, () => {
+          phase('tausch', neu ? 'Neu für dich!' : 'Getauscht!', 'gewinn');
+          Gefuehl.vibriere([30, 40, 80]);
+          Gefuehl.konfetti([farbe, '#ffd34d', '#ffffff', '#4aa3ff'], 70);
+        }],
+        [4300, () => phase('rein', `${titelVon(bekommst)} kommt in dein Album`, 'weg')],
+        [5200, () => { Gefuehl.ton('muenze'); Gefuehl.vibriere(20); ende(); }],
+      ]
+      : [
+        [200, () => phase('zeigen', `Du bietest ${titelVon(gibst)} für ${titelVon(bekommst)}`, 'tipp')],
+        [1700, () => phase('senden', `Anfrage an ${wer} gesendet`, 'weg')],
+        [3100, ende],
+      ];
+    szene = { art, ende, uhren: schritte.map(([zeit, fn]) => setTimeout(fn, zeit)) };
+  }
+
+  function schliesseSzene() {
+    if (!szene) return;
+    szene.uhren.forEach(clearTimeout);
+    szene = null;
+    $('tausch-szene').hidden = true;
+    document.body.classList.remove('pack-offen');
+    if (!fensterOffen()) document.body.classList.remove('op-offen');
+    aktualisiereAlles();
+    setTimeout(naechsteSzene, 300);
   }
 
   async function ablehnen(id, knopf) {
@@ -278,39 +362,51 @@ const Tauschen = (() => {
     return `noch ${dauerText(Math.max(0, TAUSCH_DAUER - (Date.now() - a.zeit)))}`;
   }
 
-  const STATUS_TEXT = {
-    angenommen: 'Getauscht!',
-    zurueckgezogen: 'Zurückgezogen',
-    abgelaufen: 'Abgelaufen (nach 48 Stunden)',
-    ungueltig: 'Nicht mehr möglich: Eine Karte war nicht mehr doppelt da',
-  };
-
+  // Offene Anfrage: an dich (Annehmen, Ablehnen) oder von dir (Zurückziehen)
   function anfrageHtml(a) {
     const eingehend = a.an === ich();
     const wer = nameVon(eingehend ? a.von : a.an);
     const duGibst = eingehend ? a.will : a.gibt;
     const duBekommst = eingehend ? a.gibt : a.will;
-    let text = STATUS_TEXT[a.status] || '';
-    if (a.status === 'offen') text = eingehend ? `${wer} möchte mit dir tauschen` : `Wartet auf ${wer}`;
-    if (a.status === 'abgelehnt') text = eingehend ? 'Abgelehnt' : `${wer} hat abgelehnt`;
-    let knoepfe = '';
-    if (a.status === 'offen' && eingehend) {
-      knoepfe = `<button class="btn ghost" type="button" data-ablehnen="${a.id}">Ablehnen</button>
-        <button class="btn" type="button" data-annehmen="${a.id}">Annehmen</button>`;
-    } else if (a.status === 'offen') {
-      knoepfe = `<button class="btn ghost" type="button" data-zurueck="${a.id}">Zurückziehen</button>`;
-    }
-    const neu = !besitz()[duBekommst] && a.status === 'offen' ? ' · neu für dich' : '';
+    const knoepfe = eingehend
+      ? `<button class="btn ghost" type="button" data-ablehnen="${a.id}">Ablehnen</button>
+        <button class="btn" type="button" data-annehmen="${a.id}">Annehmen</button>`
+      : `<button class="btn ghost" type="button" data-zurueck="${a.id}">Zurückziehen</button>`;
+    const neu = !besitz()[duBekommst] ? ' · neu für dich' : '';
     return `
-      <li class="tausch-anfrage ${a.status}${eingehend ? ' eingehend' : ''}" data-anfrage="${a.id}">
-        <p class="ta-kopf"><b>${esc(text)}</b><small>${zeitText(a)}</small></p>
+      <li class="tausch-anfrage${eingehend ? ' eingehend' : ''}" data-anfrage="${a.id}">
+        <p class="ta-kopf"><b>${esc(eingehend ? `${wer} möchte mit dir tauschen` : `Wartet auf ${wer}`)}</b><small>${zeitText(a)}</small></p>
         <div class="ta-karten">
           <figure class="ta-gibst"><div class="ta-karte">${karteHtml(duGibst)}</div><figcaption>Du gibst</figcaption></figure>
           <span class="ta-pfeil" aria-hidden="true">⇄</span>
           <figure class="ta-bekommst"><div class="ta-karte">${karteHtml(duBekommst)}</div><figcaption>Du bekommst${neu}</figcaption></figure>
         </div>
-        ${knoepfe ? `<div class="ta-knoepfe">${knoepfe}</div>` : ''}
+        <div class="ta-knoepfe">${knoepfe}</div>
       </li>`;
+  }
+
+  // Vergangene Anfrage: nur eine kurze Zeile, ohne Karten-Bilder
+  function vergangenHtml(a) {
+    const eingehend = a.an === ich();
+    const wer = nameVon(eingehend ? a.von : a.an);
+    const text = {
+      angenommen: `Getauscht mit ${wer}`,
+      abgelehnt: eingehend ? `Anfrage von ${wer} abgelehnt` : `${wer} hat abgelehnt`,
+      zurueckgezogen: `Anfrage an ${wer} zurückgezogen`,
+      abgelaufen: `Anfrage ${eingehend ? 'von' : 'an'} ${wer} abgelaufen`,
+      ungueltig: `Tausch mit ${wer} war nicht mehr möglich`,
+    }[a.status] || wer;
+    const gegeben = eingehend ? a.will : a.gibt;
+    const bekommen = eingehend ? a.gibt : a.will;
+    const karten = a.status === 'angenommen' ? ` · ${esc(titelVon(gegeben))} ⇄ ${esc(titelVon(bekommen))}` : '';
+    return `<li class="tv-zeile ${a.status}"><b>${esc(text)}</b><small>${new Date(a.zeit).toLocaleDateString('de-CH')}${karten}</small></li>`;
+  }
+
+  function waehleReiter(name) {
+    reiter = name;
+    document.querySelectorAll('#tausch-reiter [data-reiter]').forEach((b) =>
+      b.setAttribute('aria-selected', String(b.dataset.reiter === name)));
+    document.querySelectorAll('#v-tauschen [data-teil]').forEach((t) => { t.hidden = t.dataset.teil !== name; });
   }
 
   // Liste nur neu aufbauen, wenn sich der Inhalt geändert hat (sonst laden die Fotos neu und es flackert)
@@ -329,20 +425,26 @@ const Tauschen = (() => {
       online: 'Tausche mit deinen Freunden',
     }[status];
     $('tausch-status-text').textContent = {
-      ohne: 'Sobald es Konten gibt, schickst du Freunden hier Tausch-Anfragen. Schon jetzt kannst du deine Wunschliste füllen.',
-      test: 'Nur in der Vorschau: Ein Test-Freund spielt mit, so kannst du den Tausch ausprobieren. Auf der echten Seite startet Tauschen mit dem Anmelden.',
-      online: 'Wähle einen Freund, eine Karte von ihm und eine doppelte Karte von dir.',
+      ohne: 'Schon jetzt kannst du unter «Tauschen» deine Wunschliste füllen.',
+      test: 'Nur in der Vorschau spielt ein Test-Freund mit.',
+      online: '',
     }[status];
+    $('tausch-status').hidden = status === 'online';
     $('tausch-neu').hidden = status === 'ohne';
 
-    // Anfragen: zuerst die an dich, dann deine eigenen, dann die letzten erledigten
+    // Reiter «Anfragen»: zuerst die an dich, dann deine eigenen; rote Zahl = Anfragen an dich
     const offen = anfragen.filter((a) => a.status === 'offen')
       .sort((a, b) => (b.an === ich()) - (a.an === ich()) || b.zeit - a.zeit);
-    const erledigt = anfragen.filter((a) => a.status !== 'offen').sort((a, b) => b.zeit - a.zeit).slice(0, 5);
-    const liste = [...offen, ...erledigt];
-    setzeListe($('tausch-anfragen'), liste.map((a) => `${a.id}:${a.status}:${zeitText(a)}`).join(','),
-      liste.map(anfrageHtml).join(''));
-    $('tausch-anfragen-leer').hidden = liste.length > 0;
+    setzeListe($('tausch-anfragen'), offen.map((a) => `${a.id}:${zeitText(a)}`).join(','), offen.map(anfrageHtml).join(''));
+    $('tausch-anfragen-leer').hidden = offen.length > 0;
+    const zahl = offenFuerMich();
+    $('tausch-reiter-zahl').textContent = zahl;
+    $('tausch-reiter-zahl').hidden = !zahl;
+
+    // Reiter «Vergangen»: die letzten 20, nur als kurze Zeilen
+    const vergangen = anfragen.filter((a) => a.status !== 'offen').sort((a, b) => b.zeit - a.zeit).slice(0, 20);
+    setzeListe($('tausch-vergangen'), vergangen.map((a) => `${a.id}:${a.status}`).join(','), vergangen.map(vergangenHtml).join(''));
+    $('tausch-vergangen-leer').hidden = vergangen.length > 0;
 
     // Wunschliste: nur Karten, die noch fehlen
     const n = besitz();
@@ -373,7 +475,12 @@ const Tauschen = (() => {
     zahl.hidden = !n;
     $('tausch-oeffnen').setAttribute('aria-label', n ? `Tauschen, ${n} Anfrage${n > 1 ? 'n' : ''} an dich` : 'Tauschen');
     const offen = app.ansicht === 'tauschen';
-    if (offen && !warOffen) lade(); // beim Öffnen der Seite neu vom Server holen
+    if (offen && !warOffen) {
+      // beim Öffnen der Seite neu vom Server holen; Reiter: Anfragen, wenn welche offen sind, sonst Tauschen
+      reiterGewaehlt = false;
+      waehleReiter(standardReiter());
+      lade();
+    }
     warOffen = offen;
     if (offen) zeichneSeite();
   }
@@ -512,9 +619,9 @@ const Tauschen = (() => {
     const a = await aktion(() => server.sende({ an: f.freund, gibt: f.gibt, will: f.will }), e.currentTarget);
     if (!a) return;
     schliesseFenster();
-    Gefuehl.ton('muenze');
-    zeigeHinweis(`Anfrage an ${nameVon(f.freund)} gesendet.`);
+    reiterGewaehlt = false;
     lade();
+    spieleSzene('gesendet', a);
   }
 
   function init() {
@@ -536,11 +643,29 @@ const Tauschen = (() => {
       const k = e.target.closest('.karte');
       if (k) Gefuehl.zeigeKarte(k.dataset.karte, besitz()[k.dataset.karte] || 0);
     });
+    $('tausch-reiter').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-reiter]');
+      if (!b) return;
+      reiterGewaehlt = true;
+      waehleReiter(b.dataset.reiter);
+      Gefuehl.ton('tick');
+    });
+    // Szene: antippen springt ans Ende, «Super!» schliesst
+    $('tausch-szene').addEventListener('click', (e) => {
+      if (!szene) return;
+      if (e.target.closest('#ts-weiter')) schliesseSzene();
+      else if ($('tausch-szene').dataset.phase !== 'fertig') szene.ende();
+    });
     $('tausch-inhalt').addEventListener('click', waehle);
     $('tausch-zurueck').addEventListener('click', zurueck);
     $('tausch-senden').addEventListener('click', senden);
     $('tausch-fenster').addEventListener('click', (e) => { if (e.target === $('tausch-fenster')) schliesseFenster(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') schliesseFenster(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (szene && $('tausch-szene').dataset.phase === 'fertig') schliesseSzene();
+      else if (szene) szene.ende();
+      else schliesseFenster();
+    });
     lade();
   }
 

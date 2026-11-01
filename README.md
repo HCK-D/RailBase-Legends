@@ -53,8 +53,10 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
   grosse Erfolge zusätzlich einen Titel, der im Konto unter dem Namen steht. Der Fortschritt kommt aus dem
   Spielstand, also zählt auch, was man vorher schon gesammelt hat. Ziele und Belohnungen sind Platzhalter.
 - **Tauschen** (Mehr → Tauschen, `js/tauschen.js`): vorbereitet für die Online-Datenbank. Doppelte Karten gegen
-  Karten von Freunden, gleiche Seltenheit 1 gegen 1, ohne Special. Auf der echten Seite steht «Tauschen startet mit
-  dem Anmelden»; in der Vorschau spielt ein Test-Freund mit, damit man den Ablauf ausprobieren kann.
+  Karten von Freunden, gleiche Seltenheit 1 gegen 1, ohne Special. Drei Reiter: Anfragen, Tauschen, Vergangen.
+  Wird ein Tausch angenommen, zeigt eine Animation über den ganzen Bildschirm, wie deine Karte das Album verlässt
+  und die neue hineinfliegt. Auf der echten Seite steht «Tauschen startet mit dem Anmelden»; in der Vorschau
+  spielt ein Test-Freund mit, damit man den Ablauf ausprobieren kann.
   Die **Wunschliste** geht schon: im Album eine fehlende Karte antippen (Herz).
 - Menü unten: Start, Packs, Rad, Album, Mehr; roter Punkt, wenn etwas bereit ist
 - Auf dem Handy nach links oder rechts wischen, um die Seite zu wechseln

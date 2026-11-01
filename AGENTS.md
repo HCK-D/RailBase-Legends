@@ -130,10 +130,16 @@ Sonstiges: `app`, `hinweis`
 - Was die Datenbank dafür braucht: Tabelle der Spieler (Freunde-ID, Name, Karten, Wunschliste), Tabelle der Anfragen
   (`id, von, an, gibt, will, status, zeit`) und eine Server-Funktion «annehmen», die in einem Schritt prüft und beide
   Karten tauscht (nie im Browser). Die Wunschliste (`app.daten.wunschliste`) wird dann für Freunde sichtbar.
-- Seite `#tauschen`: `tausch-status` (`data-status="ohne|test|online"`), `tausch-status-titel`, `tausch-status-text`,
-  `tausch-neu`, `tausch-anfragen` (`li.tausch-anfrage.<status>`, `.eingehend`, `.tauscht` = Karten wechseln den Platz;
-  Knöpfe `[data-annehmen]`, `[data-ablehnen]`, `[data-zurueck]`), `tausch-anfragen-leer`, `tausch-wunsch`
-  (`[data-wunsch-weg]`), `tausch-wunsch-leer`, `tausch-doppelte`, `tausch-doppelte-leer`.
+- Seite `#tauschen`: kurzer Hinweis `tausch-status` (`data-status="ohne|test|online"`, `tausch-status-titel`, `tausch-status-text`),
+  drei Reiter `tausch-reiter` (`button[data-reiter="anfragen|tauschen|vergangen"]` mit `aria-selected`, rote Zahl `tausch-reiter-zahl`)
+  und die Teile `[data-teil]`: Anfragen `tausch-anfragen` (nur offene, `li.tausch-anfrage`, `.eingehend`; Knöpfe `[data-annehmen]`,
+  `[data-ablehnen]`, `[data-zurueck]`), `tausch-anfragen-leer`; Tauschen `tausch-neu`, `tausch-wunsch` (`[data-wunsch-weg]`),
+  `tausch-wunsch-leer`, `tausch-doppelte`, `tausch-doppelte-leer`; Vergangen `tausch-vergangen` (kurze Zeilen `li.tv-zeile.<status>`),
+  `tausch-vergangen-leer`.
+- Tausch-Szene über den ganzen Bildschirm (`tausch-szene`, `data-art="tausch|gesendet"`, `data-phase`): beim Tausch
+  `raus` (deine Karte steigt aus dem Album) → `treffen` (die Karte des Freundes kommt von oben) → `tausch` (Plätze tauschen,
+  Licht in der Farbe der neuen Karte, `--licht`) → `rein` (neue Karte ins Album) → `fertig`; beim Senden `zeigen` → `senden`.
+  IDs: `ts-gibst`, `ts-bekommst`, `ts-avatar`, `ts-freund-name`, `ts-text`, `ts-weiter`. Antippen springt ans Ende.
   Fenster: `tausch-fenster`, `tausch-schritt`, `tausch-titel`, `tausch-text`, `tausch-inhalt` (`[data-freund]`, `[data-wahl]`),
   `tausch-zurueck`, `tausch-senden`. Unter Mehr: `tausch-oeffnen` mit roter Zahl `tausch-zahl` (Anfragen an dich).
 - Wunschliste im Album: fehlende Karte antippen setzt oder entfernt sie (`Tauschen.wuensche(id)`), Sticker `li.ist-wunsch`.

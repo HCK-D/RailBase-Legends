@@ -39,25 +39,134 @@
 }
 
 /* ---------- Tausch-Seite ---------- */
-.tausch-status .btn {
-  justify-self: start;
+/* kurzer Hinweis oben: Testmodus oder «startet mit dem Anmelden» */
+.tausch-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--fg-2);
+  font-size: 14px;
 }
 
-.tausch-status[data-status="ohne"] {
-  border-style: dashed;
+.tausch-status b {
+  color: var(--fg);
 }
 
-.tausch-status[data-status="test"] b::after {
-  content: "Vorschau";
-  margin-left: 8px;
-  padding: 3px 8px;
-  border-radius: 99px;
+.tausch-status[data-status="test"] {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
   background: var(--accent-soft);
-  color: var(--accent-ink);
-  font: 800 12px/1 "Source Sans 3", sans-serif;
+}
+
+/* drei Reiter: Anfragen, Tauschen, Vergangen */
+.tausch-reiter {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.tausch-reiter button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: 42px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--fg-2);
+  font: 800 17px/1 "Barlow Condensed", sans-serif;
   letter-spacing: .04em;
   text-transform: uppercase;
-  vertical-align: 2px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.tausch-reiter button[aria-selected="true"] {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.tausch-reiter-zahl {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #D71920;
+  color: #fff;
+  font: 800 12px/1 "Source Sans 3", sans-serif;
+}
+
+.tausch-reiter-zahl[hidden] {
+  display: none;
+}
+
+.tausch-reiter button[aria-selected="true"] .tausch-reiter-zahl {
+  background: #fff;
+  color: #D71920;
+}
+
+.tausch-teil {
+  animation: viewin .25s var(--ease-out);
+}
+
+.tausch-neu {
+  max-width: 420px;
+  margin: 0 0 24px;
+}
+
+.tausch-neu[hidden] {
+  display: none;
+}
+
+/* Vergangen: nur kurze Zeilen */
+.tausch-vergangen {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.tv-zeile {
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.tv-zeile b {
+  font: 700 15px/1.25 "Source Sans 3", sans-serif;
+}
+
+.tv-zeile small {
+  color: var(--fg-2);
+  font-size: 13px;
+}
+
+.tv-zeile.angenommen b::before {
+  content: "✓ ";
+  color: #2fb66e;
+}
+
+.tv-zeile:not(.angenommen) b {
+  color: var(--fg-2);
 }
 
 .tausch-leer {
@@ -88,19 +197,9 @@
   box-shadow: var(--shadow);
 }
 
-.tausch-anfrage.offen.eingehend {
+.tausch-anfrage.eingehend {
   border-color: #ffd34d;
   box-shadow: 0 0 0 2px rgba(255, 211, 77, .35), var(--shadow);
-}
-
-.tausch-anfrage:not(.offen) {
-  opacity: .7;
-  box-shadow: none;
-}
-
-.tausch-anfrage.angenommen {
-  opacity: 1;
-  border-color: #2fb66e;
 }
 
 .ta-kopf {
@@ -140,7 +239,6 @@
 .ta-karte {
   width: 100%;
   container-type: inline-size;
-  transition: transform .9s cubic-bezier(.5, 0, .2, 1);
 }
 
 .ta-karten figcaption {
@@ -158,23 +256,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-/* Tausch angenommen: die beiden Karten wechseln die Plätze */
-.tausch-anfrage.tauscht .ta-gibst .ta-karte {
-  transform: translateX(calc(100% + 48px)) rotate(8deg);
-}
-
-.tausch-anfrage.tauscht .ta-bekommst .ta-karte {
-  transform: translateX(calc(-100% - 48px)) rotate(-8deg);
-}
-
-.tausch-anfrage.tauscht .ta-pfeil {
-  animation: tausch-pfeil .9s ease-in-out;
-}
-
-@keyframes tausch-pfeil {
-  50% { scale: 1.6; rotate: 180deg; }
 }
 
 /* ---------- Tausch-Fenster ---------- */
@@ -303,4 +384,282 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
+}
+
+/* ---------- Tausch-Szene: ganzer Bildschirm (js/tauschen.js, data-art und data-phase) ----------
+   Die Karten stehen in der Mitte (46 % der Höhe) und bewegen sich nur mit transform und opacity.
+   --ts-album und --ts-freund sind die Wege zum Album unten und zum Freund oben. */
+.tausch-szene {
+  --ts-b: min(40vw, 230px, calc(40vh * 5 / 7));
+  --ts-album: translate(0, calc(54vh - 66px)) scale(.14);
+  --ts-freund: translate(0, calc(-46vh + 52px)) scale(.14);
+  --licht: #ffd34d;
+  position: fixed;
+  inset: 0;
+  z-index: 72;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 46%, #1c2c48 0%, #0a1222 55%, #04070d 100%);
+  color: #fff;
+  animation: viewin .35s var(--ease-out);
+  user-select: none;
+}
+
+/* Lichtstrahlen in der Farbe der neuen Karte, wenn getauscht wird */
+.ts-licht {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 160vmax;
+  height: 160vmax;
+  margin: -80vmax 0 0 -80vmax;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--licht) 55%, transparent) 0, transparent 22%),
+    repeating-conic-gradient(color-mix(in srgb, var(--licht) 30%, transparent) 0deg 5deg, transparent 5deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, transparent 45%);
+  mask-image: radial-gradient(circle, #000 0, transparent 45%);
+  opacity: 0;
+  transition: opacity .6s ease;
+  animation: ts-drehen 18s linear infinite;
+  pointer-events: none;
+}
+
+.tausch-szene[data-phase="tausch"] .ts-licht {
+  opacity: 1;
+}
+
+.tausch-szene:is([data-phase="rein"], [data-phase="fertig"]) .ts-licht {
+  opacity: .45;
+}
+
+@keyframes ts-drehen {
+  to { rotate: 360deg; }
+}
+
+/* der Freund oben */
+.ts-freund {
+  position: absolute;
+  top: calc(20px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  translate: -50% 0;
+}
+
+.ts-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #4aa3ff, #1b4590);
+  font: 800 30px/1 "Barlow Condensed", sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .45);
+}
+
+.ts-freund b {
+  font: 800 18px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .04em;
+}
+
+.tausch-szene:is([data-phase="treffen"], [data-phase="senden"]) .ts-avatar {
+  animation: ts-hops .5s var(--spring, ease-out);
+}
+
+.tausch-szene[data-phase="tausch"] .ts-avatar {
+  animation: ts-hops .5s var(--spring, ease-out) .7s;
+}
+
+/* dein Album unten */
+.ts-album {
+  position: absolute;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .08);
+  translate: -50% 0;
+  transition: box-shadow .4s ease, border-color .4s ease;
+}
+
+.ts-album b {
+  font: 800 15px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.ts-plus {
+  position: absolute;
+  top: -12px;
+  right: -14px;
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: linear-gradient(#ff4251, #c3101e);
+  font: 800 16px/1 "Barlow Condensed", sans-serif;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .4);
+  opacity: 0;
+}
+
+.tausch-szene[data-phase="raus"] .ts-album {
+  animation: ts-hops .5s var(--spring, ease-out);
+}
+
+.tausch-szene[data-art="tausch"]:is([data-phase="rein"], [data-phase="fertig"]) .ts-album {
+  border-color: var(--licht);
+  box-shadow: 0 0 0 2px var(--licht), 0 0 40px var(--licht);
+}
+
+.tausch-szene[data-art="tausch"][data-phase="fertig"] .ts-album {
+  animation: ts-hops .55s var(--spring, ease-out);
+}
+
+.tausch-szene[data-art="tausch"][data-phase="fertig"] .ts-plus {
+  opacity: 1;
+  animation: ts-plus .6s var(--spring, ease-out);
+}
+
+@keyframes ts-hops {
+  0%, 100% { scale: 1; }
+  45% { scale: 1.18; }
+}
+
+@keyframes ts-plus {
+  from { opacity: 0; scale: .2; translate: 0 10px; }
+}
+
+/* die beiden Karten */
+.ts-karte {
+  position: absolute;
+  top: calc(46% - var(--ts-b) * .7);
+  left: calc(50% - var(--ts-b) / 2);
+  z-index: 2;
+  width: var(--ts-b);
+  aspect-ratio: 5 / 7;
+  container-type: inline-size;
+  opacity: 0;
+  transition: transform .95s cubic-bezier(.2, .75, .2, 1), opacity .5s ease;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.ts-karte .karte {
+  height: 100%;
+}
+
+.ts-gibst {
+  transform: var(--ts-album);
+}
+
+.ts-bekommst {
+  transform: var(--ts-freund);
+}
+
+/* 1. deine Karte steigt aus dem Album, 2. die Karte des Freundes kommt von oben dazu */
+.tausch-szene:is([data-phase="raus"], [data-phase="treffen"], [data-phase="zeigen"]) .ts-gibst {
+  transform: translate(-60%, 0) rotate(-5deg);
+  opacity: 1;
+}
+
+.tausch-szene:is([data-phase="treffen"], [data-phase="zeigen"]) .ts-bekommst {
+  transform: translate(60%, 0) rotate(5deg);
+  opacity: 1;
+}
+
+/* beim Senden ist die gewünschte Karte noch blass: sie gehört ja noch dem Freund */
+.tausch-szene[data-art="gesendet"][data-phase="zeigen"] .ts-bekommst {
+  opacity: .55;
+}
+
+/* 3. Tausch: deine Karte fliegt zum Freund, die neue kommt gross in die Mitte */
+.tausch-szene[data-phase="tausch"] .ts-gibst {
+  transform: var(--ts-freund) rotate(-30deg);
+  opacity: 0;
+  transition: transform 1s cubic-bezier(.55, 0, .3, 1), opacity .5s ease .45s;
+}
+
+.tausch-szene[data-phase="tausch"] .ts-bekommst {
+  transform: scale(1.12);
+  opacity: 1;
+}
+
+/* 4. die neue Karte fliegt ins Album */
+.tausch-szene[data-phase="rein"] .ts-bekommst {
+  transform: var(--ts-album);
+  opacity: 0;
+  transition: transform .8s cubic-bezier(.6, 0, .8, .4), opacity .3s ease .55s;
+}
+
+/* Senden: beide Karten fliegen als Anfrage zum Freund */
+.tausch-szene[data-phase="senden"] :is(.ts-gibst, .ts-bekommst) {
+  transform: var(--ts-freund);
+  opacity: 0;
+  transition: transform .9s cubic-bezier(.55, 0, .3, 1), opacity .4s ease .5s;
+}
+
+/* Tausch-Zeichen zwischen den Karten */
+.ts-symbol {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  z-index: 3;
+  color: var(--licht);
+  font: 800 46px/1 "Source Sans 3", sans-serif;
+  text-shadow: 0 0 18px var(--licht);
+  opacity: 0;
+  translate: -50% -50%;
+  transition: opacity .35s ease;
+  pointer-events: none;
+}
+
+.tausch-szene:is([data-phase="treffen"], [data-phase="zeigen"]) .ts-symbol {
+  opacity: 1;
+  animation: ts-hops 1s ease-in-out infinite;
+}
+
+/* Text unter den Karten; am Ende gross in der Mitte, darunter der Knopf */
+.ts-text {
+  position: absolute;
+  top: calc(46% + var(--ts-b) * .7 + 26px);
+  left: 50%;
+  z-index: 4;
+  width: min(90vw, 460px);
+  margin: 0;
+  font: 800 24px/1.15 "Barlow Condensed", sans-serif;
+  letter-spacing: .02em;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+  translate: -50% 0;
+}
+
+.tausch-szene[data-phase="tausch"] .ts-text {
+  color: var(--licht);
+  font-size: 34px;
+  text-transform: uppercase;
+}
+
+.tausch-szene[data-phase="fertig"] .ts-text {
+  top: 36%;
+  font-size: 30px;
+  animation: viewin .4s var(--ease-out);
+}
+
+.ts-weiter {
+  position: absolute;
+  top: calc(36% + 110px);
+  left: 50%;
+  z-index: 5;
+  width: min(80vw, 300px);
+  translate: -50% 0;
+  animation: viewin .4s var(--ease-out) .15s both;
+}
+
+.ts-weiter[hidden] {
+  display: none;
 }
