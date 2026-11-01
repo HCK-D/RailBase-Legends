@@ -291,10 +291,19 @@ const Oeffnen = (() => {
     flip.setAttribute('aria-label', 'Nächste Karte');
   }
 
+  // Der Schriftzug gehört zur Karte: geht sie weg, blendet er schnell aus
+  // (sonst steht z. B. «Epic!» noch über der nächsten, verdeckten Karte)
+  function schriftzugWeg() {
+    $('op-stage').querySelectorAll('.gf-banner').forEach((b) => {
+      b.animate({ opacity: 0 }, { duration: 180, easing: 'ease-in', fill: 'forwards' }).onfinish = () => b.remove();
+    });
+  }
+
   function weiter(flip, richtung = 1) {
     if (flip.classList.contains('weg')) return;
     flip.classList.add('weg');
     Enthuellung.beenden();
+    schriftzugWeg();
     Gefuehl.ton('weg');
     flip.style.transition = 'transform .35s cubic-bezier(.4,0,.6,1), opacity .35s ease';
     flip.style.transform = `translateX(${richtung * 140}%) rotate(${richtung * 22}deg)`;
@@ -363,6 +372,7 @@ const Oeffnen = (() => {
   function zeigeUebersicht() {
     phase = 'uebersicht';
     Enthuellung.beenden(true);
+    schriftzugWeg();
     $('opener').classList.remove('einzeln', 'fx-laedt');
     $('op-einzeln').hidden = true;
     $('op-alle').hidden = true;
