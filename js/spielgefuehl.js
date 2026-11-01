@@ -327,6 +327,8 @@ const Gefuehl = (() => {
     $('kv-karte').innerHTML = karteHtml(id);
     $('kv-karte').className = `kv-karte ruht rar-${s.id}`;
     $('kv-info').textContent = `${s.name} · ${k.bahn} · ${anzahl}× in deiner Sammlung · Verwerten: ${wertVon(id)} RB Coins`;
+    $('kv-foto').innerHTML = fotoNachweisHtml(id);
+    $('kv-foto').hidden = !fotoVon(id);
     $('kv').hidden = false;
     document.body.classList.add('op-offen');
     ton('flip');

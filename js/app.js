@@ -1044,6 +1044,25 @@ document.addEventListener('DOMContentLoaded', () => {
   $('album-info-zu').addEventListener('click', albumInfoZu);
   $('album-info').addEventListener('click', (e) => { if (e.target === $('album-info')) albumInfoZu(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') albumInfoZu(); });
+  // Mehr → Bildnachweise: Fotograf und Lizenz jedes Kartenfotos (die Liste entsteht erst beim Öffnen)
+  const bildInfoZu = () => {
+    if ($('bild-info').hidden) return;
+    $('bild-info').hidden = true;
+    document.body.classList.remove('op-offen');
+  };
+  $('bild-info-knopf').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!$('bild-liste').childElementCount) {
+      $('bild-liste').innerHTML = KARTEN.filter((k) => fotoVon(k.id))
+        .map((k) => `<li><b>${k.id} ${esc(k.name)}</b><span>${fotoNachweisHtml(k.id)}</span></li>`).join('');
+    }
+    $('bild-info').hidden = false;
+    document.body.classList.add('op-offen');
+    $('bild-info-zu').focus({ preventScroll: true });
+  });
+  $('bild-info-zu').addEventListener('click', bildInfoZu);
+  $('bild-info').addEventListener('click', (e) => { if (e.target === $('bild-info')) bildInfoZu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') bildInfoZu(); });
   $('ton-an').addEventListener('change', (e) => {
     app.daten.ton = e.target.checked;
     speichern();

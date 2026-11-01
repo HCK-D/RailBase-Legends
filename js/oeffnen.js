@@ -104,6 +104,11 @@ const Oeffnen = (() => {
     xpVorher = app.daten.xp;
     besitzVorher = new Set(app.daten.karten);
     karten = zieheKarten(p.stufe, app.daten.geoeffnet);
+    // Fotos der Karten schon laden, während das Pack aufreisst (sonst ist das Bild beim Umdrehen kurz leer)
+    karten.forEach((id) => {
+      const f = fotoVon(id);
+      if (f) { const img = new Image(); img.src = f; img.decode().catch(() => {}); }
+    });
     // welche Karten man vorher noch nicht hatte (bei doppelten im selben Pack nur die erste)
     const besitz = new Set(app.daten.karten);
     neu = karten.map((id) => {

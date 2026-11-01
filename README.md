@@ -70,7 +70,7 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 
 - Chancen pro Pack festlegen (die Kartenliste legt nur die Seltenheit fest, nicht die Chancen)
 - Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
-- Fahrzeugbilder auf den Karten
+- Fahrzeugbilder für die 65 Karten, die noch die Zeichnung zeigen
 - Handy-Optimierung
 - Login und Online-Datenbank (eher gegen Ende des Projekts)
 
@@ -85,6 +85,7 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/app.js` | Seiten, Menü, Start, Packs-Karussell, Album, Konto, Level |
 | `js/karten.js` | Kategorien, Chancen, Garantie, XP, Karten-Aussehen |
 | `js/daten/kartenliste.js` | alle 308 Karten |
+| `js/daten/kartenfotos.js`, `assets/karten/fotos/` | Fotos von Railbase.ch auf 243 Karten, mit Fotograf und Lizenz (Bildnachweise unter «Mehr») |
 | `AGENTS.md` | Regeln für Codex und andere KI-Assistenten (was beim Design geändert werden darf) |
 | `design/` | Design-Vorlagen und Sicherungen, nur lokal (nicht auf GitHub) |
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |

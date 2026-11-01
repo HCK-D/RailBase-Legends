@@ -126,7 +126,16 @@ Sonstiges: `app`, `hinweis`
 | `.rar-special` | Special | Prismatisch und Schwarz | exklusive Komposition, besonderer Rahmen |
 
 Jede Karte hat: Karten-ID (`RB001`, `V01`, `S01`), Fahrzeug, Beiname, Bahn, Bereich, Seltenheit.
-Fahrzeugbilder gibt es noch nicht; im Moment steht eine Zug-Skizze als Platzhalter.
+
+### Fotos auf den Karten
+
+243 Karten zeigen ein Foto von Railbase.ch (`assets/karten/fotos/<id>.webp`, 520 × 589 px, schon auf das Bildfeld
+`.k-bild` zugeschnitten). Welche Karte ein Foto hat, und wer es gemacht hat, steht in `js/daten/kartenfotos.js`.
+Karten ohne Eintrag zeigen weiter die Zug-Zeichnung (`SZENE_SPRITE`).
+
+Die Fotos stammen fast alle aus Wikimedia Commons (CC BY, CC BY-SA, CC0, gemeinfrei). Die Lizenzen verlangen den
+Namen des Fotografen und die Lizenz: darum der Nachweis unter der Grossansicht (`#kv-foto`) und die Liste unter
+Mehr → Bildnachweise (`#bild-info`). **Beides muss bleiben.** Neue Fotos nur mit freier Lizenz oder vom Besitzer (HCKD).
 
 ## Bildschirmgrössen
 

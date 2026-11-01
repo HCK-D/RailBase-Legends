@@ -281,6 +281,22 @@ body.pack-offen > .handy ::after {
   text-align: center;
 }
 
+/* Fotonachweis unter der Karte: klein, Links unterstrichen */
+.kv-foto {
+  max-width: min(100%, 420px);
+  margin: -4px 0 0;
+  color: #a9b6c4;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.kv-foto a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .kv-tipp {
   margin: 0 0 4px;
   color: #a9b6c4;

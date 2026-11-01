@@ -274,6 +274,20 @@ function bildWahl(id) {
   return { bx: h % 101, spiegel: Math.floor(h / 7) % 2 === 1 };
 }
 
+// Foto von Railbase.ch (js/daten/kartenfotos.js), null = Karte zeigt die Zeichnung
+function fotoVon(id) {
+  return KARTEN_FOTOS[id] ? `assets/karten/fotos/${id.toLowerCase()}.webp` : null;
+}
+
+// Fotonachweis als HTML: «Foto: Name · CC BY-SA 4.0», Name verlinkt auf das Original, Lizenz auf den Lizenztext
+function fotoNachweisHtml(id) {
+  const f = KARTEN_FOTOS[id];
+  if (!f) return '';
+  const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text));
+  if (!f.lizenz) return `Foto: ${esc(f.foto)} (eigenes Foto)`;
+  return `Foto: ${link(f.quelle, f.foto)} · ${link(f.lizenzUrl, f.lizenz)} · zugeschnitten`;
+}
+
 // Vorderseite einer Karte: Rahmen in der Farbe der Seltenheit, oben zwei Laschen
 // (Nummer und Seltenheit), grosses Bild, unten Bahn, Name, Fahrzeug und Schweizer Flagge.
 // optionen.anzahl: wie oft man die Karte hat (Album), optionen.fehlt: noch nicht gefunden
@@ -287,6 +301,8 @@ function karteHtml(id, optionen = {}) {
   if (optionen.fehlt) klassen.push('fehlt');
   const bild = bildWahl(k.id);
   if (bild.spiegel) klassen.push('k-spiegel');
+  const foto = fotoVon(k.id);
+  if (foto) klassen.push('k-mit-foto');
   // lange Namen werden kleiner (--zeichen in css/karten.css), sehr lange bekommen zwei Zeilen
   const titel = kartenTitel(k);
   const lang = titel.gross.length > 26 ? ' sehr-lang' : '';
@@ -296,9 +312,11 @@ function karteHtml(id, optionen = {}) {
       style="--bahn:${BAHN_FARBE[k.bahn] || '#4A5560'};--bx:${bild.bx}%;--zeichen:${titel.gross.length}">
       <div class="k-flaeche">
         <div class="k-bild">
-          <svg class="k-szene" viewBox="0 -14 200 200" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
+          ${foto
+            ? `<img class="k-foto" src="${foto}" alt="" loading="lazy" decoding="async" draggable="false">`
+            : `<svg class="k-szene" viewBox="0 -14 200 200" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
             <use href="#k-szene"/><use href="#k-${art}"/>
-          </svg>
+          </svg>`}
           ${optionen.anzahl > 1 ? `<span class="k-anzahl">×${optionen.anzahl}</span>` : ''}
         </div>
         <span class="k-lasche k-lasche-l"><span class="k-nr">${k.id}</span></span>

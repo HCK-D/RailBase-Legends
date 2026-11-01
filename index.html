@@ -349,6 +349,7 @@
       <ul class="menu-list">
         <li><a href="#konto"><span>Konto und Design</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><a href="#freunde"><span>Freunde</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
+        <li><a href="#mehr" id="bild-info-knopf" role="button" aria-haspopup="dialog"><span>Bildnachweise</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Tauschen</span><small>bald</small></li>
         <li><span>Rangliste</span><small>bald</small></li>
         <li><span>Erfolge</span><small>bald</small></li>
@@ -511,6 +512,8 @@
     <div class="kv-karte" id="kv-karte"></div>
   </div>
   <p class="kv-info" id="kv-info"></p>
+  <!-- Fotonachweis (Fotograf und Lizenz), nur bei Karten mit Foto -->
+  <p class="kv-foto" id="kv-foto" hidden></p>
   <p class="kv-tipp">Bewege die Karte mit dem Finger</p>
   <button class="btn ghost op-close" type="button" id="kv-zu">Schliessen</button>
 </div>
@@ -581,6 +584,16 @@
   </div>
 </div>
 
+<!-- ===== BILDNACHWEISE (unter Mehr): Fotograf und Lizenz jedes Kartenfotos, Liste aus js/daten/kartenfotos.js ===== -->
+<div class="info-fenster" id="bild-info" hidden role="dialog" aria-modal="true" aria-labelledby="bild-info-titel">
+  <div class="info-box">
+    <h2 id="bild-info-titel">Bildnachweise</h2>
+    <p class="bild-info-text">Die Fotos auf den Karten stammen von Railbase.ch, die meisten aus Wikimedia Commons. Sie sind für die Karten zugeschnitten. Fotograf und Lizenz:</p>
+    <ul class="bild-liste" id="bild-liste"></ul>
+    <button class="btn" type="button" id="bild-info-zu">Schliessen</button>
+  </div>
+</div>
+
 <!-- ===== INFO ZUM GLÜCKSRAD (kleine Schaltfläche rechts unten im Rad, js/rad.js) ===== -->
 <div class="info-fenster" id="rad-info-fenster" hidden role="dialog" aria-modal="true" aria-labelledby="rad-info-titel">
   <div class="info-box">
@@ -601,6 +614,7 @@
 
 <script src="js/store.js"></script>
 <script src="js/daten/kartenliste.js"></script>
+<script src="js/daten/kartenfotos.js"></script>
 <script src="js/karten.js"></script>
 <script src="js/spielgefuehl.js"></script>
 <script src="js/taeglich.js"></script>

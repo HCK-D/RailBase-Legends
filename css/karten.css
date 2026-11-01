@@ -132,6 +132,28 @@
   filter: sepia(.45) saturate(.85);
 }
 
+/* Foto von Railbase.ch statt Zeichnung (js/daten/kartenfotos.js): füllt das ganze Bild,
+   das Alpen-Foto dahinter fällt weg. Das Licht der Seltenheit (::after) liegt etwas schwächer darüber. */
+.k-foto {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.karte.k-mit-foto .k-bild::before {
+  content: none;
+}
+
+.karte.k-mit-foto .k-bild::after {
+  opacity: .75;
+}
+
 /* ---------- Laschen oben: Nummer links, Seltenheit rechts ---------- */
 .k-lasche {
   position: absolute;
@@ -325,4 +347,35 @@
 
 :root[data-theme] .k-rueck::after {
   content: none !important;
+}
+
+/* ---------- Bildnachweise (Mehr → Bildnachweise) ---------- */
+.bild-info-text {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 14px;
+}
+
+.bild-liste {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.bild-liste li {
+  display: grid;
+  gap: 1px;
+  overflow-wrap: anywhere;
+}
+
+.bild-liste span {
+  color: var(--fg-2);
+}
+
+.bild-liste a {
+  color: inherit;
 }
