@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/bewegung.css">
   <link rel="stylesheet" href="css/spielgefuehl.css">
   <link rel="stylesheet" href="css/taeglich.css">
+  <link rel="stylesheet" href="css/erfolge.css">
   <link rel="stylesheet" href="css/karten.css">
 </head>
 <body>
@@ -50,6 +51,7 @@
   <symbol id="i-links" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-laden" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19.5h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   <symbol id="i-rechts" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pokal" viewBox="0 0 24 24"><path d="M7 3.5h10v5.5a5 5 0 0 1-10 0z" fill="currentColor"/><path d="M7 5.5H4.5V7a3.2 3.2 0 0 0 3.2 3.2M17 5.5h2.5V7a3.2 3.2 0 0 1-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.6 13.6h2.8v3.4h-2.8zM7.5 17.5h9v3h-9z" fill="currentColor"/></symbol>
 </svg>
 
 <div class="handy">
@@ -230,6 +232,7 @@
           <span class="avatar gross" id="avatar-gross">K</span>
           <div>
             <b id="profil-name">Sammler</b>
+            <span class="profil-titel" id="profil-titel" hidden></span>
             <span id="profil-level">Sammler-Level 1</span>
           </div>
         </div>
@@ -240,6 +243,11 @@
           </label>
           <button class="btn" type="submit">Speichern</button>
         </form>
+        <!-- Titel aus den Erfolgen (js/erfolge.js), erscheint erst mit dem ersten Titel -->
+        <label class="field titel-wahl" id="titel-wahl" hidden>
+          <span>Dein Titel</span>
+          <select id="konto-titel"></select>
+        </label>
       </div>
 
       <div class="panel">
@@ -315,6 +323,22 @@
     </div>
   </section>
 
+  <!-- ===== ERFOLGE (über Mehr erreichbar, js/erfolge.js) ===== -->
+  <section class="view" id="v-erfolge" data-view="erfolge" hidden>
+    <div class="titel-block links">
+      <h1>Erfolge</h1>
+      <p>Ziele, die bleiben. Jeder Erfolg bringt eine Belohnung.</p>
+    </div>
+    <div class="seite">
+      <div class="panel erf-kopf">
+        <div class="erf-kopf-zeile"><b id="erf-anzahl"></b><small id="erf-bereit"></small></div>
+        <span class="erf-balken" aria-hidden="true"><i id="erf-balken"></i></span>
+      </div>
+      <div class="erf-filter" id="erf-filter" role="group" aria-label="Erfolge filtern"></div>
+      <ul class="erf-liste" id="erf-liste"></ul>
+    </div>
+  </section>
+
   <!-- ===== MEHR ===== -->
   <section class="view" id="v-mehr" data-view="mehr" hidden>
     <div class="titel-block links">
@@ -328,6 +352,12 @@
         <span class="tb-eintrag-txt"><b>Tagesbelohnung und Aufgaben</b><small id="tb-eintrag-text"></small></span>
         <svg class="tb-eintrag-pfeil" width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg>
       </button>
+      <!-- Erfolge: eigene Seite (#erfolge, js/erfolge.js) -->
+      <a class="panel tb-eintrag erf-eintrag" id="erf-oeffnen" href="#erfolge">
+        <span class="tb-eintrag-icon" aria-hidden="true"><svg width="26" height="26"><use href="#i-pokal"/></svg></span>
+        <span class="tb-eintrag-txt"><b>Erfolge</b><small id="erf-eintrag-text"></small></span>
+        <svg class="tb-eintrag-pfeil" width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg>
+      </a>
       <!-- App für Android: APK aus PWABuilder in download/. Auf dem iPhone Hinweis auf Safari (js/app.js),
            in der installierten App ausgeblendet (css/taeglich.css) -->
       <a class="panel tb-eintrag app-laden" id="app-laden" href="download/railbase-legends.apk" download="RailBase-Legends.apk">
@@ -352,7 +382,6 @@
         <li><a href="#mehr" id="bild-info-knopf" role="button" aria-haspopup="dialog"><span>Bildnachweise</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><span>Tauschen</span><small>bald</small></li>
         <li><span>Rangliste</span><small>bald</small></li>
-        <li><span>Erfolge</span><small>bald</small></li>
         <li><span>Regeln und Chancen</span><small>bald</small></li>
         <li><span>Feedback an die Beta</span><small>bald</small></li>
       </ul>
@@ -622,6 +651,7 @@
 <script src="js/karten.js"></script>
 <script src="js/spielgefuehl.js"></script>
 <script src="js/taeglich.js"></script>
+<script src="js/erfolge.js"></script>
 <script src="js/app.js"></script>
 <script src="js/enthuellung.js"></script>
 <script src="js/oeffnen.js"></script>

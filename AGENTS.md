@@ -50,15 +50,15 @@ Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt
 Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-oeffnen-icon`, `gw-oeffnen-txt`, `gw-spaeter`
 Album: `st-entdeckt`, `st-karten`, `st-geoeffnet`, `rar-liste`, `al-suche`, `al-bahn`, `al-nur-meine`,
 `sam-titel`, `sam-karten`, `sam-leer`
-Konto: `avatar-gross`, `profil-name`, `profil-level`, `konto-form`, `konto-name`, `reset-btn`
+Konto: `avatar-gross`, `profil-name`, `profil-titel`, `profil-level`, `konto-form`, `konto-name`, `titel-wahl`, `konto-titel`, `reset-btn`
 Pack öffnen: `opener`, `op-titel`, `op-pack`, `op-img`, `op-tipp`, `op-einzeln`, `op-zaehler`, `op-slot`,
 `op-hilfe`, `op-karten`, `op-status`, `op-alle`, `op-close`
 Sonstiges: `app`, `hinweis`
 
 ### Attribute und Klassen, die der Code setzt oder liest
 
-- Seiten: `data-view="start|rad|album|shop|konto|freunde|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`.
-  Freunde und Konto erreicht man über Mehr (Freunde oben links, Konto und Design oben rechts)
+- Seiten: `data-view="start|rad|album|shop|konto|freunde|erfolge|mehr"`, Menü: `data-tab="…"` und `aria-current="page"`.
+  Freunde, Erfolge und Konto erreicht man über Mehr
 - Menü-Reihenfolge: Rad, Album, Start, Shop, Mehr. Start ist `.nav-mitte` mit `.nav-kappe` (hebt den Balken an)
   und `.nav-rund` (runder Knopf über dem Balken, nur auf dem Handy)
 - Design-Wahl: `data-design="light|dark"`; das aktive Design steht als `data-theme` auf `<html>`
@@ -103,6 +103,18 @@ Sonstiges: `app`, `hinweis`
 - Fenster: `tb`, `tb-serie`, `tb-tage`, `tb-holen`, `tb-holen-txt`, `tb-aufgaben`, `tb-bonus`, `tb-bonus-bild`, `tb-bonus-text`,
   `tb-bonus-knopf`, `tb-neu`, `tb-zu`. Eintrag auf der Mehr-Seite: `tb-oeffnen`, `tb-eintrag-text`. Aussehen: `css/taeglich.css`.
 - Das Fenster geht einmal am Tag von selbst auf, wenn die Serien-Belohnung bereit ist. Sonst: Start-Badge «Tagesbelohnung bereit» oder Mehr.
+
+## Erfolge
+
+- `js/erfolge.js` (`Erfolge`): Liste `ERFOLGE` (Gruppen in `ERFOLG_GRUPPEN`). Jeder Erfolg hat Stufen mit Ziel,
+  Belohnung (`{ muenzen }`, `{ rubine }` oder `{ pack }`) und manchmal einem Titel. Alle Mengen sind Platzhalter.
+- Der Fortschritt kommt meist aus dem Spielstand (Karten, Packs, Level, Freunde). Was dort fehlt, zählt
+  `Erfolge.zaehle('verwertet' | 'gekauft' | 'geschenkt' | 'doppeltImPack' | 'legendaryBasis' | 'nachtzug')`.
+- Gespeichert in `app.daten.erfolge` (`geschafft`, `abgeholt`, `zaehler`, siehe `store.js`), der gewählte Titel in `app.daten.titel`.
+  Eine geschaffte Stufe bleibt geschafft, auch wenn der Wert später sinkt.
+- Seite `#erfolge`: `erf-anzahl`, `erf-bereit`, `erf-balken`, `erf-filter` (`button[data-gruppe]` mit `aria-pressed`),
+  `erf-liste` (`li.erf.bereit|offen|geheim|fertig`, `[data-abholen]`, `[data-ziel]`). Eintrag auf der Mehr-Seite:
+  `erf-oeffnen`, `erf-eintrag-text`. Aussehen: `css/erfolge.css`.
 
 ## Freunde und Geschenke
 

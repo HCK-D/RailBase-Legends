@@ -36,6 +36,14 @@ const Store = (() => {
     },
     gratisZeit: null,  // Zeitpunkt (ms) des letzten Gratis-Packs
     radZeit: null,     // Zeitpunkt (ms) der letzten Drehung am Glücksrad
+    // Erfolge (js/erfolge.js): Zeitpunkt (ms), wann eine Stufe geschafft und wann sie abgeholt wurde, z. B. { 'sammler-1': 1761… }
+    erfolge: {
+      bekannt: false,    // true nach der ersten Prüfung; danach gibt es für jeden neuen Erfolg eine Meldung
+      geschafft: {},
+      abgeholt: {},
+      zaehler: {},       // was der Spielstand sonst nicht weiss, z. B. { verwertet: 3, gekauft: 1, serie: 7 }
+    },
+    titel: '',         // Titel aus den Erfolgen, steht im Konto unter dem Namen
   };
 
   function laden() {
@@ -51,6 +59,7 @@ const Store = (() => {
         karten: Array.isArray(daten.karten) ? daten.karten.filter((k) => typeof k === 'string') : [],
         ungesehen: Array.isArray(daten.ungesehen) ? daten.ungesehen.filter((k) => typeof k === 'string') : [],
         taeglich: { ...structuredClone(STANDARD.taeglich), ...(daten.taeglich || {}) },
+        erfolge: { ...structuredClone(STANDARD.erfolge), ...(daten.erfolge || {}) },
         eingeloest: Array.isArray(daten.eingeloest) ? daten.eingeloest.filter((k) => typeof k === 'string') : [],
       };
     } catch (e) {

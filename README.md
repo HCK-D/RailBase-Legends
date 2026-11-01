@@ -46,6 +46,10 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 - 7 Karten-Kategorien: Common, Uncommon, Rare, Epic, Mythic, Legendary, Special
 - Karten-Skizze (Platzhalter-Design) mit Nummer, Kategorie, Bild, Name und Werten
 - Album mit allen gezogenen Karten, Filter nach Kategorie
+- **Erfolge** (Mehr → Erfolge, `js/erfolge.js`): 34 Erfolge mit 61 Stufen in 6 Gruppen (Sammeln, Bahnen,
+  Packs, Treue, Freunde, Geheim). Jede Stufe hat eine Belohnung (RB Coins, Rubine oder ein Pack),
+  grosse Erfolge zusätzlich einen Titel, der im Konto unter dem Namen steht. Der Fortschritt kommt aus dem
+  Spielstand, also zählt auch, was man vorher schon gesammelt hat. Ziele und Belohnungen sind Platzhalter.
 - Menü unten: Start, Packs, Rad, Album, Mehr; roter Punkt, wenn etwas bereit ist
 - Auf dem Handy nach links oder rechts wischen, um die Seite zu wechseln
 
@@ -95,6 +99,8 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/oeffnen.js` | Pack öffnen, Karten einzeln aufdecken und wegwischen |
 | `js/enthuellung.js` | Enthüllung ab Epic: Aufladen mit Farbstufen, Knall, Strahlen, Funken und Konfetti (auf canvas gemalt) |
 | `js/rad.js` | Glücksrad |
+| `js/taeglich.js`, `css/taeglich.css` | Tagesbelohnung (Login-Serie) und Tagesaufgaben |
+| `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen und Titeln (Liste `ERFOLGE` am Anfang der Datei) |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |

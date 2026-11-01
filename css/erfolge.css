@@ -1,0 +1,268 @@
+/* Erfolge: Seite unter Mehr (#erfolge, js/erfolge.js), Eintrag auf der Mehr-Seite und Titel im Konto.
+   Abholen-Knopf, Balken, Stand und Belohnung kommen aus css/taeglich.css (.tb-abholen, .tb-balken, .tb-stand, .tb-lohn). */
+
+/* ---------- Eintrag auf der Mehr-Seite: wie die Tagesbelohnung, aber blau ---------- */
+.erf-eintrag {
+  border-color: rgba(74, 163, 255, .6) !important;
+  background: linear-gradient(135deg, rgba(74, 163, 255, .16), var(--surface)) !important;
+  text-decoration: none;
+}
+
+.erf-eintrag .tb-eintrag-icon {
+  background: linear-gradient(180deg, #7fb6ff, #2f6fd6);
+  color: #fff;
+  box-shadow: 0 3px 0 #1b4590;
+}
+
+/* ---------- Kopf: wie viele geschafft ---------- */
+.erf-kopf {
+  gap: 10px;
+}
+
+.erf-kopf-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.erf-kopf-zeile b {
+  font: 800 26px/1 "Barlow Condensed", sans-serif;
+}
+
+.erf-kopf-zeile small {
+  color: var(--fg-2);
+  font-size: 14px;
+}
+
+.erf-balken {
+  display: block;
+  height: 8px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.erf-balken i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffb800, #ffd34d);
+  transition: width .6s var(--ease-out);
+}
+
+/* ---------- Filter: Alle, Sammeln, Bahnen … (scrollt seitlich, wenn der Platz fehlt) ---------- */
+.erf-filter {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.erf-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.erf-filter button {
+  flex: none;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg-2);
+  font: 700 15px/1 "Source Sans 3", sans-serif;
+  cursor: pointer;
+}
+
+.erf-filter button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
+/* ---------- Liste der Erfolge ---------- */
+.erf-liste {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.erf {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.erf.bereit {
+  border-color: #ffd34d;
+  box-shadow: 0 0 0 2px rgba(255, 211, 77, .35), var(--shadow);
+}
+
+.erf.fertig {
+  opacity: .62;
+  box-shadow: none;
+}
+
+/* Medaille links: Farbe der Stufe (Bronze bis Legende), der Bahn oder der Seltenheit (--erf) */
+.erf-medaille {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 2px solid var(--erf);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--erf) 16%, var(--surface));
+  color: var(--erf);
+}
+
+.erf-medaille b {
+  font: 800 16px/1 "Barlow Condensed", sans-serif;
+}
+
+.erf-medaille b.lang {
+  font-size: 12px;
+}
+
+.erf-medaille img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.erf.geheim .erf-medaille {
+  --erf: var(--fg-2);
+  border-style: dashed;
+  background: transparent;
+}
+
+.erf.bereit .erf-medaille,
+.erf.fertig .erf-medaille {
+  background: var(--erf);
+  color: #fff;
+}
+
+.erf.bereit .erf-medaille {
+  animation: tb-hops 1.4s ease-in-out infinite;
+}
+
+.erf-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+button.erf-text {
+  cursor: pointer;
+}
+
+.erf-text b {
+  font: 700 16px/1.2 "Source Sans 3", sans-serif;
+}
+
+.erf-text small {
+  color: var(--fg-2);
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.erf-text .erf-titel {
+  color: #a8761a;
+  font-weight: 700;
+}
+
+.erf-text .tb-balken {
+  margin-top: 4px;
+  background: var(--surface-2);
+}
+
+/* Stufen als kleine Striche: farbig = abgeholt */
+.erf-stufen {
+  display: flex;
+  gap: 3px;
+}
+
+.erf-stufen i {
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+}
+
+.erf-stufen i.an {
+  background: var(--erf);
+}
+
+.erf-rechts {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.erf .tb-lohn {
+  color: #a8761a;
+}
+
+.erf .tb-lohn img.ist-pack {
+  width: auto;
+  height: 28px;
+  border-radius: 2px;
+}
+
+.erf .tb-stand,
+.erf .tb-erledigt {
+  min-width: 0;
+  color: var(--fg-2);
+}
+
+.erf .tb-erledigt {
+  color: #2fb66e;
+}
+
+[data-theme="dark"] .erf .tb-lohn,
+[data-theme="dark"] .erf-text .erf-titel {
+  color: #ffd34d;
+}
+
+/* ---------- Konto: Titel unter dem Namen und Auswahl ---------- */
+#v-konto .profil-titel {
+  color: #a8761a;
+  font-weight: 800;
+}
+
+[data-theme="dark"] #v-konto .profil-titel {
+  color: #ffd34d;
+}
+
+.titel-wahl select {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-flach);
+  color: var(--fg);
+  font: inherit;
+}
+
+.titel-wahl select:focus {
+  outline: none;
+  border-color: var(--accent);
+}

@@ -126,6 +126,10 @@ const Oeffnen = (() => {
     Taeglich.zaehle('packs');
     Taeglich.zaehle('neu', neu.filter(Boolean).length);
     Taeglich.zaehle('selten', karten.filter((id) => rangVon(karteVonId(id).seltenheit) >= rangVon('rare')).length);
+    // Geheime Erfolge: zwei gleiche Karten, Legendary aus einem Basis-Pack, Pack in der Nacht
+    if (new Set(karten).size < karten.length) Erfolge.zaehle('doppeltImPack');
+    if (p.stufe === 'standard' && karten.some((id) => karteVonId(id).seltenheit === 'legendary')) Erfolge.zaehle('legendaryBasis');
+    if (new Date().getHours() < 5) Erfolge.zaehle('nachtzug');
     const levelVorher = levelVon(app.daten.xp).level;
     xpGewinn = xpVon(karten);
     app.daten.xp += xpGewinn;

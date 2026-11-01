@@ -308,6 +308,7 @@ function aktualisiereAlles() {
   zeichneKonto();
   zeichneShop();
   Taeglich.zeichne();
+  Erfolge.zeichne();
   zeichnePunkte();
 }
 
@@ -388,7 +389,7 @@ function zeichnePunkte() {
   document.querySelector('[data-tab="start"]').classList.toggle('punkt', gratisBereit() || vorratGesamt() > 0);
   document.querySelector('[data-tab="rad"]').classList.toggle('punkt', Rad.bereit());
   document.querySelector('[data-tab="album"]').classList.toggle('punkt', app.daten.ungesehen.length > 0);
-  document.querySelector('[data-tab="mehr"]').classList.toggle('punkt', Taeglich.etwasBereit());
+  document.querySelector('[data-tab="mehr"]').classList.toggle('punkt', Taeglich.etwasBereit() || Erfolge.etwasBereit());
 }
 
 // ---------- Packs: Reiter, Karussell, Ticket ----------
@@ -600,6 +601,7 @@ async function verwerteDoppelte(id, knopf) {
   if (knopf && knopf.isConnected) Gefuehl.muenzFlug(knopf, MUENZ_BILD.muenzen, Math.min(8, 2 + Math.ceil(preis / 10)));
   speichern();
   Taeglich.zaehle('verwerten');
+  Erfolge.zaehle('verwertet');
   aktualisiereAlles();
   zeigeHinweis(`+${preis} RB Coins für ${k.name}.`);
   return true;
@@ -686,6 +688,7 @@ async function kaufePack(id) {
   app.daten.vorrat[id] = vorratVon(id) + 1;
   speichern();
   Taeglich.zaehle('kauf');
+  Erfolge.zaehle('gekauft');
   aktualisiereAlles();
   Gefuehl.ton('muenze');
   Gefuehl.vibriere(15);
@@ -870,6 +873,7 @@ async function verschenkePack(id) {
   app.daten.geschenkZeit = Date.now();
   const code = geschenkCode(id, freund);
   speichern();
+  Erfolge.zaehle('geschenkt');
   aktualisiereAlles();
   Gefuehl.ton('gewinn');
   Gefuehl.vibriere([30, 40, 60]);
@@ -1023,6 +1027,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Rad.init();
   Gefuehl.init();
   Taeglich.init();
+  Erfolge.init();
 
   $('start-badge').addEventListener('click', startKnopf);
   $('konto-form').addEventListener('submit', speichereName);
