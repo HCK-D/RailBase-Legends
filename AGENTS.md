@@ -137,8 +137,11 @@ Sonstiges: `app`, `hinweis`
   `tausch-wunsch-leer`, `tausch-doppelte`, `tausch-doppelte-leer`; Vergangen `tausch-vergangen` (kurze Zeilen `li.tv-zeile.<status>`),
   `tausch-vergangen-leer`.
 - Tausch-Szene über den ganzen Bildschirm (`tausch-szene`, `data-art="tausch|gesendet"`, `data-phase`): beim Tausch
-  `raus` (deine Karte steigt aus dem Album) → `treffen` (die Karte des Freundes kommt von oben) → `tausch` (Plätze tauschen,
-  Licht in der Farbe der neuen Karte, `--licht`) → `rein` (neue Karte ins Album) → `fertig`; beim Senden `zeigen` → `senden`.
+  `raus` (deine Karte steigt aus dem Album-Knopf im Menü) → `treffen` (die Karte des Freundes kommt von oben) → `tausch`
+  (Plätze tauschen, Licht in der Farbe der neuen Karte, `--licht`) → `rein` (neue Karte fliegt in den Album-Knopf) → `fertig`
+  (Album-Knopf hüpft, leuchtet `.ts-leuchtet` und zeigt `.ts-plus` «+1»); beim Senden `zeigen` → `senden`.
+  Das Menü bleibt dabei über der Szene sichtbar (`body.tausch-laeuft`); die Wege `--ts-album` und `--ts-freund` misst
+  `messeWege()` am echten Album-Knopf (Handy unten, Computer oben).
   IDs: `ts-gibst`, `ts-bekommst`, `ts-avatar`, `ts-freund-name`, `ts-text`, `ts-weiter`. Antippen springt ans Ende.
   Fenster: `tausch-fenster`, `tausch-schritt`, `tausch-titel`, `tausch-text`, `tausch-inhalt` (`[data-freund]`, `[data-wahl]`),
   `tausch-zurueck`, `tausch-senden`. Unter Mehr: `tausch-oeffnen` mit roter Zahl `tausch-zahl` (Anfragen an dich).

@@ -388,7 +388,8 @@
 
 /* ---------- Tausch-Szene: ganzer Bildschirm (js/tauschen.js, data-art und data-phase) ----------
    Die Karten stehen in der Mitte (46 % der Höhe) und bewegen sich nur mit transform und opacity.
-   --ts-album und --ts-freund sind die Wege zum Album unten und zum Freund oben. */
+   --ts-album und --ts-freund sind die Wege zum Album-Knopf im Menü und zum Freund oben; js/tauschen.js misst sie
+   beim Start genau aus (messeWege), die Werte hier gelten nur bis dahin. */
 .tausch-szene {
   --ts-b: min(40vw, 230px, calc(40vh * 5 / 7));
   --ts-album: translate(0, calc(54vh - 66px)) scale(.14);
@@ -447,6 +448,13 @@
   translate: -50% 0;
 }
 
+/* auf dem Computer steht das Menü oben: der Freund kommt darunter */
+@media (min-width: 1100px) {
+  .ts-freund {
+    top: 92px;
+  }
+}
+
 .ts-avatar {
   display: grid;
   place-items: center;
@@ -472,57 +480,49 @@
   animation: ts-hops .5s var(--spring, ease-out) .7s;
 }
 
-/* dein Album unten */
-.ts-album {
-  position: absolute;
-  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  padding: 10px 18px;
-  border: 1px solid rgba(255, 255, 255, .2);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .08);
-  translate: -50% 0;
-  transition: box-shadow .4s ease, border-color .4s ease;
+/* Das Menü bleibt über der Szene sichtbar: die Karten kommen aus dem Album-Knopf und fliegen wieder hinein.
+   Seite und Kopfzeile dahinter sind verdeckt und ruhen. Das Menü lässt sich währenddessen nicht antippen. */
+body.tausch-laeuft .tabbar {
+  z-index: 74;
+  pointer-events: none;
 }
 
-.ts-album b {
-  font: 800 15px/1 "Barlow Condensed", sans-serif;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+body.tausch-laeuft > .handy > :is(#app, .topbar) {
+  visibility: hidden;
+  transition: visibility 0s linear .35s;
 }
 
-.ts-plus {
-  position: absolute;
-  top: -12px;
-  right: -14px;
-  padding: 4px 9px;
-  border-radius: 99px;
-  background: linear-gradient(#ff4251, #c3101e);
-  font: 800 16px/1 "Barlow Condensed", sans-serif;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .4);
-  opacity: 0;
+body.tausch-laeuft #app :is(*, ::before, ::after) {
+  animation-play-state: paused !important;
 }
 
-.tausch-szene[data-phase="raus"] .ts-album {
-  animation: ts-hops .5s var(--spring, ease-out);
+.tabbar [data-tab="album"] {
+  position: relative;
 }
 
-.tausch-szene[data-art="tausch"]:is([data-phase="rein"], [data-phase="fertig"]) .ts-album {
-  border-color: var(--licht);
-  box-shadow: 0 0 0 2px var(--licht), 0 0 40px var(--licht);
-}
-
-.tausch-szene[data-art="tausch"][data-phase="fertig"] .ts-album {
+.tabbar [data-tab="album"].ts-hops {
   animation: ts-hops .55s var(--spring, ease-out);
 }
 
-.tausch-szene[data-art="tausch"][data-phase="fertig"] .ts-plus {
-  opacity: 1;
+.tabbar [data-tab="album"].ts-leuchtet {
+  border-radius: 14px;
+  box-shadow: 0 0 0 2px var(--licht), 0 0 26px var(--licht);
+  transition: box-shadow .4s ease;
+}
+
+.tabbar [data-tab="album"] .ts-plus {
+  position: absolute;
+  top: -8px;
+  right: 2px;
+  z-index: 2;
+  padding: 3px 7px;
+  border-radius: 99px;
+  background: linear-gradient(#ff4251, #c3101e);
+  color: #fff;
+  font: 800 14px/1 "Barlow Condensed", sans-serif;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .4);
   animation: ts-plus .6s var(--spring, ease-out);
+  pointer-events: none;
 }
 
 @keyframes ts-hops {

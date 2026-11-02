@@ -244,11 +244,36 @@ const Tauschen = (() => {
   }
 
   // ---------- Tausch-Szene über den ganzen Bildschirm ----------
-  // «tausch»: deine Karte steigt aus dem Album, die Karte des Freundes kommt von oben, sie tauschen die Plätze,
-  // deine fliegt zum Freund, die neue ins Album. «gesendet»: beide Karten fliegen als Anfrage zum Freund.
+  // «tausch»: deine Karte steigt aus dem Album-Knopf im Menü, die Karte des Freundes kommt von oben, sie tauschen
+  // die Plätze, deine fliegt zum Freund, die neue in den Album-Knopf. «gesendet»: beide Karten fliegen zum Freund.
+  // Das Menü bleibt dabei über der Szene sichtbar (body.tausch-laeuft, css/tauschen.css).
   // Antippen springt ans Ende. Kommen mehrere Szenen kurz nacheinander, warten sie, bis die vorige fertig ist.
   const szenen = [];
   let szene = null; // { art, uhren, ende }
+
+  // Album-Knopf im Menü: auf dem Handy unten zwischen Rad und Start, auf dem Computer oben
+  const albumKnopf = () => document.querySelector('.tabbar [data-tab="album"]');
+
+  // Wege der Karten von der Mitte (46 % der Höhe) zum Album-Knopf und zum Freund oben, in Pixeln gemessen
+  function messeWege(el) {
+    const weg = (ziel) => {
+      const r = ziel.getBoundingClientRect();
+      const x = Math.round(r.left + r.width / 2 - innerWidth / 2);
+      const y = Math.round(r.top + r.height / 2 - innerHeight * 0.46);
+      return `translate(${x}px, ${y}px) scale(.12)`;
+    };
+    const knopf = albumKnopf();
+    el.style.setProperty('--ts-album', weg(knopf.querySelector('svg') || knopf));
+    el.style.setProperty('--ts-freund', weg($('ts-avatar')));
+  }
+
+  // Der Album-Knopf hüpft, wenn eine Karte herauskommt oder hineinfliegt
+  function knopfHops() {
+    const knopf = albumKnopf();
+    knopf.classList.remove('ts-hops');
+    void knopf.offsetWidth;
+    knopf.classList.add('ts-hops');
+  }
 
   function spieleSzene(art, a) {
     szenen.push({ art, a });
@@ -281,7 +306,9 @@ const Tauschen = (() => {
     $('ts-text').textContent = '';
     $('ts-weiter').hidden = true;
     el.hidden = false;
-    document.body.classList.add('op-offen', 'pack-offen');
+    document.body.classList.add('op-offen', 'tausch-laeuft');
+    albumKnopf().style.setProperty('--licht', farbe);
+    messeWege(el);
     // Fotos schon laden, bevor die Karten ins Bild fliegen
     el.querySelectorAll('img').forEach((img) => { img.loading = 'eager'; });
 
@@ -295,23 +322,28 @@ const Tauschen = (() => {
       szene.uhren = [];
       if (art === 'gesendet') return schliesseSzene();
       phase('fertig', `${titelVon(bekommst)} ist jetzt in deinem Album.${neu ? ' Neu in deiner Sammlung!' : ''}`);
+      // Album-Knopf im Menü: hüpft, leuchtet und zeigt «+1»
+      const knopf = albumKnopf();
+      knopfHops();
+      knopf.classList.add('ts-leuchtet');
+      if (!knopf.querySelector('.ts-plus')) knopf.insertAdjacentHTML('beforeend', '<span class="ts-plus" aria-hidden="true">+1</span>');
       $('ts-weiter').hidden = false;
       $('ts-weiter').focus({ preventScroll: true });
     };
     const schritte = art === 'tausch'
       ? [
-        [200, () => phase('raus', `Du gibst ${titelVon(gibst)}`, 'weg')],
+        [200, () => { phase('raus', `Du gibst ${titelVon(gibst)}`, 'weg'); knopfHops(); }],
         [1400, () => phase('treffen', `${wer} gibt dir ${titelVon(bekommst)}`, 'flip')],
         [2700, () => {
           phase('tausch', neu ? 'Neu für dich!' : 'Getauscht!', 'gewinn');
           Gefuehl.vibriere([30, 40, 80]);
           Gefuehl.konfetti([farbe, '#ffd34d', '#ffffff', '#4aa3ff'], 70);
         }],
-        [4300, () => phase('rein', `${titelVon(bekommst)} kommt in dein Album`, 'weg')],
+        [4300, () => { messeWege(el); phase('rein', `${titelVon(bekommst)} kommt in dein Album`, 'weg'); }],
         [5200, () => { Gefuehl.ton('muenze'); Gefuehl.vibriere(20); ende(); }],
       ]
       : [
-        [200, () => phase('zeigen', `Du bietest ${titelVon(gibst)} für ${titelVon(bekommst)}`, 'tipp')],
+        [200, () => { phase('zeigen', `Du bietest ${titelVon(gibst)} für ${titelVon(bekommst)}`, 'tipp'); knopfHops(); }],
         [1700, () => phase('senden', `Anfrage an ${wer} gesendet`, 'weg')],
         [3100, ende],
       ];
@@ -323,8 +355,11 @@ const Tauschen = (() => {
     szene.uhren.forEach(clearTimeout);
     szene = null;
     $('tausch-szene').hidden = true;
-    document.body.classList.remove('pack-offen');
+    document.body.classList.remove('tausch-laeuft');
     if (!fensterOffen()) document.body.classList.remove('op-offen');
+    const knopf = albumKnopf();
+    knopf.classList.remove('ts-hops', 'ts-leuchtet');
+    knopf.querySelectorAll('.ts-plus').forEach((p) => p.remove());
     aktualisiereAlles();
     setTimeout(naechsteSzene, 300);
   }
