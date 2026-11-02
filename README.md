@@ -35,8 +35,14 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 
 - Zwei Designs: **Silber** (hell) und **Schwarz** (dunkel), wählbar unter Konto
 - Kopfzeile mit Konto-Knopf (Anfangsbuchstabe), Sammler-Level und XP-Balken
+- **Anmelden beim Start (Pflicht)** mit E-Mail und Passwort oder mit Google (`js/online.js`, Online-Datenbank
+  Supabase, Tabellen und Regeln in `werkzeuge/datenbank.sql`). Der Spielstand wird online gesichert und ist auf
+  jedem Gerät gleich; ohne Netz spielt man mit dem Spielstand auf dem Gerät weiter. Bisherige Spielstände ziehen
+  beim ersten Konto mit um. Im Konto: «Angemeldet als …», Online-Status und Abmelden.
 - Erster Start: Willkommens-Fenster mit allem, was man bekommt (100 RB Coins, Gratis-Pack, Startbonus,
   Glücksrad, Tagesbelohnung) und unten «Annehmen»; erst dann gibt es das Startguthaben
+- Danach eine **kurze Einführung** in 5 Schritten (`js/einfuehrung.js`): Packs öffnen, Karten, Glücksrad, Album.
+  Sie zeigt auf die echten Knöpfe im Menü und lässt sich unter Mehr → Kurze Einführung wiederholen.
 - Start: «Dein nächster Fund.» mit Basis-Pack auf dem Podest und grossem Knopf «Pack öffnen»
 - Gratis-Pack: 1 Basis-Pack alle 24 Stunden (ab dem Zeitpunkt, an dem man es geholt hat)
 - Packs: «Wähle dein Pack» mit Reitern Basis/Silver/Gold/Platinum, Karussell zum Wischen
@@ -90,10 +96,8 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 - Das richtige Design (Anleitung für Codex: `AGENTS.md`, Mockups in `design/mockups/`)
 - Fotos für die 68 Karten, die deshalb noch nicht im Spiel sind
 - Handy-Optimierung
-- Login und Online-Datenbank (eher gegen Ende des Projekts). Damit startet auch das Tauschen:
-  Für die Datenbank kommt in `js/tauschen.js` nur eine weitere Server-Fassung dazu (siehe AGENTS.md → Tauschen).
-
-Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eigenen Spielstand.
+- «Passwort vergessen» und Bestätigungs-Mails: brauchen einen eigenen Mail-Versand (SMTP) in Supabase.
+  Mit dem Gratis-Mailversand gehen Mails nur an das eigene Team; darum ist «Confirm email» für die Beta aus.
 
 ## Ordner
 
@@ -112,7 +116,10 @@ Bis dahin speichert die Seite alles im Browser. Jedes Gerät hat also seinen eig
 | `js/rad.js` | Glücksrad |
 | `js/taeglich.js`, `css/taeglich.css` | Tagesbelohnung (Login-Serie) und Tagesaufgaben |
 | `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen und Titeln (Liste `ERFOLGE` am Anfang der Datei) |
-| `js/tauschen.js`, `css/tauschen.css` | Tauschen und Wunschliste; der Teil für die Datenbank steht im Server-Objekt |
+| `js/tauschen.js`, `css/tauschen.css` | Tauschen und Wunschliste; online prüft und entscheidet der Server (`onlineServer`) |
+| `js/online.js`, `css/anmelden.css` | Anmelden, Spielstand online, Freunde-Namen, Geschenke (Supabase) |
+| `werkzeuge/datenbank.sql` | Tabellen, Regeln und Server-Funktionen der Datenbank (im Supabase SQL Editor ausführen) |
+| `js/einfuehrung.js`, `css/einfuehrung.css` | kurze Einführung für neue Spieler |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |

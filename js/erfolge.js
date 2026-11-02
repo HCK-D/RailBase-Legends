@@ -165,8 +165,8 @@ const ERFOLGE = [
   },
   {
     id: 'beschenkt', gruppe: 'freunde', name: 'Beschenkt', icon: 'i-gift', seite: 'konto',
-    text: () => 'Löse ein Geschenk von einem Freund ein',
-    wert: (l) => l.beschenkt,
+    text: () => 'Bekomme ein Geschenk von einem Freund',
+    wert: (l) => l.beschenkt + (l.z.beschenkt || 0),
     stufen: [{ ziel: 1, belohnung: { muenzen: 30 } }],
   },
   // ---------- Geheim: was man tun muss, steht erst da, wenn man es geschafft hat ----------

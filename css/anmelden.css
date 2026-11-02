@@ -1,0 +1,184 @@
+/* Anmelden beim Start (js/online.js): ganzer Bildschirm, gleiche Farben wie Willkommen (css/taeglich.css).
+   Logo und Titel nutzen .wk-logo und .wk-titel von dort. */
+.anmelden {
+  position: fixed;
+  inset: 0;
+  z-index: 74;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background:
+    repeating-conic-gradient(from 0deg at 50% 18%, transparent 0deg 14deg, rgba(255, 211, 77, .04) 15deg 19deg, transparent 20deg 34deg),
+    radial-gradient(ellipse at 50% 15%, #2d3f63, #121a2b 55%, #070b14);
+  color: #eef3f8;
+  animation: viewin .3s var(--ease-out);
+}
+
+.am-box {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: min(100%, 400px);
+  margin: 0;
+}
+
+.am-box .wk-titel {
+  font-size: 38px;
+}
+
+/* Anmelden oder neues Konto */
+.am-reiter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .05);
+}
+
+.am-reiter button {
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: #a9b6c4;
+  font: 800 16px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.am-reiter button[aria-selected="true"] {
+  background: linear-gradient(180deg, #ffd34d, #f5a300);
+  color: #3a2700;
+}
+
+/* Google: weisser Knopf mit dem farbigen G */
+.am-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #1f1f1f;
+  font: 700 16px/1 "Source Sans 3", sans-serif;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+  cursor: pointer;
+}
+
+.am-google:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.am-oder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 2px 0;
+  color: #8796a8;
+  font-size: 13px;
+}
+
+.am-oder::before,
+.am-oder::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, .14);
+}
+
+.am-feld {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.am-feld span {
+  color: #c9d4e0;
+  font: 700 13px/1 "Source Sans 3", sans-serif;
+}
+
+.am-feld input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+}
+
+.am-feld input::placeholder {
+  color: #7f8da0;
+}
+
+.am-feld input:focus {
+  outline: none;
+  border-color: #ffd34d;
+  box-shadow: 0 0 0 3px rgba(255, 211, 77, .25);
+}
+
+.am-meldung {
+  width: 100%;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 66, 81, .16);
+  color: #ffb3b9;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.am-meldung.gut {
+  background: rgba(47, 182, 110, .16);
+  color: #8ff0b8;
+}
+
+.am-los {
+  margin-top: 4px;
+}
+
+.am-los:disabled {
+  filter: grayscale(.4);
+  opacity: .7;
+}
+
+.am-nochmals {
+  width: 100%;
+  color: #fff;
+  border-color: rgba(255, 255, 255, .3);
+}
+
+.am-klein {
+  margin: 0;
+  color: #8796a8;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Konto: angemeldet als …, Abmelden und Zurücksetzen nebeneinander */
+.konto-email {
+  display: block;
+  margin-top: 2px;
+  color: var(--fg);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.konto-knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

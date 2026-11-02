@@ -1,8 +1,8 @@
 /*
  * Speicher-Schicht.
- * Im Moment liegen die Daten im Browser (localStorage). Später wird nur dieser Teil
- * gegen eine Online-Datenbank ausgetauscht. Die App ruft nur Store.laden(),
- * Store.speichern() und Store.zuruecksetzen() auf.
+ * Die Daten liegen zuerst im Browser (localStorage), damit alles sofort und auch ohne Netz geht.
+ * js/online.js schickt den Spielstand danach zusätzlich in die Online-Datenbank (Supabase).
+ * Die App ruft Store.laden(), Store.speichern(), Store.zuruecksetzen() und Store.ausDaten() auf.
  */
 const Store = (() => {
   const SCHLUESSEL = 'sk-beta-v1';
@@ -44,26 +44,38 @@ const Store = (() => {
       zaehler: {},       // was der Spielstand sonst nicht weiss, z. B. { verwertet: 3, gekauft: 1, serie: 7 }
     },
     titel: '',         // Titel aus den Erfolgen, steht im Konto unter dem Namen
-    wunschliste: [],   // Karten-IDs, die man sucht (Tauschen, js/tauschen.js; später für Freunde sichtbar)
+    wunschliste: [],   // Karten-IDs, die man sucht (Tauschen, js/tauschen.js; Freunde sehen sie beim Tauschen)
+    tauschErledigt: [], // IDs der angenommenen Tausche, die in diesem Spielstand schon umgesetzt sind (js/tauschen.js)
+    zeit: 0,           // Zeitpunkt (ms) der letzten Änderung: beim Verbinden mit der Datenbank gewinnt der neuere Spielstand
+    konto: '',         // zu welchem Online-Konto dieser Spielstand gehört (js/online.js), leer = noch keinem
+    einfuehrung: false, // kurze Einführung gesehen (js/einfuehrung.js); kommt sonst nach dem Willkommen
   };
+
+  const textListe = (liste) => (Array.isArray(liste) ? liste.filter((k) => typeof k === 'string') : []);
+
+  // Gespeicherte Daten (aus dem Browser oder aus der Online-Datenbank) mit den Standardwerten ergänzen
+  function ausDaten(daten) {
+    return {
+      ...structuredClone(STANDARD),
+      ...daten,
+      vorrat: { ...(daten.vorrat || {}) },
+      // nur Karten-IDs behalten; alte Platzhalter-Karten aus früheren Beta-Versionen fallen weg
+      karten: textListe(daten.karten),
+      ungesehen: textListe(daten.ungesehen),
+      freunde: textListe(daten.freunde),
+      taeglich: { ...structuredClone(STANDARD.taeglich), ...(daten.taeglich || {}) },
+      erfolge: { ...structuredClone(STANDARD.erfolge), ...(daten.erfolge || {}) },
+      eingeloest: textListe(daten.eingeloest),
+      wunschliste: textListe(daten.wunschliste),
+      tauschErledigt: Array.isArray(daten.tauschErledigt) ? daten.tauschErledigt.filter((n) => Number.isInteger(n)) : [],
+    };
+  }
 
   function laden() {
     try {
       const roh = localStorage.getItem(SCHLUESSEL);
       if (!roh) return structuredClone(STANDARD);
-      const daten = JSON.parse(roh);
-      return {
-        ...structuredClone(STANDARD),
-        ...daten,
-        vorrat: { ...(daten.vorrat || {}) },
-        // nur Karten-IDs behalten; alte Platzhalter-Karten aus früheren Beta-Versionen fallen weg
-        karten: Array.isArray(daten.karten) ? daten.karten.filter((k) => typeof k === 'string') : [],
-        ungesehen: Array.isArray(daten.ungesehen) ? daten.ungesehen.filter((k) => typeof k === 'string') : [],
-        taeglich: { ...structuredClone(STANDARD.taeglich), ...(daten.taeglich || {}) },
-        erfolge: { ...structuredClone(STANDARD.erfolge), ...(daten.erfolge || {}) },
-        eingeloest: Array.isArray(daten.eingeloest) ? daten.eingeloest.filter((k) => typeof k === 'string') : [],
-        wunschliste: Array.isArray(daten.wunschliste) ? daten.wunschliste.filter((k) => typeof k === 'string') : [],
-      };
+      return ausDaten(JSON.parse(roh));
     } catch (e) {
       return structuredClone(STANDARD);
     }
@@ -82,5 +94,5 @@ const Store = (() => {
     try { localStorage.removeItem(SCHLUESSEL); } catch (e) { /* ignorieren */ }
   }
 
-  return { laden, speichern, zuruecksetzen };
+  return { laden, speichern, zuruecksetzen, ausDaten };
 })();

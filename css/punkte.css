@@ -88,6 +88,29 @@
   border-radius: 12px;
 }
 
+/* Online-Konto im Konto: grün, wenn gesichert */
+.online-status {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.online-status[data-status="ok"] {
+  color: #2fb66e;
+  font-weight: 700;
+}
+
+.freund-wer {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.freund-wer b {
+  font: 800 17px/1.1 "Barlow Condensed", sans-serif;
+  overflow-wrap: anywhere;
+}
+
 .freund-liste .btn {
   height: 34px;
   padding: 0 12px;

@@ -177,6 +177,76 @@ function testServer(geaendert) {
   };
 }
 
+// Angenommenen Tausch im eigenen Spielstand umsetzen, genau einmal (app.daten.tauschErledigt). true = jetzt umgesetzt
+function setzeTauschUm(a) {
+  const erledigt = app.daten.tauschErledigt;
+  if (erledigt.includes(a.id)) return false;
+  const vonMir = a.von === app.daten.spielerId;
+  const duGibst = vonMir ? a.gibt : a.will;
+  const duBekommst = vonMir ? a.will : a.gibt;
+  const i = app.daten.karten.indexOf(duGibst);
+  if (i >= 0) app.daten.karten.splice(i, 1);
+  if (karteVonId(duBekommst)) {
+    if (!app.daten.karten.includes(duBekommst)) app.daten.ungesehen.push(duBekommst);
+    app.daten.karten.push(duBekommst);
+  }
+  app.daten.wunschliste = app.daten.wunschliste.filter((id) => id !== duBekommst);
+  erledigt.push(a.id);
+  if (erledigt.length > 300) erledigt.splice(0, erledigt.length - 300);
+  speichern();
+  return true;
+}
+
+// Online (Supabase, js/online.js und werkzeuge/datenbank.sql): der Server prüft beide Sammlungen und entscheidet,
+// jedes Spiel setzt einen angenommenen Tausch danach genau einmal um (setzeTauschUm).
+// geaendert(anfrage): dein Freund hat angenommen (Szene) oder abgelehnt (Hinweis).
+function onlineServer(geaendert) {
+  const ich = () => app.daten.spielerId;
+  let vorher = null; // Status beim letzten Laden: «abgelehnt» nur melden, wenn es seither neu ist
+  const alsAnfrage = (z) => {
+    const zeit = Date.parse(z.zeit);
+    const status = z.status === 'offen' && Date.now() - zeit > TAUSCH_DAUER ? 'abgelaufen' : z.status;
+    return { id: z.id, von: z.von_id, an: z.an_id, gibt: z.gibt, will: z.will, status, zeit };
+  };
+
+  return {
+    bereit: true,
+    test: false,
+    freunde: () => app.daten.freunde.map((id) => ({ id, name: Online.nameVon(id) || id, bereit: true })),
+    async sammlungVon(id) {
+      const r = await Online.rpc('sammlung_von', { freund: id });
+      return r && { doppelte: r.doppelte || [], wunschliste: r.wunschliste || [] };
+    },
+    async anfragen() {
+      const liste = (await Online.tauschAnfragen()).map(alsAnfrage);
+      liste.forEach((a) => {
+        if (a.status === 'angenommen') {
+          if (setzeTauschUm(a) && a.von === ich()) geaendert(a);
+        } else if (vorher && a.von === ich() && a.status === 'abgelehnt' && vorher.get(a.id) === 'offen') {
+          geaendert(a);
+        }
+      });
+      vorher = new Map(liste.map((a) => [a.id, a.status]));
+      return liste;
+    },
+    async sende({ an, gibt, will }) {
+      const fehler = tauschFehler(gibt, will, besitz()[gibt] || 0);
+      if (fehler) throw new Error(fehler);
+      await Online.sichere(); // der Server prüft den gespeicherten Spielstand
+      return alsAnfrage(await Online.rpc('tausch_senden', { freund: an, karte_gibt: gibt, karte_will: will }));
+    },
+    async antworte(id, ja) {
+      await Online.sichere();
+      const a = alsAnfrage(await Online.rpc('tausch_antworten', { anfrage: id, annehmen: ja }));
+      if (a.status === 'angenommen') setzeTauschUm(a);
+      return a;
+    },
+    async zurueckziehen(id) {
+      return alsAnfrage(await Online.rpc('tausch_zurueckziehen', { anfrage: id }));
+    },
+  };
+}
+
 // ---------- Tausch-Seite, Tausch-Fenster und Wunschliste ----------
 
 const Tauschen = (() => {
@@ -189,7 +259,7 @@ const Tauschen = (() => {
   let fenster = null;     // Tausch-Fenster: { schritt, freund, sammlung, will, gibt }
 
   const ich = () => app.daten.spielerId;
-  const nameVon = (id) => (id === TEST_FREUND ? 'Test-Freund' : id);
+  const nameVon = (id) => (id === TEST_FREUND ? 'Test-Freund' : Online.nameVon(id) || id);
   const titelVon = (id) => kartenTitel(karteVonId(id)).gross;
   const offenFuerMich = () => anfragen.filter((a) => a.status === 'offen' && a.an === ich()).length;
   const offenVonMir = () => anfragen.filter((a) => a.status === 'offen' && a.von === ich()).length;
@@ -198,11 +268,27 @@ const Tauschen = (() => {
     return offenFuerMich() > 0;
   }
 
+  // Wie oft diese Karte in deinen offenen Anfragen steckt (so lange kann man sie nicht verwerten)
+  function reserviert(id) {
+    return anfragen.filter((a) => a.status === 'offen' && a.von === ich() && a.gibt === id).length;
+  }
+
+  // js/online.js ist verbunden: ab jetzt tauscht der Server (auch in der Vorschau, dort ohne Test-Freund)
+  function verbunden() {
+    server = onlineServer(geaendert);
+    lade();
+  }
+
   const standardReiter = () => (anfragen.some((a) => a.status === 'offen') ? 'anfragen' : 'tauschen');
 
   async function lade() {
     const nr = ++ladeNr;
-    const liste = await server.anfragen();
+    let liste;
+    try {
+      liste = await server.anfragen();
+    } catch (e) {
+      return; // gerade keine Verbindung: beim nächsten Mal
+    }
     if (nr !== ladeNr) return;
     anfragen = liste;
     if (app.ansicht === 'tauschen' && !reiterGewaehlt) waehleReiter(standardReiter());
@@ -579,8 +665,19 @@ const Tauschen = (() => {
       if (!f.sammlung) {
         text.textContent = '';
         inhalt.innerHTML = '<p class="tausch-laedt">Lädt …</p>';
-        f.sammlung = await server.sammlungVon(f.freund);
+        let fehler = '';
+        try {
+          f.sammlung = await server.sammlungVon(f.freund);
+        } catch (e) {
+          fehler = e.message;
+        }
         if (fenster !== f) return;
+        if (fehler || !f.sammlung) {
+          text.textContent = fehler || `${name} ist noch nicht online. Dein Freund muss das Spiel zuerst einmal öffnen.`;
+          inhalt.innerHTML = '';
+          f.sammlung = null;
+          return;
+        }
       }
       const n = besitz();
       const wunsch = new Set(app.daten.wunschliste);
@@ -704,5 +801,5 @@ const Tauschen = (() => {
     lade();
   }
 
-  return { init, zeichne, etwasBereit, wuensche };
+  return { init, zeichne, etwasBereit, wuensche, lade, verbunden, reserviert };
 })();

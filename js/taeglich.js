@@ -291,8 +291,12 @@ const Taeglich = (() => {
   function vielleichtZeigen() {
     const t = app.daten.taeglich;
     if (t.gezeigt === heute() || !serieStand().bereit) return;
-    // nicht über einem anderen Fenster (Pack, Glücksrad, Willkommen); nach «Annehmen» ruft app.js es nochmals auf
-    if (!$('opener').hidden || !$('gewinn').hidden || !$('willkommen').hidden) return;
+    // erst wenn das Spiel nach dem Anmelden freigegeben ist (js/online.js ruft es dann selbst auf)
+    if (!Online.freigegeben()) return;
+    // nicht über einem anderen Fenster (Pack, Glücksrad, Anmelden, Willkommen);
+    // nach dem Anmelden und nach «Annehmen» wird es nochmals aufgerufen
+    if (!$('opener').hidden || !$('gewinn').hidden || !$('willkommen').hidden || !$('anmelden').hidden
+      || !$('einfuehrung').hidden) return;
     zeige();
   }
 

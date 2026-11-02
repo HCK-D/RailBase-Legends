@@ -1,0 +1,157 @@
+/* Kurze Einführung (js/einfuehrung.js): der Bildschirm wird dunkel, nur der erklärte Knopf im Menü bleibt hell.
+   Die Sprechblase hat die Farben von Willkommen und Tagesbelohnung (dunkelblau mit Gold). */
+.einfuehrung {
+  position: fixed;
+  inset: 0;
+  z-index: 73;
+  transition: background .3s ease;
+}
+
+/* Schritte ohne Knopf (Karten, Los geht's): ganz dunkel, Blase in der Mitte */
+.einfuehrung.dunkel {
+  background: rgba(4, 8, 16, .78);
+}
+
+/* heller Rahmen: der riesige Schatten verdunkelt alles rundherum */
+.ef-spot {
+  position: fixed;
+  border: 2px solid #ffd34d;
+  border-radius: 16px;
+  box-shadow: 0 0 0 200vmax rgba(4, 8, 16, .78), 0 0 24px rgba(255, 211, 77, .6);
+  transition: left .35s var(--ease-out), top .35s var(--ease-out), width .35s var(--ease-out), height .35s var(--ease-out);
+  animation: ef-puls 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ef-puls {
+  50% { border-color: #fff3c4; box-shadow: 0 0 0 200vmax rgba(4, 8, 16, .78), 0 0 36px rgba(255, 211, 77, .9); }
+}
+
+.ef-blase {
+  position: fixed;
+  display: grid;
+  gap: 10px;
+  width: min(calc(100vw - 24px), 340px);
+  padding: 16px;
+  border: 2px solid #c9a54e;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 0, #2d3f63, #121a2b 70%);
+  color: #eef3f8;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .55);
+}
+
+.ef-blase.rein {
+  animation: ef-rein .35s var(--spring, ease-out);
+}
+
+@keyframes ef-rein {
+  from { opacity: 0; scale: .92; }
+}
+
+/* in der Mitte (ohne Knopf) */
+.ef-blase.mitte {
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+/* kleiner Pfeil zum Knopf: nach unten (Menü unten) oder nach oben (Menü oben) */
+.ef-blase:not(.mitte)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--pfeil-x, 50%) - 9px);
+  width: 16px;
+  height: 16px;
+  border: solid #c9a54e;
+  background: #121a2b;
+  transform: rotate(45deg);
+}
+
+.ef-blase[data-pfeil="unten"]:not(.mitte)::after {
+  bottom: -10px;
+  border-width: 0 2px 2px 0;
+}
+
+.ef-blase[data-pfeil="oben"]:not(.mitte)::after {
+  top: -10px;
+  border-width: 2px 0 0 2px;
+  background: #2b3c5e;
+}
+
+.ef-punkte {
+  display: flex;
+  gap: 5px;
+}
+
+.ef-punkte i {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .2);
+}
+
+.ef-punkte i.an {
+  background: #ffd34d;
+}
+
+.ef-titel {
+  margin: 0;
+  color: #ffd98a;
+  font: 800 28px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.ef-text {
+  margin: 0;
+  color: #dbe4ee;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* zwei Beispiel-Karten im Schritt «Karten» */
+.ef-karten {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: min(100%, 250px);
+  justify-self: center;
+}
+
+.ef-karte {
+  container-type: inline-size;
+}
+
+.ef-karte:first-child {
+  rotate: -4deg;
+}
+
+.ef-karte:last-child {
+  rotate: 4deg;
+}
+
+.ef-knoepfe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ef-ueberspringen {
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  color: #a9b6c4;
+  font: 700 14px/1 "Source Sans 3", sans-serif;
+  cursor: pointer;
+}
+
+.ef-weiter {
+  margin-left: auto;
+  min-width: 120px;
+}
+
+/* während der Einführung lässt sich das Menü nicht antippen */
+body.einfuehrung-laeuft .tabbar {
+  pointer-events: none;
+}

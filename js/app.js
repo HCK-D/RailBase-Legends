@@ -66,8 +66,11 @@ function vorratGesamt() {
   return Object.values(app.daten.vorrat).reduce((a, b) => a + b, 0);
 }
 
+// Im Browser speichern und kurz danach auch online (js/online.js). zeit: der neuere Spielstand gewinnt
 function speichern() {
+  app.daten.zeit = Date.now();
   Store.speichern(app.daten);
+  Online.merke();
 }
 
 // Freunde-ID: RB-XXXX-XXXX, ohne leicht verwechselbare Zeichen (0, 1, I, O)
@@ -594,8 +597,12 @@ function zeichneAlbum() {
 async function verwerteDoppelte(id, knopf) {
   const k = karteVonId(id);
   const preis = wertVon(id);
-  const zweiOderMehr = () => app.daten.karten.filter((x) => x === id).length >= 2;
-  if (!zweiOderMehr()) return false;
+  // Karten in einer offenen Tausch-Anfrage von dir sind reserviert (js/tauschen.js)
+  const zweiOderMehr = () => app.daten.karten.filter((x) => x === id).length >= 2 + Tauschen.reserviert(id);
+  if (!zweiOderMehr()) {
+    if (Tauschen.reserviert(id)) zeigeHinweis('Diese Karte steckt in einer offenen Tausch-Anfrage.');
+    return false;
+  }
   const frageText = `Doppelte Karte „${k.name}“ verwerten und dafür ${preis} RB Coins bekommen? Eine Karte bleibt in deinem Album.`;
   if (!(await frage(frageText, `+${preis} RB Coins`))) return false;
   if (!zweiOderMehr()) return false;
@@ -663,7 +670,9 @@ function nimmWillkommenAn() {
     document.body.classList.remove('op-offen');
     aktualisiereAlles();
     if (gutschrift) zeigeHinweis(`+${START_MUENZEN} RB Coins. Viel Spass beim Sammeln!`);
-    setTimeout(Taeglich.vielleichtZeigen, 1600);
+    // beim ersten Mal die kurze Einführung (js/einfuehrung.js), danach die Tagesbelohnung
+    if (!app.daten.einfuehrung) setTimeout(() => Einfuehrung.starte(Taeglich.vielleichtZeigen), 700);
+    else setTimeout(Taeglich.vielleichtZeigen, 1600);
   }, 350);
 }
 
@@ -778,7 +787,18 @@ function fuegeFreundHinzu(e) {
   $('freund-id').value = '';
   aktualisiereAlles();
   zeigeHinweis('Freund hinzugefügt.');
+  // online: Namen holen; gibt es die ID noch nicht, muss der Freund das Spiel zuerst einmal öffnen
+  if (Online.bereit()) {
+    Online.ladeProfile([id]).then(() => {
+      aktualisiereAlles();
+      if (Online.gibtEs(id)) zeigeHinweis(`${Online.nameVon(id) || id} ist jetzt dein Freund.`);
+      else zeigeHinweis('Diese ID ist noch nicht online. Dein Freund muss das Spiel zuerst einmal öffnen.');
+    });
+  }
 }
+
+// Name eines Freundes (online), sonst seine ID
+const freundName = (id) => Online.nameVon(id) || id;
 
 function entferneFreund(id) {
   app.daten.freunde = app.daten.freunde.filter((f) => f !== id);
@@ -865,7 +885,7 @@ function waehleFreund(text) {
     $('geschenk-text').textContent = text;
     $('geschenk-freunde').hidden = false;
     $('geschenk-freunde').innerHTML = app.daten.freunde.map((id) =>
-      `<li><button class="btn ghost" type="button" data-freund="${esc(id)}">${esc(id)}</button></li>`).join('');
+      `<li><button class="btn ghost" type="button" data-freund="${esc(id)}">${esc(freundName(id))}</button></li>`).join('');
     $('geschenk-code-box').hidden = true;
     $('geschenk-teilen').hidden = true;
     $('geschenk-zu').textContent = 'Abbrechen';
@@ -913,15 +933,27 @@ async function verschenkePack(id) {
   }
   const freund = await waehleFreund(`${p.titel} Pack „${p.name}“ für ${preis} ${name} verschenken. An wen?`);
   if (!freund || app.daten[waehrung] < preis || schenkenIn() > 0) return;
+  // Online kommt das Pack direkt beim Freund an (js/online.js); ohne Verbindung gibt es wie bisher einen Code
+  if (Online.bereit()) {
+    const fehler = await Online.schenke(freund, id);
+    if (fehler) {
+      zeigeHinweis(fehler);
+      return;
+    }
+  }
   app.daten[waehrung] -= preis;
   app.daten.geschenkZeit = Date.now();
-  const code = geschenkCode(id, freund);
   speichern();
   Erfolge.zaehle('geschenkt');
   aktualisiereAlles();
   Gefuehl.ton('gewinn');
   Gefuehl.vibriere([30, 40, 60]);
-  zeigeGeschenkCode(code, p, freund);
+  if (Online.bereit()) {
+    Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], 50);
+    zeigeHinweis(`Geschenkt! ${freundName(freund)} bekommt das ${p.titel}-Pack beim nächsten Öffnen des Spiels.`);
+  } else {
+    zeigeGeschenkCode(geschenkCode(id, freund), p, freund);
+  }
 }
 
 // Beta-Code zum Testen: einmal pro Gerät 10 Packs von jeder Sorte, 1000 RB Coins und 30 Extra-Drehungen am Rad
@@ -986,8 +1018,12 @@ function holeTestPaket() {
 
 function zeichneFreunde() {
   $('spieler-id').textContent = app.daten.spielerId;
-  $('freund-liste').innerHTML = app.daten.freunde.map((id) =>
-    `<li><code>${esc(id)}</code><button class="btn ghost" type="button" data-entfernen="${esc(id)}">Entfernen</button></li>`).join('');
+  // online mit Namen (js/online.js), sonst nur die ID
+  $('freund-liste').innerHTML = app.daten.freunde.map((id) => {
+    const name = Online.nameVon(id);
+    return `<li><span class="freund-wer">${name ? `<b>${esc(name)}</b>` : ''}<code>${esc(id)}</code></span>
+      <button class="btn ghost" type="button" data-entfernen="${esc(id)}">Entfernen</button></li>`;
+  }).join('');
   $('freund-leer').hidden = app.daten.freunde.length > 0;
 }
 
@@ -1015,10 +1051,14 @@ function speichereName(e) {
 }
 
 async function setzeAlleZurueck() {
-  if (!(await frage('Wirklich alles auf diesem Gerät löschen? Packs, Karten, Level und Coins gehen verloren.', 'Alles löschen'))) return;
+  if (!(await frage('Wirklich alles löschen? Packs, Karten, Level und Coins gehen verloren, auch online.', 'Alles löschen'))) return;
+  // Freunde-ID und Konto bleiben: sie gehören zum Online-Konto, Freunde kennen die ID schon
+  const { spielerId, konto } = app.daten;
   Store.zuruecksetzen();
   app.daten = Store.laden();
+  Object.assign(app.daten, { spielerId, konto });
   sichereSpielerId();
+  speichern();
   app.filter = null;
   $('sam-karten').innerHTML = '';
   aktualisiereAlles();
@@ -1215,9 +1255,10 @@ document.addEventListener('DOMContentLoaded', () => {
   aktuelleAnsichtAusHash();
   karussellBeimScrollen();
 
-  // Erster Start: Willkommens-Fenster mit dem Startgeschenk
+  // Anmelden (Pflicht) und Online-Datenbank: danach Willkommen beim ersten Mal, sonst die Tagesbelohnung (js/online.js)
   $('wk-annehmen').addEventListener('click', nimmWillkommenAn);
-  willkommenPruefen();
+  Einfuehrung.init();
+  Online.init();
 
   // Countdowns aktualisieren
   setInterval(() => {

@@ -37,7 +37,8 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
   (ausser reine Texte, die auf der Seite erscheinen)
 - `js/daten/kartenliste.js` (308 Karten aus dem Word-Dokument des Besitzers und 60 Karten der 6 neuen Bahnen)
 - Chancen, Garantie, XP und Level in `js/karten.js` (Spielregeln, legt der Besitzer fest)
-- Der Speicher-Schlüssel `sk-beta-v1` und `sk-theme` im localStorage
+- Der Speicher-Schlüssel `sk-beta-v1` und `sk-theme` im localStorage, die Anmeldung von Supabase unter `sk-online`
+- `js/online.js` und `werkzeuge/datenbank.sql` (Anmelden, Online-Speichern, Regeln der Datenbank)
 
 ### IDs, die der Code braucht (müssen im HTML bleiben)
 
@@ -120,19 +121,42 @@ Sonstiges: `app`, `hinweis`
   (nach «Rangliste»): `erf-oeffnen`, daneben die rote Zahl `erf-eintrag-text` (Belohnungen zum Abholen, Klasse `neu` = Hüpfer).
   Aussehen: `css/erfolge.css`.
 
-## Tauschen (vorbereitet für die Online-Datenbank)
+## Anmelden und Online-Datenbank
+
+- `js/online.js` (`Online`): Supabase (Projekt-URL und Publishable key in `ONLINE`, die Bibliothek supabase-js wird
+  erst beim Start geladen). Anmelden ist Pflicht: E-Mail und Passwort oder Google (Fenster `anmelden`, `am-form`,
+  `am-reiter` mit `[data-art="anmelden|registrieren"]`, `am-name-feld`, `am-name`, `am-email`, `am-passwort`,
+  `am-meldung`, `am-los`, `am-google`, `am-nochmals`; Aussehen `css/anmelden.css`). Im Claude-Artefakt gibt es kein Anmelden.
+- Spielstand: zuerst im Browser (`store.js`), `speichern()` in `js/app.js` setzt `app.daten.zeit` und ruft `Online.merke()`,
+  das lädt ihn kurz danach in die Tabelle `spieler` hoch. Beim Verbinden gewinnt der neuere Spielstand, wenn er zum
+  selben Konto gehört (`app.daten.konto`); sonst gilt der des Kontos. Ein neues Konto übernimmt einen Spielstand ohne Konto.
+- Konto-Seite: `konto-email`, `online-status` (`data-status="verbinde|ok|fehler|aus"`), `abmelden-btn`.
+- Geschenke gehen online direkt an den Freund (`geschenk_senden`, `geschenk_abholen`), ohne Netz wie bisher per Code.
+- Datenbank: `werkzeuge/datenbank.sql` (Tabellen `spieler`, `tausch_anfragen`, `geschenke`, Regeln und Server-Funktionen).
+  Jeder darf nur seinen eigenen Eintrag lesen und ändern; was zwei Spieler betrifft, geht nur über die Funktionen.
+  Änderungen an der Datenbank immer in dieser Datei und dann im Supabase SQL Editor ausführen.
+
+## Kurze Einführung
+
+- `js/einfuehrung.js` (`Einfuehrung`, Schritte in `EINFUEHRUNG`): kommt einmal nach dem Willkommens-Fenster
+  (`app.daten.einfuehrung`) und unter Mehr → Kurze Einführung (`einfuehrung-knopf`). Heller Rahmen `ef-spot` um den
+  Knopf im Menü, Sprechblase `ef-blase` (`ef-punkte`, `ef-titel`, `ef-karten`, `ef-text`, `ef-ueberspringen`, `ef-weiter`).
+  Aussehen: `css/einfuehrung.css`.
+
+## Tauschen
 
 - `js/tauschen.js` (`Tauschen`), Aussehen `css/tauschen.css`. Regeln: nur doppelte Karten, gleiche Seltenheit 1 gegen 1,
   keine Special-Karten, höchstens 3 eigene offene Anfragen (`TAUSCH_MAX_OFFEN`), Anfragen verfallen nach 48 Stunden.
   Die Prüfung steht in `tauschFehler()`; der Server muss dieselben Regeln noch einmal prüfen.
-- Alles, was später die Datenbank macht, läuft über ein Server-Objekt mit denselben Funktionen:
+- Alles, was der Server macht, läuft über ein Server-Objekt mit denselben Funktionen:
   `bereit`, `freunde()`, `sammlungVon(id)`, `anfragen()`, `sende({ an, gibt, will })`, `antworte(id, ja)`, `zurueckziehen(id)`.
-  Heute gibt es zwei Fassungen: `SERVER_OHNE` (echte Seite: «Tauschen startet mit dem Anmelden») und `testServer()`
-  (nur Vorschau, `TEST_ERLAUBT`: ein Test-Freund im Browser, Speicher `sk-tausch-test`). Für die Datenbank kommt eine
-  dritte Fassung dazu; sonst muss am Tauschen nichts geändert werden.
-- Was die Datenbank dafür braucht: Tabelle der Spieler (Freunde-ID, Name, Karten, Wunschliste), Tabelle der Anfragen
-  (`id, von, an, gibt, will, status, zeit`) und eine Server-Funktion «annehmen», die in einem Schritt prüft und beide
-  Karten tauscht (nie im Browser). Die Wunschliste (`app.daten.wunschliste`) wird dann für Freunde sichtbar.
+  Fassungen: `onlineServer()` (angemeldet: Supabase-Funktionen `sammlung_von`, `tausch_senden`, `tausch_antworten`,
+  `tausch_zurueckziehen`), `testServer()` (nur Vorschau ohne Verbindung: ein Test-Freund, Speicher `sk-tausch-test`)
+  und `SERVER_OHNE` («Tauschen startet mit dem Anmelden»). `Tauschen.verbunden()` schaltet auf den Server um.
+- Online prüft der Server beim Annehmen beide gespeicherten Sammlungen und entscheidet für beide gleichzeitig.
+  Jedes Spiel setzt einen angenommenen Tausch danach genau einmal um (`setzeTauschUm`, `app.daten.tauschErledigt`).
+  Karten in eigenen offenen Anfragen sind reserviert (`Tauschen.reserviert(id)`, Verwerten gesperrt).
+  Freunde sehen beim Tauschen deine doppelten Karten und deine Wunschliste (`app.daten.wunschliste`).
 - Seite `#tauschen`: kurzer Hinweis `tausch-status` (`data-status="ohne|test|online"`, `tausch-status-titel`, `tausch-status-text`),
   drei Reiter `tausch-reiter` (`button[data-reiter="anfragen|tauschen|vergangen"]` mit `aria-selected`, rote Zahl `tausch-reiter-zahl`)
   und die Teile `[data-teil]`: Anfragen `tausch-anfragen` (nur offene, `li.tausch-anfrage`, `.eingehend`; Knöpfe `[data-annehmen]`,
