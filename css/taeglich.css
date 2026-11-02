@@ -429,6 +429,167 @@
   box-shadow: 0 3px 0 #7d0a14;
 }
 
+/* ---------- Willkommen: beim ersten Start über den ganzen Bildschirm (js/app.js, zeigeWillkommen) ----------
+   Gleiche Farben wie die Tagesbelohnung. Die Geschenke erscheinen nacheinander, unten der Knopf «Annehmen». */
+.willkommen {
+  position: fixed;
+  inset: 0;
+  z-index: 73;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background:
+    repeating-conic-gradient(from 0deg at 50% 22%, transparent 0deg 14deg, rgba(255, 211, 77, .05) 15deg 19deg, transparent 20deg 34deg),
+    radial-gradient(ellipse at 50% 20%, #2d3f63, #121a2b 55%, #070b14);
+  color: #eef3f8;
+  animation: viewin .35s var(--ease-out);
+}
+
+.willkommen.zu {
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.wk-box {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: min(100%, 440px);
+}
+
+.wk-logo {
+  width: min(64vw, 230px);
+  height: auto;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .5));
+  animation: wk-logo .7s var(--spring, ease-out) both;
+}
+
+@keyframes wk-logo {
+  from { opacity: 0; scale: .6; }
+}
+
+.wk-kicker {
+  margin: 0;
+  color: #e6c77a;
+  font: 800 12px/1 "Source Sans 3", sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.wk-titel {
+  margin: 0;
+  background: linear-gradient(180deg, #fff, #ffd98a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font: 800 44px/1 "Barlow Condensed", sans-serif;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.wk-text {
+  margin: 0 0 4px;
+  color: #c9d4e0;
+  font-size: 16px;
+}
+
+.wk-liste {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.wk-liste li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .06);
+  animation: wk-geschenk .5s var(--spring, ease-out) both;
+  animation-delay: calc(.35s + var(--i, 0) * .14s);
+}
+
+/* das erste Geschenk (die RB Coins) leuchtet golden */
+.wk-liste li:first-child {
+  border-color: #c9a54e;
+  background: linear-gradient(135deg, rgba(255, 211, 77, .2), rgba(255, 255, 255, .04));
+}
+
+@keyframes wk-geschenk {
+  from { opacity: 0; translate: 0 18px; scale: .96; }
+}
+
+.wk-bild {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffd34d, #f5a300);
+  color: #3a2700;
+  box-shadow: 0 3px 0 #a86c00;
+}
+
+.wk-bild img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.wk-bild img.wk-pack {
+  width: auto;
+  height: 46px;
+  border-radius: 3px;
+}
+
+.wk-txt {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.wk-txt b {
+  font: 800 19px/1.1 "Barlow Condensed", sans-serif;
+  letter-spacing: .02em;
+}
+
+.wk-txt small {
+  color: #a9b6c4;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+/* bleibt auf kleinen Bildschirmen unten sichtbar, auch wenn die Liste länger ist */
+.wk-annehmen {
+  position: sticky;
+  bottom: 0;
+  max-width: 360px;
+  animation: viewin .4s var(--ease-out) 1.2s both, tb-knopf 1.8s ease-in-out 1.8s infinite;
+}
+
+@media (max-height: 700px) {
+  .wk-logo {
+    width: min(50vw, 170px);
+  }
+
+  .wk-titel {
+    font-size: 36px;
+  }
+
+  .wk-liste li {
+    padding: 7px 10px;
+  }
+}
+
 /* in der installierten App braucht es den Knopf nicht */
 @media (display-mode: standalone) {
   .app-laden {

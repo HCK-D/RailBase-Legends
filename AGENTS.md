@@ -44,7 +44,10 @@ Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt spä
 Kopf: `avatar`, `lvl` (nur die Zahl), `lvl-balken`, `lvl-xp` (Level-Kapsel `.level-chip`, Ring über `--xp`)
 Mehr (Sammler-Level): `level-zahl`, `xp-level`, `xp-balken`, `xp-zahl`
 Start (mit den Packs auf derselben Seite): `start-badge` (Knopf mit einem `<use>` und einem `<span>` darin),
-`pk-reiter`, `pk-karussell`, `pk-stelle`, `pk-punkte`, `tk-vorrat` (kleine Zeile unter dem Karussell: Vorrat und Garantie).
+`pk-reiter`, `pk-karussell`, `pk-stelle`, `pk-punkte`, `tk-vorrat` (kleine Zeile unter dem Karussell: Name und Vorrat;
+den Startbonus zeigt das Willkommens-Fenster).
+Willkommen beim ersten Start (`js/app.js`, `zeigeWillkommen`, Aussehen in `css/taeglich.css`): `willkommen`, `wk-liste`,
+`wk-annehmen`. Erst «Annehmen» schreibt das Startguthaben gut (`app.daten.bonusMuenzen`); danach kann die Tagesbelohnung aufgehen.
 Keine Pfeile und kein «Pack öffnen»-Knopf: gewischt wird auf den Packs, das Pack in der Mitte antippen öffnet es.
 Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt`, `rad-info`
 Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-oeffnen-icon`, `gw-oeffnen-txt`, `gw-spaeter`

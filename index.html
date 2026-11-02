@@ -653,6 +653,22 @@
   </div>
 </div>
 
+<!-- ===== WILLKOMMEN (js/app.js, zeigeWillkommen): beim ersten Start alles, was man zum Start bekommt.
+     Erst «Annehmen» schreibt das Startguthaben gut. Aussehen in css/taeglich.css ===== -->
+<div class="willkommen" id="willkommen" hidden role="dialog" aria-modal="true" aria-labelledby="wk-titel">
+  <div class="wk-box">
+    <img class="wk-logo" src="assets/logo/railbase-legends-dunkel.png" alt="RailBase Legends" draggable="false">
+    <p class="wk-kicker">Schön, dass du da bist</p>
+    <h2 class="wk-titel" id="wk-titel">Willkommen!</h2>
+    <p class="wk-text">Das bekommst du zum Start:</p>
+    <ul class="wk-liste" id="wk-liste"></ul>
+    <button class="btn-haupt wk-annehmen" type="button" id="wk-annehmen">
+      <svg width="26" height="26" aria-hidden="true"><use href="#i-gift"/></svg>
+      <span>Annehmen</span>
+    </button>
+  </div>
+</div>
+
 <!-- ===== TAUSCH-SZENE (js/tauschen.js): ganzer Bildschirm beim Senden und wenn ein Tausch angenommen wurde.
      Deine Karte steigt aus dem Album-Knopf im Menü (das Menü bleibt sichtbar), die Karte des Freundes kommt von oben,
      sie tauschen die Plätze, die neue Karte fliegt in den Album-Knopf. Phasen über data-phase, Aussehen in css/tauschen.css ===== -->

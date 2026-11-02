@@ -35,6 +35,8 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 
 - Zwei Designs: **Silber** (hell) und **Schwarz** (dunkel), wählbar unter Konto
 - Kopfzeile mit Konto-Knopf (Anfangsbuchstabe), Sammler-Level und XP-Balken
+- Erster Start: Willkommens-Fenster mit allem, was man bekommt (100 RB Coins, Gratis-Pack, Startbonus,
+  Glücksrad, Tagesbelohnung) und unten «Annehmen»; erst dann gibt es das Startguthaben
 - Start: «Dein nächster Fund.» mit Basis-Pack auf dem Podest und grossem Knopf «Pack öffnen»
 - Gratis-Pack: 1 Basis-Pack alle 24 Stunden (ab dem Zeitpunkt, an dem man es geholt hat)
 - Packs: «Wähle dein Pack» mit Reitern Basis/Silver/Gold/Platinum, Karussell zum Wischen

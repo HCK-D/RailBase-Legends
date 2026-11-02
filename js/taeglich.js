@@ -291,7 +291,8 @@ const Taeglich = (() => {
   function vielleichtZeigen() {
     const t = app.daten.taeglich;
     if (t.gezeigt === heute() || !serieStand().bereit) return;
-    if (!$('opener').hidden || !$('gewinn').hidden) return;
+    // nicht über einem anderen Fenster (Pack, Glücksrad, Willkommen); nach «Annehmen» ruft app.js es nochmals auf
+    if (!$('opener').hidden || !$('gewinn').hidden || !$('willkommen').hidden) return;
     zeige();
   }
 
@@ -317,5 +318,5 @@ const Taeglich = (() => {
   }
 
   // gib und die belohnung…-Helfer braucht auch js/erfolge.js
-  return { init, zaehle, zeige, zeichne, etwasBereit, gib, belohnungText, belohnungKurz, belohnungBild };
+  return { init, zaehle, zeige, zeichne, etwasBereit, vielleichtZeigen, gib, belohnungText, belohnungKurz, belohnungBild };
 })();

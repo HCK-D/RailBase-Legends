@@ -486,14 +486,12 @@ function zeichnePackDaten() {
   zeichneTicket();
 }
 
-// Die einzige Vorrat-Anzeige: Name, Anzahl und Garantie des Packs in der Mitte
+// Die einzige Vorrat-Anzeige: Name und Anzahl des Packs in der Mitte.
+// Den Startbonus zeigt das Willkommens-Fenster beim ersten Start (zeigeWillkommen).
 function zeichneTicket() {
   const p = PACKS[app.packIndex];
   const n = vorratVon(p.id);
-  const garantie = anfaengerBonusAktiv(app.daten.geoeffnet) ? 'rare' : KARTEN_GARANTIE[p.stufe];
-  const teile = [p.name, n > 0 ? `${n}× im Vorrat` : 'keins im Vorrat'];
-  if (garantie) teile.push(`Startbonus: mind. 1 ${seltenheitVon(garantie).name} oder höher (${ANFAENGER_PACKS - app.daten.geoeffnet} Packs übrig)`);
-  $('tk-vorrat').textContent = teile.join(' · ');
+  $('tk-vorrat').textContent = [p.name, n > 0 ? `${n}× im Vorrat` : 'keins im Vorrat'].join(' · ');
   $('tk-vorrat').classList.toggle('hat', n > 0);
 }
 
@@ -617,15 +615,56 @@ async function verwerteDoppelte(id, knopf) {
 const MUENZ_BILD = { muenzen: 'assets/muenzen/gold-rund.png', rubine: 'assets/muenzen/rubin-rund.png' };
 const muenzeHtml = (waehrung, klein) => `<img class="muenze${klein ? ' klein' : ''}" src="${MUENZ_BILD[waehrung]}" alt="" aria-hidden="true">`;
 
-// Startguthaben in RB Coins, einmal pro Konto (auch für Sammler, die schon gespielt haben)
-function muenzenBonusPruefen() {
-  if (app.daten.bonusMuenzen) return;
-  app.daten.bonusMuenzen = true;
-  app.daten.muenzen += START_MUENZEN;
-  speichern();
-  zeigeHinweis(app.daten.geoeffnet === 0
-    ? `Willkommen! Du hast ${START_MUENZEN} RB Coins geschenkt bekommen.`
-    : `Start-Bonus: ${START_MUENZEN} RB Coins für dich.`);
+// ---------- Willkommen ----------
+// Beim ersten Start ein Fenster über den ganzen Bildschirm: alles, was man zum Start bekommt, und unten «Annehmen».
+// Erst «Annehmen» schreibt das Startguthaben gut (einmal pro Konto). Wer es schon hat, sieht das Fenster nicht mehr.
+function willkommenPruefen() {
+  if (!app.daten.bonusMuenzen) zeigeWillkommen();
+}
+
+function zeigeWillkommen() {
+  const geschenke = [
+    { bild: MUENZ_BILD.muenzen, titel: `${START_MUENZEN} RB Coins`, text: 'Dein Startguthaben für den Shop' },
+    { pack: bildKlein(packVonId('standard')), titel: 'Jeden Tag ein Gratis-Pack', text: 'Das erste Basis-Pack wartet schon auf dich' },
+    { icon: 'i-stern', titel: 'Startbonus', text: `In deinen ersten ${ANFAENGER_PACKS} Packs steckt immer mindestens eine Rare-Karte oder besser` },
+    { icon: 'i-rad', titel: 'Glücksrad', text: 'Jeden Tag einmal gratis drehen' },
+    { icon: 'i-gift', titel: 'Tagesbelohnung', text: 'Komm 7 Tage in Folge vorbei, jeden Tag gibt es mehr' },
+  ];
+  $('wk-liste').innerHTML = geschenke.map((g, i) => {
+    let bild = `<svg width="28" height="28" aria-hidden="true"><use href="#${g.icon}"/></svg>`;
+    if (g.bild) bild = `<img src="${g.bild}" alt="">`;
+    if (g.pack) bild = `<img class="wk-pack" src="${g.pack}" alt="">`;
+    return `<li style="--i:${i}"><span class="wk-bild">${bild}</span><span class="wk-txt"><b>${g.titel}</b><small>${g.text}</small></span></li>`;
+  }).join('');
+  $('willkommen').hidden = false;
+  document.body.classList.add('op-offen');
+  Gefuehl.ton('auf');
+}
+
+function nimmWillkommenAn() {
+  const box = $('willkommen');
+  if (box.hidden || box.classList.contains('zu')) return;
+  const gutschrift = !app.daten.bonusMuenzen;
+  if (gutschrift) {
+    app.daten.bonusMuenzen = true;
+    app.daten.muenzen += START_MUENZEN;
+    speichern();
+    // die Münzen fliegen vom ersten Geschenk zur Münz-Anzeige oben
+    Gefuehl.muenzFlug($('wk-liste').querySelector('img') || $('wk-annehmen'), MUENZ_BILD.muenzen, 10);
+    Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], 70);
+    Gefuehl.ton('gewinn');
+    Gefuehl.vibriere([30, 40, 80]);
+  }
+  // kurz ausblenden, dann zu; danach kann die Tagesbelohnung von selbst aufgehen
+  box.classList.add('zu');
+  setTimeout(() => {
+    box.hidden = true;
+    box.classList.remove('zu');
+    document.body.classList.remove('op-offen');
+    aktualisiereAlles();
+    if (gutschrift) zeigeHinweis(`+${START_MUENZEN} RB Coins. Viel Spass beim Sammeln!`);
+    setTimeout(Taeglich.vielleichtZeigen, 1600);
+  }, 350);
 }
 
 // Die Liste mit allen Packs wird einmal aufgebaut, Preise und Knöpfe werden danach aktualisiert
@@ -980,11 +1019,11 @@ async function setzeAlleZurueck() {
   Store.zuruecksetzen();
   app.daten = Store.laden();
   sichereSpielerId();
-  muenzenBonusPruefen();
   app.filter = null;
   $('sam-karten').innerHTML = '';
   aktualisiereAlles();
   zeigeHinweis('Alles zurückgesetzt.');
+  willkommenPruefen();
 }
 
 function waehleDesign(theme) {
@@ -1022,8 +1061,6 @@ document.addEventListener('DOMContentLoaded', () => {
     speichern();
     if (ersatz) setTimeout(() => zeigeHinweis(`+${ersatz} RB Coins für ${weg.length} entfernte Karten`), 1500);
   }
-
-  muenzenBonusPruefen();
 
   sichereSpielerId();
   baueKarussell();
@@ -1177,6 +1214,10 @@ document.addEventListener('DOMContentLoaded', () => {
   bindeSeitenWischen();
   aktuelleAnsichtAusHash();
   karussellBeimScrollen();
+
+  // Erster Start: Willkommens-Fenster mit dem Startgeschenk
+  $('wk-annehmen').addEventListener('click', nimmWillkommenAn);
+  willkommenPruefen();
 
   // Countdowns aktualisieren
   setInterval(() => {
