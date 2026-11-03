@@ -27,9 +27,31 @@
   <link rel="stylesheet" href="css/tauschen.css">
   <link rel="stylesheet" href="css/anmelden.css">
   <link rel="stylesheet" href="css/einfuehrung.css">
+  <link rel="stylesheet" href="css/laden.css">
   <link rel="stylesheet" href="css/karten.css">
 </head>
 <body>
+
+<!-- Ladebildschirm beim Start (js/laden.js): bleibt, bis die Anmeldung geprüft und der Spielstand geladen ist -->
+<div class="laden" id="laden" role="status" aria-live="polite" aria-busy="true">
+  <div class="ld-mitte">
+    <div class="ld-faecher" aria-hidden="true">
+      <span class="ld-karte ld-k1"><img src="assets/karten/rueckseite.webp" alt="" draggable="false"></span>
+      <span class="ld-karte ld-k3"><img src="assets/karten/rueckseite.webp" alt="" draggable="false"></span>
+      <span class="ld-karte ld-k2"><img src="assets/karten/rueckseite.webp" alt="" draggable="false"></span>
+    </div>
+    <div class="ld-logo">
+      <img src="assets/logo/railbase-legends-dunkel.png" alt="RailBase Legends" draggable="false">
+      <span class="ld-beta">Beta</span>
+    </div>
+  </div>
+  <div class="ld-unten">
+    <div class="ld-gleis" aria-hidden="true"><i id="ld-balken"></i></div>
+    <p class="ld-text" id="ld-text">Lädt …</p>
+    <p class="ld-tipp" id="ld-tipp"></p>
+  </div>
+</div>
+<script src="js/laden.js"></script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs><linearGradient id="metal-red" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff5e67"/><stop offset=".48" stop-color="#d60923"/><stop offset="1" stop-color="#790011"/></linearGradient><linearGradient id="metal-silver" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".48" stop-color="#9caab8"/><stop offset="1" stop-color="#e8f0f8"/></linearGradient><linearGradient id="metal-gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a0"/><stop offset=".48" stop-color="#d5a441"/><stop offset="1" stop-color="#fff0ae"/></linearGradient><linearGradient id="metal-black" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4f5a63"/><stop offset=".48" stop-color="#1d252c"/><stop offset="1" stop-color="#49545e"/></linearGradient><linearGradient id="metal-green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#86e8ae"/><stop offset=".48" stop-color="#157249"/><stop offset="1" stop-color="#2fb66e"/></linearGradient><linearGradient id="metal-prism" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#bedfff"/><stop offset=".48" stop-color="#ddd3f9"/><stop offset="1" stop-color="#88d3d2"/></linearGradient></defs>

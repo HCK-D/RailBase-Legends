@@ -86,8 +86,10 @@ const Online = (() => {
       return;
     }
     setzeStatus('verbinde');
+    Laden.schritt(0.35, 'Verbinde mit dem Server …');
     try {
       await ladeBibliothek();
+      Laden.schritt(0.6, 'Anmeldung wird geprüft …');
       if (!db) {
         db = window.supabase.createClient(ONLINE.url, ONLINE.schluessel, {
           auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce', storageKey: 'sk-online' },
@@ -117,14 +119,16 @@ const Online = (() => {
   }
 
   // Spiel freigeben: Willkommen (beim ersten Mal, danach die Einführung), sonst einmal die Einführung
-  // für alle, die sie noch nicht gesehen haben, sonst die Tagesbelohnung
+  // für alle, die sie noch nicht gesehen haben, sonst die Tagesbelohnung. Fenster erst, wenn der Ladebildschirm weg ist.
   function spielen() {
     if (gespielt) return;
     gespielt = true;
     aktualisiereAlles();
-    if (!app.daten.bonusMuenzen) willkommenPruefen();
-    else if (!app.daten.einfuehrung) setTimeout(() => Einfuehrung.starte(Taeglich.vielleichtZeigen), 600);
-    else setTimeout(Taeglich.vielleichtZeigen, 600);
+    Laden.fertig().then(() => {
+      if (!app.daten.bonusMuenzen) willkommenPruefen();
+      else if (!app.daten.einfuehrung) setTimeout(() => Einfuehrung.starte(Taeglich.vielleichtZeigen), 400);
+      else setTimeout(Taeglich.vielleichtZeigen, 400);
+    });
   }
 
   // Supabase meldet das Anmelden manchmal doppelt (Sitzung beim Start und Ereignis): nur einmal verbinden
@@ -137,6 +141,7 @@ const Online = (() => {
 
   async function verbinde(user) {
     nutzer = user;
+    Laden.schritt(0.8, 'Spielstand wird geladen …');
     try {
       await verbindeSpielstand();
     } catch (e) {
@@ -204,6 +209,7 @@ const Online = (() => {
   // true = den Spielstand vom Gerät ins Konto nehmen, false = der vom Konto bleibt (auch bei «Abbrechen»)
   async function waehleSpielstand(lokal, online) {
     const kurz = (d) => `${new Set(d.karten || []).size} Karten, Level ${levelVon(d.xp || 0).level}`;
+    await Laden.fertig('Spielstand wählen');
     const antwort = await frage(
       `Auf diesem Gerät gibt es einen Spielstand ohne Konto (${kurz(lokal)}). Dein Konto hat schon einen `
       + `(${kurz(online)}). Welchen willst du behalten? Der andere geht verloren.`,
@@ -240,6 +246,7 @@ const Online = (() => {
     zeichneAnmelden();
     zeigeMeldung(meldung);
     $('am-nochmals').hidden = !nochmals;
+    Laden.fertig('Bitte melde dich an');
   }
 
   function schliesseAnmelden() {

@@ -136,6 +136,15 @@ Sonstiges: `app`, `hinweis`
   Jeder darf nur seinen eigenen Eintrag lesen und ändern; was zwei Spieler betrifft, geht nur über die Funktionen.
   Änderungen an der Datenbank immer in dieser Datei und dann im Supabase SQL Editor ausführen.
 
+## Ladebildschirm
+
+- `js/laden.js` (`Laden`, Tipps in `LADE_TIPPS`), Aussehen `css/laden.css`, ganz oben im `<body>` (`laden`, `ld-balken`,
+  `ld-text`, `ld-tipp`), z-index 100 über allem. Immer dunkel wie die Kartenrückseite (`assets/karten/rueckseite.webp`).
+- `js/online.js` meldet die Schritte (`Laden.schritt(anteil, text)`) und ruft `Laden.fertig(text)`, sobald man spielen
+  kann (`spielen()`), sich anmelden muss (`zeigeAnmelden()`) oder den Spielstand wählen muss. `fertig()` gibt ein
+  Promise zurück, das erfüllt ist, wenn der Bildschirm weg ist: Willkommen, Einführung und Tagesbelohnung gehen erst danach auf.
+- Mindestens 1,6 Sekunden zu sehen; nach 15 Sekunden geht er sicher weg, ohne Skript blendet ihn das CSS nach 20 Sekunden aus.
+
 ## Kurze Einführung
 
 - `js/einfuehrung.js` (`Einfuehrung`, Schritte in `EINFUEHRUNG`): kommt einmal nach dem Willkommens-Fenster

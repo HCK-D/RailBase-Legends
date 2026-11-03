@@ -35,6 +35,9 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
 
 - Zwei Designs: **Silber** (hell) und **Schwarz** (dunkel), wählbar unter Konto
 - Kopfzeile mit Konto-Knopf (Anfangsbuchstabe), Sammler-Level und XP-Balken
+- **Ladebildschirm** beim Start (`js/laden.js`): drei Karten im Fächer, Logo, ein roter Zug als Ladebalken,
+  was gerade lädt (Server, Anmeldung, Spielstand) und wechselnde Tipps. Er bleibt, bis man spielen oder sich
+  anmelden kann; danach gehen Willkommen, Einführung oder Tagesbelohnung auf.
 - **Anmelden beim Start (Pflicht)** mit E-Mail und Passwort oder mit Google (`js/online.js`, Online-Datenbank
   Supabase, Tabellen und Regeln in `werkzeuge/datenbank.sql`). Der Spielstand wird online gesichert und ist auf
   jedem Gerät gleich; ohne Netz spielt man mit dem Spielstand auf dem Gerät weiter. Bisherige Spielstände ziehen
@@ -120,6 +123,7 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 | `js/online.js`, `css/anmelden.css` | Anmelden, Spielstand online, Freunde-Namen, Geschenke (Supabase) |
 | `werkzeuge/datenbank.sql` | Tabellen, Regeln und Server-Funktionen der Datenbank (im Supabase SQL Editor ausführen) |
 | `js/einfuehrung.js`, `css/einfuehrung.css` | kurze Einführung für neue Spieler |
+| `js/laden.js`, `css/laden.css` | Ladebildschirm beim Start (Tipps in `LADE_TIPPS`) |
 | `js/store.js` | Speichern der Daten (hier kommt später die Online-Datenbank rein) |
 | `assets/packs/` | Pack-Bilder gross (zum Öffnen) |
 | `assets/packs/klein/` | Pack-Bilder klein (für Listen) |
