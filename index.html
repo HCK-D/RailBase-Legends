@@ -246,7 +246,6 @@
   <section class="view" id="v-konto" data-view="konto" hidden>
     <div class="titel-block links">
       <h1>Mein Konto</h1>
-      <p>In der Beta bleiben deine Daten nur auf diesem Gerät.</p>
     </div>
     <div class="seite">
       <!-- Profil und Name in einem Kasten -->
@@ -255,22 +254,16 @@
           <span class="avatar gross" id="avatar-gross">K</span>
           <div>
             <b id="profil-name">Sammler</b>
-            <span class="profil-titel" id="profil-titel" hidden></span>
             <span id="profil-level">Sammler-Level 1</span>
           </div>
         </div>
         <form id="konto-form" autocomplete="off">
           <label class="field">
             <span class="sr-only">Dein Name</span>
-            <input type="text" id="konto-name" maxlength="30" placeholder="Dein Name, z. B. Hckd">
+            <input type="text" id="konto-name" maxlength="30" placeholder="Dein Name">
           </label>
           <button class="btn" type="submit">Speichern</button>
         </form>
-        <!-- Titel aus den Erfolgen (js/erfolge.js), erscheint erst mit dem ersten Titel -->
-        <label class="field titel-wahl" id="titel-wahl" hidden>
-          <span>Dein Titel</span>
-          <select id="konto-titel"></select>
-        </label>
       </div>
 
       <div class="panel">
@@ -699,7 +692,7 @@
     <p class="am-oder"><span>oder mit E-Mail</span></p>
     <label class="am-feld" id="am-name-feld" hidden>
       <span>Spielername</span>
-      <input type="text" id="am-name" maxlength="30" autocomplete="nickname" placeholder="z. B. Hckd">
+      <input type="text" id="am-name" maxlength="30" autocomplete="nickname">
     </label>
     <label class="am-feld">
       <span>E-Mail</span>

@@ -54,7 +54,7 @@ Rad: `rad-buehne` (das Rad ist zum Drücken), `rad-svg`, `rad-btn`, `rad-btn-txt
 Gewinn-Fenster vom Rad: `gewinn`, `gw-img`, `gw-leer`, `gw-kicker`, `gw-titel`, `gw-text`, `gw-oeffnen`, `gw-oeffnen-icon`, `gw-oeffnen-txt`, `gw-spaeter`
 Album: `st-entdeckt`, `st-karten`, `st-geoeffnet`, `rar-liste`, `al-suche`, `al-bahn`, `al-nur-meine`,
 `sam-titel`, `sam-karten`, `sam-leer`
-Konto: `avatar-gross`, `profil-name`, `profil-titel`, `profil-level`, `konto-form`, `konto-name`, `titel-wahl`, `konto-titel`, `reset-btn`
+Konto: `avatar-gross`, `profil-name`, `profil-level`, `konto-form`, `konto-name`, `reset-btn`
 Pack öffnen: `opener`, `op-titel`, `op-pack`, `op-img`, `op-tipp`, `op-einzeln`, `op-zaehler`, `op-slot`,
 `op-hilfe`, `op-karten`, `op-status`, `op-alle`, `op-close`
 Sonstiges: `app`, `hinweis`
@@ -111,10 +111,10 @@ Sonstiges: `app`, `hinweis`
 ## Erfolge
 
 - `js/erfolge.js` (`Erfolge`): Liste `ERFOLGE` (Gruppen in `ERFOLG_GRUPPEN`). Jeder Erfolg hat Stufen mit Ziel,
-  Belohnung (`{ muenzen }`, `{ rubine }` oder `{ pack }`) und manchmal einem Titel. Alle Mengen sind Platzhalter.
+  Belohnung (`{ muenzen }`, `{ rubine }` oder `{ pack }`). Titel gibt es keine mehr (auf Wunsch entfernt). Alle Mengen sind Platzhalter.
 - Der Fortschritt kommt meist aus dem Spielstand (Karten, Packs, Level, Freunde). Was dort fehlt, zählt
   `Erfolge.zaehle('verwertet' | 'gekauft' | 'geschenkt' | 'doppeltImPack' | 'legendaryBasis' | 'nachtzug')`.
-- Gespeichert in `app.daten.erfolge` (`geschafft`, `abgeholt`, `zaehler`, siehe `store.js`), der gewählte Titel in `app.daten.titel`.
+- Gespeichert in `app.daten.erfolge` (`geschafft`, `abgeholt`, `zaehler`, siehe `store.js`).
   Eine geschaffte Stufe bleibt geschafft, auch wenn der Wert später sinkt.
 - Seite `#erfolge`: `erf-anzahl`, `erf-bereit`, `erf-balken`, `erf-filter` (`button[data-gruppe]` mit `aria-pressed`),
   `erf-liste` (`li.erf.bereit|offen|geheim|fertig`, `[data-abholen]`, `[data-ziel]`). Eintrag in der Liste der Mehr-Seite

@@ -43,7 +43,6 @@ const Store = (() => {
       abgeholt: {},
       zaehler: {},       // was der Spielstand sonst nicht weiss, z. B. { verwertet: 3, gekauft: 1, serie: 7 }
     },
-    titel: '',         // Titel aus den Erfolgen, steht im Konto unter dem Namen
     wunschliste: [],   // Karten-IDs, die man sucht (Tauschen, js/tauschen.js; Freunde sehen sie beim Tauschen)
     tauschErledigt: [], // IDs der angenommenen Tausche, die in diesem Spielstand schon umgesetzt sind (js/tauschen.js)
     zeit: 0,           // Zeitpunkt (ms) der letzten Änderung: beim Verbinden mit der Datenbank gewinnt der neuere Spielstand

@@ -1,6 +1,6 @@
 /*
  * Erfolge: Ziele, die bleiben (anders als die Tagesaufgaben, die jeden Tag neu beginnen).
- * Jede Stufe bringt eine Belohnung, grosse Erfolge zusätzlich einen Titel fürs Konto.
+ * Jede Stufe bringt eine Belohnung.
  * Der Fortschritt kommt meist aus dem Spielstand (Karten, Packs, Level, Freunde): Was man schon vor den
  * Erfolgen gesammelt hat, zählt mit. Was der Spielstand nicht weiss, zählt Erfolge.zaehle(…).
  * Gespeichert in app.daten.erfolge (siehe store.js). Ziele und Belohnungen sind Platzhalter.
@@ -38,7 +38,7 @@ const ERFOLGE = [
       { ziel: 100, belohnung: { rubine: 1 } },
       { ziel: 150, belohnung: { pack: 'silber-2' } },
       { ziel: 200, belohnung: { pack: 'gold-2' } },
-      { ziel: KARTEN.length, belohnung: { pack: 'platin-2' }, titel: 'Komplett-Sammler' },
+      { ziel: KARTEN.length, belohnung: { pack: 'platin-2' } },
     ],
   },
   ...[['epic', { muenzen: 30 }], ['mythic', { muenzen: 60 }], ['legendary', { rubine: 1 }], ['special', { rubine: 2 }]]
@@ -48,12 +48,12 @@ const ERFOLGE = [
       wert: (l) => l.seltenheit[s] || 0,
       stufen: [{ ziel: 1, belohnung }],
     })),
-  ...[['mythic', { pack: 'gold-2' }, 'Mythen-Sammler'], ['legendary', { pack: 'platin-2' }, 'Legenden-Jäger']]
-    .map(([s, belohnung, titel]) => ({
+  ...[['mythic', { pack: 'gold-2' }], ['legendary', { pack: 'platin-2' }]]
+    .map(([s, belohnung]) => ({
       id: `alle-${s}`, gruppe: 'sammeln', name: `Alle ${seltenheitVon(s).name}`, rar: s, album: { filter: s },
       text: (z) => `Sammle alle ${z} ${seltenheitVon(s).name}-Karten`,
       wert: (l) => l.seltenheit[s] || 0,
-      stufen: [{ ziel: KARTEN_NACH_SELTENHEIT[s].length, belohnung, titel }],
+      stufen: [{ ziel: KARTEN_NACH_SELTENHEIT[s].length, belohnung }],
     })),
   {
     id: 'verwerter', gruppe: 'sammeln', name: 'Verwerter', bild: 'assets/muenzen/gold-rund.png', album: {},
@@ -73,7 +73,7 @@ const ERFOLGE = [
     stufen: [
       { ziel: 3, belohnung: { muenzen: 20 } },
       { ziel: 7, belohnung: { muenzen: 50 } },
-      { ziel: ANZAHL_BAHNEN, belohnung: { pack: 'gold-2' }, titel: 'GA-Besitzer' },
+      { ziel: ANZAHL_BAHNEN, belohnung: { pack: 'gold-2' } },
     ],
   },
   // Jede Bahn komplett: je mehr Karten die Bahn hat, desto besser das Pack
@@ -83,7 +83,7 @@ const ERFOLGE = [
       id: `bahn-${b.toLowerCase()}`, gruppe: 'bahnen', name: `${b} komplett`, bahn: b, album: { bahn: b },
       text: (z) => `Sammle alle ${z} Karten der ${b}`,
       wert: (l) => l.proBahn[b] || 0,
-      stufen: [{ ziel: n, belohnung: { pack: n <= 8 ? 'silber-2' : n <= 25 ? 'gold-2' : 'platin-2' }, titel: `${b}-Kenner` }],
+      stufen: [{ ziel: n, belohnung: { pack: n <= 8 ? 'silber-2' : n <= 25 ? 'gold-2' : 'platin-2' } }],
     };
   }),
   // ---------- Packs ----------
@@ -96,7 +96,7 @@ const ERFOLGE = [
       { ziel: 10, belohnung: { muenzen: 30 } },
       { ziel: 50, belohnung: { rubine: 1 } },
       { ziel: 100, belohnung: { pack: 'gold-2' } },
-      { ziel: 250, belohnung: { pack: 'platin-2' }, titel: 'Pack-Profi' },
+      { ziel: 250, belohnung: { pack: 'platin-2' } },
     ],
   },
   {
@@ -117,7 +117,7 @@ const ERFOLGE = [
       { ziel: 1, belohnung: { muenzen: 10 } },
       { ziel: 10, belohnung: { muenzen: 25 } },
       { ziel: 50, belohnung: { rubine: 1 } },
-      { ziel: 100, belohnung: { pack: 'gold-2' }, titel: 'Glücksritter' },
+      { ziel: 100, belohnung: { pack: 'gold-2' } },
     ],
   },
   // ---------- Treue ----------
@@ -129,7 +129,7 @@ const ERFOLGE = [
       { ziel: 5, belohnung: { muenzen: 50 } },
       { ziel: 10, belohnung: { pack: 'silber-2' } },
       { ziel: 15, belohnung: { pack: 'gold-2' } },
-      { ziel: 20, belohnung: { pack: 'platin-2' }, titel: 'Lokführer' },
+      { ziel: 20, belohnung: { pack: 'platin-2' } },
     ],
   },
   {
@@ -140,7 +140,7 @@ const ERFOLGE = [
       { ziel: 3, belohnung: { muenzen: 20 } },
       { ziel: 7, belohnung: { rubine: 1 } },
       { ziel: 14, belohnung: { pack: 'gold-2' } },
-      { ziel: 30, belohnung: { pack: 'platin-2' }, titel: 'Stammgast' },
+      { ziel: 30, belohnung: { pack: 'platin-2' } },
     ],
   },
   // ---------- Freunde ----------
@@ -286,18 +286,16 @@ const Erfolge = (() => {
   function hole(key, knopf) {
     const x = ALLE_STUFEN.find((y) => y.key === key);
     if (!x || !bereit(key)) return;
-    const { belohnung, titel } = x.s;
+    const { belohnung } = x.s;
     daten().abgeholt[key] = Date.now();
     Taeglich.gib(belohnung, knopf);
-    if (titel) app.daten.titel = titel;
     speichern();
     aktualisiereAlles();
-    const gross = !!(titel || belohnung.pack);
+    const gross = !!belohnung.pack;
     Gefuehl.ton(gross ? 'levelup' : 'muenze');
     Gefuehl.vibriere(gross ? [30, 40, 80] : 20);
-    if (gross) Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], titel ? 80 : 50);
-    zeigeHinweis(`${stufenName(x.e, x.i)}: ${Taeglich.belohnungText(belohnung)}${belohnung.pack ? ' liegt in deinem Vorrat' : ''}`
-      + `${titel ? `. Neuer Titel: ${titel}` : ''}!`);
+    if (gross) Gefuehl.konfetti(['#ffd34d', '#ff4251', '#ffffff', '#4aa3ff'], 50);
+    zeigeHinweis(`${stufenName(x.e, x.i)}: ${Taeglich.belohnungText(belohnung)}${belohnung.pack ? ' liegt in deinem Vorrat' : ''}!`);
   }
 
   // Tipp auf einen Erfolg: zum Album (mit passendem Filter) oder zur Seite, auf der man ihn schafft
@@ -351,11 +349,10 @@ const Erfolge = (() => {
       ? `<span class="erf-stufen" aria-label="Stufe ${nr + 1} von ${e.stufen.length}">${e.stufen.map((x, j) =>
         `<i class="${abgeholt(schluessel(e, j)) ? 'an' : ''}"></i>`).join('')}</span>`
       : '';
-    const titel = s.titel && !geheim && zustand !== 'fertig' ? `<small class="erf-titel">+ Titel «${s.titel}»</small>` : '';
     const balken = zustand === 'offen'
       ? `<span class="tb-balken" aria-hidden="true"><i style="width:${(wert / s.ziel) * 100}%"></i></span>`
       : '';
-    const inneres = `<b>${name}</b>${stufen}<small>${text}</small>${titel}${balken}`;
+    const inneres = `<b>${name}</b>${stufen}<small>${text}</small>${balken}`;
     const mitte = (e.album || e.seite) && !geheim
       ? `<button class="erf-text" type="button" data-ziel="${e.id}">${inneres}</button>`
       : `<div class="erf-text">${inneres}</div>`;
@@ -393,23 +390,7 @@ const Erfolge = (() => {
       .map(zeileHtml).join('');
   }
 
-  // Konto: der gewählte Titel unter dem Namen, zur Wahl stehen alle abgeholten Titel
-  function zeichneTitel() {
-    const titel = ALLE_STUFEN.filter((x) => x.s.titel && abgeholt(x.key)).map((x) => x.s.titel);
-    const aktiv = titel.includes(app.daten.titel) ? app.daten.titel : '';
-    $('profil-titel').textContent = aktiv ? `«${aktiv}»` : '';
-    $('profil-titel').hidden = !aktiv;
-    $('titel-wahl').hidden = !titel.length;
-    const wahl = $('konto-titel');
-    const liste = ['', ...titel];
-    if (wahl.dataset.liste !== liste.join('|')) {
-      wahl.innerHTML = liste.map((t) => `<option value="${esc(t)}">${t ? esc(t) : 'Kein Titel'}</option>`).join('');
-      wahl.dataset.liste = liste.join('|');
-    }
-    wahl.value = aktiv;
-  }
-
-  // Wird von aktualisiereAlles aufgerufen: prüft neue Erfolge, Eintrag auf der Mehr-Seite, Seite und Konto
+  // Wird von aktualisiereAlles aufgerufen: prüft neue Erfolge, Eintrag auf der Mehr-Seite und Seite
   function zeichne() {
     pruefe();
     const anzahl = ALLE_STUFEN.filter((x) => geschafft(x.key)).length;
@@ -426,7 +407,6 @@ const Erfolge = (() => {
     $('erf-oeffnen').setAttribute('aria-label', offen
       ? `Erfolge, ${offen} Belohnung${offen > 1 ? 'en' : ''} bereit`
       : `Erfolge, ${anzahl} von ${ALLE_STUFEN.length} geschafft`);
-    zeichneTitel();
     if (app.ansicht === 'erfolge') zeichneSeite(anzahl, offen);
   }
 
@@ -445,11 +425,6 @@ const Erfolge = (() => {
       if (abholen) return hole(abholen.dataset.abholen, abholen);
       const ziel = e.target.closest('[data-ziel]');
       if (ziel) oeffneZiel(ziel.dataset.ziel);
-    });
-    $('konto-titel').addEventListener('change', (e) => {
-      app.daten.titel = e.target.value;
-      speichern();
-      zeichneTitel();
     });
   }
 

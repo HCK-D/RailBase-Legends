@@ -61,8 +61,8 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
   Holo-Schimmer und Sterne (Epic), Glut und Funken (Mythic), Gold-Glitzer (Legendary). Special bekommt später ein eigenes Design.
 - Album mit allen gezogenen Karten, Filter nach Kategorie
 - **Erfolge** (Mehr → Erfolge, mit roter Zahl, wenn Belohnungen bereit sind; `js/erfolge.js`): 34 Erfolge mit 61 Stufen in 6 Gruppen (Sammeln, Bahnen,
-  Packs, Treue, Freunde, Geheim). Jede Stufe hat eine Belohnung (RB Coins, Rubine oder ein Pack),
-  grosse Erfolge zusätzlich einen Titel, der im Konto unter dem Namen steht. Der Fortschritt kommt aus dem
+  Packs, Treue, Freunde, Geheim). Jede Stufe hat eine Belohnung (RB Coins, Rubine oder ein Pack).
+  Der Fortschritt kommt aus dem
   Spielstand, also zählt auch, was man vorher schon gesammelt hat. Ziele und Belohnungen sind Platzhalter.
 - **Tauschen** (Mehr → Tauschen, `js/tauschen.js`): vorbereitet für die Online-Datenbank. Doppelte Karten gegen
   Karten von Freunden, gleiche Seltenheit 1 gegen 1, ohne Special. Drei Reiter: Anfragen, Tauschen, Vergangen.
@@ -119,7 +119,7 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 | `js/enthuellung.js` | Enthüllung ab Epic: Aufladen mit Farbstufen, Knall, Strahlen, Funken und Konfetti (auf canvas gemalt) |
 | `js/rad.js` | Glücksrad |
 | `js/taeglich.js`, `css/taeglich.css` | Tagesbelohnung (Login-Serie) und Tagesaufgaben |
-| `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen und Titeln (Liste `ERFOLGE` am Anfang der Datei) |
+| `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen (Liste `ERFOLGE` am Anfang der Datei) |
 | `js/tauschen.js`, `css/tauschen.css` | Tauschen und Wunschliste; online prüft und entscheidet der Server (`onlineServer`) |
 | `js/online.js`, `css/anmelden.css` | Anmelden, Spielstand online, Freunde-Namen, Geschenke (Supabase) |
 | `werkzeuge/datenbank.sql` | Tabellen, Regeln und Server-Funktionen der Datenbank (im Supabase SQL Editor ausführen) |
