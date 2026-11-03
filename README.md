@@ -42,6 +42,7 @@ Ab 1100 px Breite steht das Menü oben, darunter (Handy) unten.
   Supabase, Tabellen und Regeln in `werkzeuge/datenbank.sql`). Der Spielstand wird online gesichert und ist auf
   jedem Gerät gleich; ohne Netz spielt man mit dem Spielstand auf dem Gerät weiter. Bisherige Spielstände ziehen
   beim ersten Konto mit um. Im Konto: «Angemeldet als …», Online-Status und Abmelden.
+  Neues Konto: Spielername, E-Mail und zweimal das Passwort (damit kein Tippfehler drin ist).
 - Erster Start: Willkommens-Fenster mit allem, was man bekommt (100 RB Coins, Gratis-Pack, Startbonus,
   Glücksrad, Tagesbelohnung) und unten «Annehmen»; erst dann gibt es das Startguthaben
 - Danach eine **kurze Einführung** in 5 Schritten (`js/einfuehrung.js`): Packs öffnen, Karten, Glücksrad, Album.

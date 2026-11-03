@@ -126,6 +126,7 @@ Sonstiges: `app`, `hinweis`
 - `js/online.js` (`Online`): Supabase (Projekt-URL und Publishable key in `ONLINE`, die Bibliothek supabase-js wird
   erst beim Start geladen). Anmelden ist Pflicht: E-Mail und Passwort oder Google (Fenster `anmelden`, `am-form`,
   `am-reiter` mit `[data-art="anmelden|registrieren"]`, `am-name-feld`, `am-name`, `am-email`, `am-passwort`,
+  `am-passwort2-feld`, `am-passwort2` (neues Konto: Spielername Pflicht, Passwort zweimal),
   `am-meldung`, `am-los`, `am-google`, `am-nochmals`; Aussehen `css/anmelden.css`). Im Claude-Artefakt gibt es kein Anmelden.
 - Spielstand: zuerst im Browser (`store.js`), `speichern()` in `js/app.js` setzt `app.daten.zeit` und ruft `Online.merke()`,
   das lädt ihn kurz danach in die Tabelle `spieler` hoch. Beim Verbinden gewinnt der neuere Spielstand, wenn er zum

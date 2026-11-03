@@ -161,13 +161,6 @@
   border-color: rgba(255, 255, 255, .3);
 }
 
-.am-klein {
-  margin: 0;
-  color: #8796a8;
-  font-size: 12px;
-  text-align: center;
-}
-
 /* Konto: angemeldet als …, Abmelden und Zurücksetzen nebeneinander */
 .konto-email {
   display: block;

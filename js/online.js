@@ -260,6 +260,7 @@ const Online = (() => {
     $('am-titel').textContent = neu ? 'Neues Konto' : 'Anmelden';
     $('am-reiter').querySelectorAll('[data-art]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.art === artAnmelden)));
     $('am-name-feld').hidden = !neu;
+    $('am-passwort2-feld').hidden = !neu;
     $('am-passwort').setAttribute('autocomplete', neu ? 'new-password' : 'current-password');
     $('am-los').textContent = neu ? 'Konto erstellen' : 'Anmelden';
   }
@@ -277,16 +278,20 @@ const Online = (() => {
     const email = $('am-email').value.trim();
     const passwort = $('am-passwort').value;
     const name = $('am-name').value.trim().slice(0, 30);
+    const neu = artAnmelden === 'registrieren';
+    // neues Konto: Spielername, E-Mail und zweimal dasselbe Passwort
+    if (neu && !name) return zeigeMeldung('Gib deinen Spielernamen ein.');
     if (!/^\S+@\S+\.\S+$/.test(email)) return zeigeMeldung('Gib deine E-Mail-Adresse ein.');
     if (passwort.length < 6) return zeigeMeldung('Das Passwort braucht mindestens 6 Zeichen.');
+    if (neu && passwort !== $('am-passwort2').value) return zeigeMeldung('Die beiden Passwörter sind nicht gleich. Gib sie nochmals ein.');
     const knopf = $('am-los');
     knopf.disabled = true;
     zeigeMeldung('');
     try {
-      if (artAnmelden === 'registrieren') {
+      if (neu) {
         const { data, error } = await db.auth.signUp({ email, password: passwort, options: { data: { spielername: name } } });
         if (error) throw error;
-        if (name) app.daten.name = name;
+        app.daten.name = name;
         // mit Bestätigungs-Mail gibt es noch keine Sitzung: erst nach dem Klick auf den Link
         if (!data.session) {
           zeigeMeldung('Fast fertig: Bestätige deine E-Mail (Link in der Mail), dann melde dich hier an.', true);
@@ -298,6 +303,7 @@ const Online = (() => {
         if (error) throw error;
       }
       $('am-passwort').value = '';
+      $('am-passwort2').value = '';
     } catch (fehler) {
       zeigeMeldung(deutsch(fehler));
     } finally {

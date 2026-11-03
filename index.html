@@ -709,10 +709,14 @@
       <span>Passwort</span>
       <input type="password" id="am-passwort" autocomplete="current-password" placeholder="mindestens 6 Zeichen">
     </label>
+    <!-- nur beim neuen Konto: Passwort zur Sicherheit nochmals eingeben -->
+    <label class="am-feld" id="am-passwort2-feld" hidden>
+      <span>Passwort wiederholen</span>
+      <input type="password" id="am-passwort2" autocomplete="new-password" placeholder="nochmals dasselbe Passwort">
+    </label>
     <p class="am-meldung" id="am-meldung" role="alert" hidden></p>
     <button class="btn-haupt am-los" type="submit" id="am-los">Anmelden</button>
     <button class="btn ghost am-nochmals" type="button" id="am-nochmals" hidden>Nochmals verbinden</button>
-    <p class="am-klein">Dein Spielstand wird online gespeichert und ist auf jedem Gerät gleich.</p>
   </form>
 </div>
 
