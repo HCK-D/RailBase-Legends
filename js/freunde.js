@@ -22,6 +22,9 @@ const PROFILBILDER = [
   { id: 'berge', zeichen: '🏔️', farbe: '#4f86b8', name: 'Berge' },
   { id: 'signal', zeichen: '🚦', farbe: '#39424d', name: 'Signal' },
   { id: 'billett', zeichen: '🎫', farbe: '#d6407e', name: 'Billett' },
+  { id: 'bahnhof', zeichen: '🚉', farbe: '#0e7c86', name: 'Bahnhof' },
+  { id: 'gleise', zeichen: '🛤️', farbe: '#8b6b4a', name: 'Gleise' },
+  { id: 'uhr', zeichen: '⏱️', farbe: '#5a4fcf', name: 'Uhr' },
 ];
 
 const profilbildVon = (id) => PROFILBILDER.find((b) => b.id === id) || null;
@@ -38,12 +41,47 @@ function titelFuerLevel(level) {
   return titel;
 }
 
-// Rundes Profilbild als HTML; ohne Bild der erste Buchstabe des Namens
-function profilbildHtml(bild, name = '', klasse = '') {
+// Eigenes Foto: nur echte Bild-Texte (data:image/…) zulassen; es kommt auch von anderen Spielern
+const FOTO_MUSTER = /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/;
+const fotoOk = (foto) => typeof foto === 'string' && foto.length < 16000 && FOTO_MUSTER.test(foto);
+
+// Rundes Profilbild als HTML; foto gilt bei bild 'eigen'. Ohne Bild der erste Buchstabe des Namens
+function profilbildHtml(bild, name = '', klasse = '', foto = '') {
+  if (bild === 'eigen' && fotoOk(foto)) {
+    return `<span class="pb pb-foto ${klasse}" aria-hidden="true"><img src="${foto}" alt="" draggable="false"></span>`;
+  }
   const b = profilbildVon(bild);
   if (b) return `<span class="pb ${klasse}" style="--pb:${b.farbe}" aria-hidden="true">${b.zeichen}</span>`;
   const buchstabe = (name || '?').trim().charAt(0).toUpperCase() || '?';
   return `<span class="pb pb-leer ${klasse}" aria-hidden="true">${esc(buchstabe)}</span>`;
+}
+
+// Foto aus der Galerie: Mitte quadratisch ausschneiden, klein machen (160 px) und als Bild-Text zurückgeben.
+// Wird es zu gross, mit weniger Qualität und dann kleiner nochmals.
+async function fotoAusDatei(datei) {
+  const url = URL.createObjectURL(datei);
+  try {
+    const img = await new Promise((fertig, fehler) => {
+      const i = new Image();
+      i.onload = () => fertig(i);
+      i.onerror = () => fehler(new Error('Dieses Bild kann nicht geöffnet werden. Nimm ein anderes Foto.'));
+      i.src = url;
+    });
+    const seite = Math.min(img.naturalWidth, img.naturalHeight);
+    if (!seite) throw new Error('Dieses Bild kann nicht geöffnet werden. Nimm ein anderes Foto.');
+    for (const [groesse, qualitaet] of [[160, 0.8], [160, 0.65], [128, 0.6], [96, 0.55]]) {
+      const c = document.createElement('canvas');
+      c.width = groesse;
+      c.height = groesse;
+      c.getContext('2d').drawImage(img, (img.naturalWidth - seite) / 2, (img.naturalHeight - seite) / 2, seite, seite, 0, 0, groesse, groesse);
+      let text = c.toDataURL('image/webp', qualitaet);
+      if (!text.startsWith('data:image/webp')) text = c.toDataURL('image/jpeg', qualitaet); // ältere iPhones
+      if (fotoOk(text)) return text;
+    }
+    throw new Error('Das Foto ist zu gross. Nimm ein anderes.');
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 const Freunde = (() => {
@@ -63,7 +101,7 @@ const Freunde = (() => {
       const daten = await Online.rpc('freunde_liste', {});
       return (daten || []).map((r) => ({
         anfrage: r.anfrage, id: r.spieler_id, name: r.name || '', titel: r.titel || '', level: r.level || 1,
-        bild: r.bild || '', art: r.art, zeit: Date.parse(r.zeit),
+        bild: r.bild || '', foto: fotoOk(r.bild_foto) ? r.bild_foto : '', art: r.art, zeit: Date.parse(r.zeit),
       }));
     },
     anfragen: (id) => Online.rpc('freund_anfragen', { freund: id }),
@@ -256,7 +294,7 @@ const Freunde = (() => {
     $('freund-anfragen-box').hidden = !eingehend.length;
     $('freund-anfragen').innerHTML = eingehend.map((f) => `
       <li class="freund-karte eingehend">
-        ${profilbildHtml(f.bild, f.name)}
+        ${profilbildHtml(f.bild, f.name, '', f.foto)}
         <span class="freund-wer"><b>${esc(f.name || f.id)}</b><small>${unterzeile(f)}</small></span>
         <span class="freund-knoepfe">
           <button class="btn ghost" type="button" data-ablehnen="${f.anfrage}">Ablehnen</button>
@@ -268,7 +306,7 @@ const Freunde = (() => {
     const zeigen = geladen ? freunde : app.daten.freunde.map((id) => ({ id, name: Online.nameVon(id), level: 1, art: 'freund' }));
     $('freund-liste').innerHTML = zeigen.map((f) => `
       <li class="freund-karte">
-        ${profilbildHtml(f.bild, f.name || f.id)}
+        ${profilbildHtml(f.bild, f.name || f.id, '', f.foto)}
         <span class="freund-wer"><b>${esc(f.name || f.id)}</b><small>${unterzeile(f)}</small></span>
         <span class="freund-knoepfe">
           <button class="btn freund-tauschen" type="button" data-tauschen="${esc(f.id)}">
@@ -281,7 +319,7 @@ const Freunde = (() => {
     $('freund-gesendet-box').hidden = !ausgehend.length;
     $('freund-gesendet').innerHTML = ausgehend.map((f) => `
       <li class="freund-karte klein">
-        ${profilbildHtml(f.bild, f.name)}
+        ${profilbildHtml(f.bild, f.name, '', f.foto)}
         <span class="freund-wer"><b>${esc(f.name || f.id)}</b><small>wartet auf Antwort</small></span>
         <button class="btn ghost" type="button" data-entfernen="${esc(f.id)}">Zurückziehen</button>
       </li>`).join('');
@@ -297,7 +335,7 @@ const Freunde = (() => {
     const f = liste.find((x) => x.id === id);
     if (f) return f;
     const p = Online.profilVon(id);
-    return p ? { id, name: p.name, level: p.level || 1, titel: p.titel || titelFuerLevel(p.level || 1), bild: p.bild || '' } : null;
+    return p ? { id, name: p.name, level: p.level || 1, titel: p.titel || titelFuerLevel(p.level || 1), bild: p.bild || '', foto: fotoOk(p.bild_foto) ? p.bild_foto : '' } : null;
   }
 
   const etwasBereit = () => liste.some((f) => f.art === 'eingehend');
@@ -307,12 +345,20 @@ const Freunde = (() => {
   function waehleBild(zwang = false) {
     return new Promise((fertig) => {
       const box = $('profilbild');
+      const datei = $('pb-datei');
       let wahl = app.daten.bild || '';
+      let foto = fotoOk(app.daten.bildFoto) ? app.daten.bildFoto : ''; // eigenes Foto (auch wenn gerade nicht gewählt)
+      // erste Kachel: eigenes Foto aus der Galerie (ohne Foto ein Kamera-Zeichen), danach die Zeichen
       const zeichneWahl = () => {
-        $('pb-raster').innerHTML = PROFILBILDER.map((b) => `
+        const eigen = `
+          <li><button type="button" class="pb-knopf pb-eigen" data-bild="eigen" aria-pressed="${wahl === 'eigen'}"
+            aria-label="${foto ? 'Eigenes Foto (nochmals antippen: anderes Foto wählen)' : 'Eigenes Foto aus der Galerie wählen'}">
+            ${foto ? profilbildHtml('eigen', '', 'gross', foto) : '<span class="pb gross pb-kamera" aria-hidden="true">📷</span>'}
+            <small>${foto ? (wahl === 'eigen' ? 'Ändern' : 'Dein Foto') : 'Eigenes Foto'}</small></button></li>`;
+        $('pb-raster').innerHTML = eigen + PROFILBILDER.map((b) => `
           <li><button type="button" class="pb-knopf" data-bild="${b.id}" aria-pressed="${b.id === wahl}" aria-label="${b.name}">
             ${profilbildHtml(b.id, '', 'gross')}</button></li>`).join('');
-        $('pb-fertig').disabled = !wahl;
+        $('pb-fertig').disabled = !wahl || (wahl === 'eigen' && !foto);
       };
       const zu = (ok) => {
         box.hidden = true;
@@ -320,8 +366,11 @@ const Freunde = (() => {
         $('pb-raster').onclick = null;
         $('pb-fertig').onclick = null;
         $('pb-abbrechen').onclick = null;
-        if (ok && wahl && wahl !== app.daten.bild) {
+        datei.onchange = null;
+        const neuesFoto = wahl === 'eigen' && foto !== app.daten.bildFoto;
+        if (ok && wahl && (wahl !== app.daten.bild || neuesFoto)) {
           app.daten.bild = wahl;
+          if (wahl === 'eigen') app.daten.bildFoto = foto;
           speichern();
           aktualisiereAlles();
           Gefuehl.ton('gewinn');
@@ -338,10 +387,31 @@ const Freunde = (() => {
       $('pb-raster').onclick = (e) => {
         const b = e.target.closest('[data-bild]');
         if (!b) return;
+        // eigenes Foto: noch keines oder schon gewählt → Galerie öffnen
+        if (b.dataset.bild === 'eigen' && (!foto || wahl === 'eigen')) {
+          datei.value = '';
+          datei.click();
+          return;
+        }
         wahl = b.dataset.bild;
         Gefuehl.ton('tick');
         zeichneWahl();
         $('pb-fertig').focus({ preventScroll: true });
+      };
+      // Foto aus der Galerie: zuschneiden, verkleinern, dann gleich als Wahl zeigen
+      datei.onchange = async () => {
+        const d = datei.files && datei.files[0];
+        if (!d) return;
+        if (!/^image\//.test(d.type || 'image/')) return zeigeHinweis('Das ist kein Bild. Wähle ein Foto.');
+        try {
+          foto = await fotoAusDatei(d);
+          wahl = 'eigen';
+          Gefuehl.ton('tick');
+          zeichneWahl();
+          $('pb-fertig').focus({ preventScroll: true });
+        } catch (fehler) {
+          zeigeHinweis(fehler.message);
+        }
       };
       $('pb-fertig').onclick = () => zu(true);
       $('pb-abbrechen').onclick = () => zu(false);

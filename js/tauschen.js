@@ -185,6 +185,7 @@ function freundProfil(id) {
     level,
     titel: (p && p.titel) || titelFuerLevel(level),
     bild: (p && p.bild) || '',
+    foto: (p && p.foto) || '',
   };
 }
 
@@ -396,9 +397,13 @@ const Tauschen = (() => {
     $('ts-bekommst').innerHTML = karteHtml(bekommst);
     $('ts-freund-name').textContent = wer;
     // Profilbild des Freundes (js/freunde.js), sonst sein Anfangsbuchstabe
-    const bild = profilbildVon(freundProfil(vonMir ? a.an : a.von).bild);
-    $('ts-avatar').textContent = bild ? bild.zeichen : wer.replace(/^RB-/, '').charAt(0);
+    const profil = freundProfil(vonMir ? a.an : a.von);
+    const bild = profilbildVon(profil.bild);
+    const foto = profil.bild === 'eigen' && fotoOk(profil.foto) ? profil.foto : '';
+    if (foto) $('ts-avatar').innerHTML = `<img src="${foto}" alt="">`;
+    else $('ts-avatar').textContent = bild ? bild.zeichen : wer.replace(/^RB-/, '').charAt(0);
     $('ts-avatar').classList.toggle('mit-bild', !!bild);
+    $('ts-avatar').classList.toggle('mit-foto', !!foto);
     $('ts-avatar').style.setProperty('--pb', bild ? bild.farbe : '');
     el.dataset.art = art;
     el.dataset.phase = 'start';
@@ -679,7 +684,7 @@ const Tauschen = (() => {
       text.textContent = freunde.length ? 'Wähle einen Freund.' : 'Füge zuerst unter Mehr → Freunde einen Freund hinzu.';
       inhalt.innerHTML = `<ul class="tausch-freunde">${freunde.map((fr) => `
         <li><button class="tausch-freund mit-bild" type="button" data-freund="${esc(fr.id)}"${fr.bereit ? '' : ' disabled'}>
-          ${profilbildHtml(fr.bild, fr.name)}
+          ${profilbildHtml(fr.bild, fr.name, '', fr.foto)}
           <b>${esc(fr.name)}</b><small>${fr.bereit
     ? `Level ${fr.level} · ${esc(fr.titel)}${fr.id === TEST_FREUND ? ' · spielt nur in der Vorschau mit' : ''}`
     : 'erst mit dem Anmelden'}</small>

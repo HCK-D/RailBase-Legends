@@ -20,6 +20,10 @@ create table if not exists public.spieler (
 
 -- Profilbild: ein Kürzel aus js/freunde.js (z. B. 'lok-rot'), leer = noch keines gewählt
 alter table public.spieler add column if not exists bild text not null default '' check (bild ~ '^[a-z0-9-]{0,20}$');
+-- Eigenes Foto aus der Galerie (bild = 'eigen'): klein und rund zugeschnitten, als Bild-Text (data:image/…)
+alter table public.spieler add column if not exists bild_foto text not null default '' check (
+  bild_foto = '' or (char_length(bild_foto) < 16000 and bild_foto ~ '^data:image/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$')
+);
 
 alter table public.spieler enable row level security;
 
@@ -165,13 +169,13 @@ revoke all on function public.sind_freunde(uuid, uuid) from public, anon, authen
 -- ---------- Profile: nur Name, Titel, Level und Profilbild ----------
 drop function if exists public.profile_von(text[]);
 create function public.profile_von(ids text[])
-returns table (spieler_id text, name text, titel text, level integer, bild text)
+returns table (spieler_id text, name text, titel text, level integer, bild text, bild_foto text)
 language sql
 stable
 security definer
 set search_path = public
 as $$
-  select s.spieler_id, s.name, s.titel, s.level, s.bild
+  select s.spieler_id, s.name, s.titel, s.level, s.bild, s.bild_foto
   from public.spieler s
   where s.spieler_id = any (ids[1:200])
 $$;
@@ -180,14 +184,15 @@ $$;
 
 -- Alle Freunde und offenen Anfragen mit Name, Titel, Level und Bild.
 -- art: 'freund', 'eingehend' (wartet auf deine Antwort) oder 'ausgehend' (wartet auf den anderen)
-create or replace function public.freunde_liste()
-returns table (anfrage bigint, spieler_id text, name text, titel text, level integer, bild text, art text, zeit timestamptz)
+drop function if exists public.freunde_liste();
+create function public.freunde_liste()
+returns table (anfrage bigint, spieler_id text, name text, titel text, level integer, bild text, bild_foto text, art text, zeit timestamptz)
 language sql
 stable
 security definer
 set search_path = public
 as $$
-  select f.id, s.spieler_id, s.name, s.titel, s.level, s.bild,
+  select f.id, s.spieler_id, s.name, s.titel, s.level, s.bild, s.bild_foto,
     case when f.status = 'angenommen' then 'freund' when f.an = auth.uid() then 'eingehend' else 'ausgehend' end,
     f.zeit
   from public.freundschaften f

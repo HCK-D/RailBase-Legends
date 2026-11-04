@@ -332,8 +332,16 @@ function zeichneKopf() {
   const buchstabe = (app.daten.name || 'K').trim().charAt(0).toUpperCase() || 'K';
   // Profilbild (js/freunde.js), sonst der Anfangsbuchstabe
   const bild = profilbildVon(app.daten.bild);
-  $('avatar').textContent = bild ? bild.zeichen : buchstabe;
+  const foto = app.daten.bild === 'eigen' && fotoOk(app.daten.bildFoto) ? app.daten.bildFoto : '';
+  if (foto) {
+    // eigenes Foto: nur neu setzen, wenn es sich geändert hat (sonst flackert es)
+    const img = $('avatar').querySelector('img');
+    if (!img || img.getAttribute('src') !== foto) $('avatar').innerHTML = `<img src="${foto}" alt="">`;
+  } else {
+    $('avatar').textContent = bild ? bild.zeichen : buchstabe;
+  }
   $('avatar').classList.toggle('mit-bild', !!bild);
+  $('avatar').classList.toggle('mit-foto', !!foto);
   $('muenz-zahl').textContent = tausender(app.daten.muenzen);
   if (letzteMuenzen !== null && letzteMuenzen !== app.daten.muenzen) blinkeMuenzstand();
   letzteMuenzen = app.daten.muenzen;
@@ -988,7 +996,11 @@ function holeTestPaket() {
 function zeichneKonto() {
   const feld = $('konto-name');
   if (document.activeElement !== feld) feld.value = app.daten.name || '';
-  $('avatar-gross').innerHTML = profilbildHtml(app.daten.bild, app.daten.name || 'K', 'gross');
+  const grossHtml = profilbildHtml(app.daten.bild, app.daten.name || 'K', 'gross', app.daten.bildFoto);
+  if ($('avatar-gross').dataset.html !== grossHtml) {
+    $('avatar-gross').dataset.html = grossHtml;
+    $('avatar-gross').innerHTML = grossHtml;
+  }
   $('profil-name').textContent = app.daten.name || 'Sammler';
   const { level } = levelVon(app.daten.xp);
   $('profil-level').textContent = `Level ${level} · ${titelFuerLevel(level)} · ${tausender(app.daten.xp)} XP gesamt`;
@@ -1009,10 +1021,10 @@ function speichereName(e) {
 async function setzeAlleZurueck() {
   if (!(await frage('Wirklich alles löschen? Packs, Karten, Level und Coins gehen verloren, auch online.', 'Alles löschen'))) return;
   // Freunde-ID und Konto bleiben: sie gehören zum Online-Konto, Freunde kennen die ID schon
-  const { spielerId, konto, bild, freunde } = app.daten;
+  const { spielerId, konto, bild, bildFoto, freunde } = app.daten;
   Store.zuruecksetzen();
   app.daten = Store.laden();
-  Object.assign(app.daten, { spielerId, konto, bild, freunde });
+  Object.assign(app.daten, { spielerId, konto, bild, bildFoto, freunde });
   sichereSpielerId();
   speichern();
   app.filter = null;

@@ -21,6 +21,19 @@
   font: 800 20px/1 "Barlow Condensed", sans-serif;
 }
 
+/* eigenes Foto: rund zugeschnitten */
+.pb-foto {
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.pb-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .pb.gross {
   width: 58px;
   height: 58px;
@@ -63,6 +76,24 @@
   text-transform: none;
 }
 
+.avatar.mit-foto {
+  overflow: hidden;
+  padding: 0;
+}
+
+.avatar.mit-foto img,
+.ts-avatar.mit-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ts-avatar.mit-foto {
+  overflow: hidden;
+}
+
 /* ---------- Fenster «Profilbild wählen» ---------- */
 .profilbild .info-box {
   width: min(100%, 440px);
@@ -103,6 +134,36 @@
   background: var(--bg-flach);
   cursor: pointer;
   transition: transform .2s var(--spring, ease-out), border-color .2s;
+}
+
+/* Kachel «Eigenes Foto»: Bild und kleine Schrift darunter */
+.pb-eigen {
+  align-content: center;
+  gap: 4px;
+}
+
+.pb-eigen .pb {
+  width: 46px;
+  height: 46px;
+  font-size: 22px;
+}
+
+.pb-eigen small {
+  color: var(--fg-2);
+  font: 700 11px/1 "Source Sans 3", sans-serif;
+}
+
+.pb-kamera {
+  background: var(--surface-2);
+  border: 2px dashed var(--line);
+  box-shadow: none;
+}
+
+.pb-hinweis {
+  margin: -4px 0 0;
+  color: var(--fg-2);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .pb-knopf:hover {

@@ -9,7 +9,8 @@ const Store = (() => {
 
   const STANDARD = {
     name: '',
-    bild: '',          // Profilbild, Kürzel aus PROFILBILDER in js/freunde.js (leer = noch nicht gewählt)
+    bild: '',          // Profilbild, Kürzel aus PROFILBILDER in js/freunde.js oder 'eigen' (leer = noch nicht gewählt)
+    bildFoto: '',      // eigenes Foto aus der Galerie, klein als Bild-Text (data:image/…), gilt bei bild 'eigen'
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
     radDrehungen: 0,   // Gratisdrehungen für den Gold-Fortschritt; verfällt nicht

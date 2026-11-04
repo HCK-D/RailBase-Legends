@@ -356,17 +356,29 @@ const Online = (() => {
 
   // ---------- Speichern ----------
 
+  let ohneFotoSpalte = false; // Datenbank kennt bild_foto noch nicht (SQL noch nicht ausgeführt)
+
   async function hochladen() {
     const d = app.daten;
     const level = levelVon(d.xp).level;
-    const { error } = await db.from('spieler').update({
+    const foto = d.bild === 'eigen' && fotoOk(d.bildFoto) ? d.bildFoto : '';
+    const zeile = {
       name: (d.name || '').slice(0, 30),
       titel: titelFuerLevel(level),
       level,
-      bild: profilbildVon(d.bild) ? d.bild : '',
+      bild: foto ? 'eigen' : profilbildVon(d.bild) ? d.bild : '',
+      bild_foto: foto,
       stand: d,
       geaendert: new Date().toISOString(),
-    }).eq('id', nutzer.id);
+    };
+    if (ohneFotoSpalte) delete zeile.bild_foto;
+    let { error } = await db.from('spieler').update(zeile).eq('id', nutzer.id);
+    // ohne die neue Spalte trotzdem speichern (dann sehen Freunde das Foto erst später)
+    if (error && !ohneFotoSpalte && /bild_foto/.test(`${error.message} ${error.details}`)) {
+      ohneFotoSpalte = true;
+      delete zeile.bild_foto;
+      ({ error } = await db.from('spieler').update(zeile).eq('id', nutzer.id));
+    }
     if (error) throw error;
   }
 
@@ -409,7 +421,9 @@ const Online = (() => {
 
   // Freundesliste (js/freunde.js) bringt Name, Titel, Level und Bild schon mit
   function merkeProfile(liste) {
-    liste.forEach((f) => profile.set(f.id, { spieler_id: f.id, name: f.name, titel: f.titel, level: f.level, bild: f.bild }));
+    liste.forEach((f) => profile.set(f.id, {
+      spieler_id: f.id, name: f.name, titel: f.titel, level: f.level, bild: f.bild, bild_foto: f.foto || '',
+    }));
   }
 
   // ---------- Sofort-Meldungen (Supabase Realtime) ----------
