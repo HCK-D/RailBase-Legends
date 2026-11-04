@@ -1,0 +1,242 @@
+/* Freunde (js/freunde.js): Anfragen, Freundesliste mit Profilbild, Name, Level und Titel, Profilbild wählen */
+
+/* ---------- Rundes Profilbild ---------- */
+.pb {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, .28), transparent 65%), var(--pb, #4a5560);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .18), 0 2px 6px rgba(0, 0, 0, .18);
+  font-size: 22px;
+  line-height: 1;
+  user-select: none;
+}
+
+.pb-leer {
+  background: var(--surface-2);
+  color: var(--fg);
+  font: 800 20px/1 "Barlow Condensed", sans-serif;
+}
+
+.pb.gross {
+  width: 58px;
+  height: 58px;
+  font-size: 30px;
+}
+
+/* Konto: grosses Profilbild zum Antippen, darunter «Profilbild ändern» */
+.pb-gross-knopf {
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transition: transform .2s var(--spring, ease-out);
+}
+
+.pb-gross-knopf:hover {
+  transform: scale(1.06);
+}
+
+.pb-aendern {
+  justify-self: start;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font: 700 13px/1.2 "Source Sans 3", sans-serif;
+  cursor: pointer;
+}
+
+.pb-aendern:hover {
+  text-decoration: underline;
+}
+
+/* Oben im Level-Knopf: das Zeichen statt des Buchstabens */
+.avatar.mit-bild {
+  font-size: 20px;
+  text-transform: none;
+}
+
+/* ---------- Fenster «Profilbild wählen» ---------- */
+.profilbild .info-box {
+  width: min(100%, 440px);
+}
+
+/* beim ersten Start gibt es nur «Fertig»: rechts */
+.profilbild .tausch-knoepfe {
+  justify-content: flex-end;
+}
+
+.profilbild #pb-abbrechen:not([hidden]) {
+  margin-right: auto;
+}
+
+.pb-text {
+  margin: -6px 0 0;
+  color: var(--fg-2);
+  font-size: 15px;
+}
+
+.pb-raster {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pb-knopf {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background: var(--bg-flach);
+  cursor: pointer;
+  transition: transform .2s var(--spring, ease-out), border-color .2s;
+}
+
+.pb-knopf:hover {
+  transform: scale(1.05);
+}
+
+.pb-knopf[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: scale(1.06);
+}
+
+.pb-knopf[aria-pressed="true"] .pb {
+  animation: tausch-herz .4s var(--spring, ease-out);
+}
+
+/* ---------- Freundesliste ---------- */
+.freund-kopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.freund-tausch-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-ink);
+  font: 700 14px/1 "Source Sans 3", sans-serif;
+  text-decoration: none;
+}
+
+.freund-tausch-link .erf-zahl {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+}
+
+.freund-tausch-link .erf-zahl[hidden] {
+  display: none;
+}
+
+.freund-liste li.freund-karte {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--bg-flach);
+  animation: viewin .25s var(--ease-out);
+}
+
+.freund-karte.eingehend {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.freund-karte.klein .pb {
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+}
+
+.freund-wer small {
+  color: var(--fg-2);
+  font-size: 13px;
+}
+
+.freund-knoepfe {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.freund-tauschen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Entfernen: nur ein kleines × neben «Tauschen» */
+.freund-weg {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--fg-2);
+  font: 400 22px/1 sans-serif;
+  cursor: pointer;
+}
+
+.freund-weg:hover {
+  background: var(--surface-2);
+  color: var(--fg);
+}
+
+/* Handy: Knöpfe der Anfragen unter Name und Bild */
+@media (max-width: 420px) {
+  .freund-karte.eingehend {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .freund-karte.eingehend .freund-knoepfe {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .pb-raster {
+    gap: 8px;
+  }
+}
+
+/* ---------- Tausch-Fenster: Freunde mit Bild, Name, Level und Titel ---------- */
+.tausch-freund.mit-bild {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+}
+
+.tausch-freund.mit-bild .pb {
+  grid-row: span 2;
+}
+
+/* Tausch-Szene: Profilbild des Freundes oben */
+.ts-avatar.mit-bild {
+  background: var(--pb, #4a5560);
+  font-size: 24px;
+  text-transform: none;
+}

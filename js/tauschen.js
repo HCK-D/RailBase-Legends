@@ -124,10 +124,8 @@ function testServer(geaendert) {
   return {
     bereit: true,
     test: true,
-    freunde: () => [
-      { id: TEST_FREUND, name: 'Test-Freund', bereit: true },
-      ...app.daten.freunde.map((id) => ({ id, name: id, bereit: false })),
-    ],
+    // nur der Test-Freund tauscht in der Vorschau wirklich (zuerst unter Freunde seine Anfrage annehmen)
+    freunde: () => app.daten.freunde.map((id) => ({ ...freundProfil(id), bereit: id === TEST_FREUND })),
     async sammlungVon(id) {
       if (id !== TEST_FREUND) return null;
       const f = freund();
@@ -177,6 +175,19 @@ function testServer(geaendert) {
   };
 }
 
+// Name, Level, Titel und Profilbild eines Freundes (js/freunde.js), sonst nur die ID
+function freundProfil(id) {
+  const p = Freunde.profil(id);
+  const level = (p && p.level) || 1;
+  return {
+    id,
+    name: (p && p.name) || (id === TEST_FREUND ? 'Test-Freund' : id),
+    level,
+    titel: (p && p.titel) || titelFuerLevel(level),
+    bild: (p && p.bild) || '',
+  };
+}
+
 // Angenommenen Tausch im eigenen Spielstand umsetzen, genau einmal (app.daten.tauschErledigt). true = jetzt umgesetzt
 function setzeTauschUm(a) {
   const erledigt = app.daten.tauschErledigt;
@@ -212,7 +223,7 @@ function onlineServer(geaendert) {
   return {
     bereit: true,
     test: false,
-    freunde: () => app.daten.freunde.map((id) => ({ id, name: Online.nameVon(id) || id, bereit: true })),
+    freunde: () => app.daten.freunde.map((id) => ({ ...freundProfil(id), bereit: true })),
     async sammlungVon(id) {
       const r = await Online.rpc('sammlung_von', { freund: id });
       return r && { doppelte: r.doppelte || [], wunschliste: r.wunschliste || [] };
@@ -259,7 +270,7 @@ const Tauschen = (() => {
   let fenster = null;     // Tausch-Fenster: { schritt, freund, sammlung, will, gibt }
 
   const ich = () => app.daten.spielerId;
-  const nameVon = (id) => (id === TEST_FREUND ? 'Test-Freund' : Online.nameVon(id) || id);
+  const nameVon = (id) => freundProfil(id).name;
   const titelVon = (id) => kartenTitel(karteVonId(id)).gross;
   const offenFuerMich = () => anfragen.filter((a) => a.status === 'offen' && a.an === ich()).length;
   const offenVonMir = () => anfragen.filter((a) => a.status === 'offen' && a.von === ich()).length;
@@ -384,7 +395,11 @@ const Tauschen = (() => {
     $('ts-gibst').innerHTML = karteHtml(gibst);
     $('ts-bekommst').innerHTML = karteHtml(bekommst);
     $('ts-freund-name').textContent = wer;
-    $('ts-avatar').textContent = wer === 'Test-Freund' ? 'T' : wer.replace(/^RB-/, '').charAt(0);
+    // Profilbild des Freundes (js/freunde.js), sonst sein Anfangsbuchstabe
+    const bild = profilbildVon(freundProfil(vonMir ? a.an : a.von).bild);
+    $('ts-avatar').textContent = bild ? bild.zeichen : wer.replace(/^RB-/, '').charAt(0);
+    $('ts-avatar').classList.toggle('mit-bild', !!bild);
+    $('ts-avatar').style.setProperty('--pb', bild ? bild.farbe : '');
     el.dataset.art = art;
     el.dataset.phase = 'start';
     const farbe = TAUSCH_LICHT[karteVonId(bekommst).seltenheit] || '#ffd34d';
@@ -416,22 +431,23 @@ const Tauschen = (() => {
       $('ts-weiter').hidden = false;
       $('ts-weiter').focus({ preventScroll: true });
     };
+    // etwas kürzer als früher, damit Tauschen schneller geht (Übergänge in css/tauschen.css dauern höchstens 1 s)
     const schritte = art === 'tausch'
       ? [
-        [200, () => { phase('raus', `Du gibst ${titelVon(gibst)}`, 'weg'); knopfHops(); }],
-        [1400, () => phase('treffen', `${wer} gibt dir ${titelVon(bekommst)}`, 'flip')],
-        [2700, () => {
+        [120, () => { phase('raus', `Du gibst ${titelVon(gibst)}`, 'weg'); knopfHops(); }],
+        [1050, () => phase('treffen', `${wer} gibt dir ${titelVon(bekommst)}`, 'flip')],
+        [2050, () => {
           phase('tausch', neu ? 'Neu für dich!' : 'Getauscht!', 'gewinn');
           Gefuehl.vibriere([30, 40, 80]);
           Gefuehl.konfetti([farbe, '#ffd34d', '#ffffff', '#4aa3ff'], 70);
         }],
-        [4300, () => { messeWege(el); phase('rein', `${titelVon(bekommst)} kommt in dein Album`, 'weg'); }],
-        [5200, () => { Gefuehl.ton('muenze'); Gefuehl.vibriere(20); ende(); }],
+        [3300, () => { messeWege(el); phase('rein', `${titelVon(bekommst)} kommt in dein Album`, 'weg'); }],
+        [4150, () => { Gefuehl.ton('muenze'); Gefuehl.vibriere(20); ende(); }],
       ]
       : [
-        [200, () => { phase('zeigen', `Du bietest ${titelVon(gibst)} für ${titelVon(bekommst)}`, 'tipp'); knopfHops(); }],
-        [1700, () => phase('senden', `Anfrage an ${wer} gesendet`, 'weg')],
-        [3100, ende],
+        [120, () => { phase('zeigen', `Du bietest ${titelVon(gibst)} für ${titelVon(bekommst)}`, 'tipp'); knopfHops(); }],
+        [1150, () => phase('senden', `Anfrage an ${wer} gesendet`, 'weg')],
+        [2150, ende],
       ];
     szene = { art, ende, uhren: schritte.map(([zeit, fn]) => setTimeout(fn, zeit)) };
   }
@@ -547,7 +563,7 @@ const Tauschen = (() => {
     }[status];
     $('tausch-status-text').textContent = {
       ohne: 'Schon jetzt kannst du unter «Tauschen» deine Wunschliste füllen.',
-      test: 'Nur in der Vorschau spielt ein Test-Freund mit.',
+      test: 'Nur in der Vorschau spielt ein Test-Freund mit. Nimm zuerst unter Freunde seine Anfrage an.',
       online: '',
     }[status];
     $('tausch-status').hidden = status === 'online';
@@ -608,13 +624,20 @@ const Tauschen = (() => {
 
   // ---------- Tausch-Fenster: Freund → Karte, die du willst → Karte, die du gibst → senden ----------
 
-  function oeffneFenster() {
+  // freund: direkt mit diesem Freund (Knopf «Tauschen» in der Freundesliste), dann geht es gleich bei Schritt 2 los
+  function oeffneFenster(freund) {
     if (!server.bereit) return zeigeHinweis('Tauschen startet mit dem Anmelden.');
     if (offenVonMir() >= TAUSCH_MAX_OFFEN) {
       return zeigeHinweis(`Du hast schon ${TAUSCH_MAX_OFFEN} offene Anfragen. Warte auf eine Antwort oder ziehe eine zurück.`);
     }
     if (!tauschKarten().length) return zeigeHinweis('Du brauchst zuerst eine doppelte Karte zum Tauschen.');
-    fenster = { schritt: 1 };
+    if (typeof freund === 'string') {
+      const fr = server.freunde().find((x) => x.id === freund);
+      if (!fr || !fr.bereit) return zeigeHinweis(server.test ? 'In der Vorschau tauscht nur der Test-Freund.' : 'Tauschen geht nur mit deinen Freunden.');
+      fenster = { schritt: 2, freund, direkt: true, sammlung: null };
+    } else {
+      fenster = { schritt: 1 };
+    }
     $('tausch-fenster').hidden = false;
     document.body.classList.add('op-offen');
     Gefuehl.ton('auf');
@@ -641,8 +664,9 @@ const Tauschen = (() => {
     const f = fenster;
     if (!f) return;
     const name = f.freund ? nameVon(f.freund) : '';
-    $('tausch-schritt').textContent = `Schritt ${f.schritt} von 4`;
-    $('tausch-zurueck').textContent = f.schritt === 1 ? 'Abbrechen' : 'Zurück';
+    // direkt vom Freund aus: nur 3 Schritte (der Freund ist schon gewählt)
+    $('tausch-schritt').textContent = f.direkt ? `Schritt ${f.schritt - 1} von 3 · mit ${name}` : `Schritt ${f.schritt} von 4`;
+    $('tausch-zurueck').textContent = f.schritt === 1 || (f.direkt && f.schritt === 2) ? 'Abbrechen' : 'Zurück';
     $('tausch-senden').hidden = f.schritt !== 4;
     const titel = $('tausch-titel');
     const text = $('tausch-text');
@@ -654,8 +678,11 @@ const Tauschen = (() => {
       titel.textContent = 'Mit wem tauschst du?';
       text.textContent = freunde.length ? 'Wähle einen Freund.' : 'Füge zuerst unter Mehr → Freunde einen Freund hinzu.';
       inhalt.innerHTML = `<ul class="tausch-freunde">${freunde.map((fr) => `
-        <li><button class="tausch-freund" type="button" data-freund="${esc(fr.id)}"${fr.bereit ? '' : ' disabled'}>
-          <b>${esc(fr.name)}</b><small>${fr.bereit ? (fr.id === TEST_FREUND ? 'spielt nur in der Vorschau mit' : '') : 'erst mit dem Anmelden'}</small>
+        <li><button class="tausch-freund mit-bild" type="button" data-freund="${esc(fr.id)}"${fr.bereit ? '' : ' disabled'}>
+          ${profilbildHtml(fr.bild, fr.name)}
+          <b>${esc(fr.name)}</b><small>${fr.bereit
+    ? `Level ${fr.level} · ${esc(fr.titel)}${fr.id === TEST_FREUND ? ' · spielt nur in der Vorschau mit' : ''}`
+    : 'erst mit dem Anmelden'}</small>
         </button></li>`).join('')}</ul>`;
       return;
     }
@@ -727,7 +754,15 @@ const Tauschen = (() => {
       f.schritt = 2;
     } else if (f.schritt === 2 && wahl && !wahl.disabled) {
       f.will = wahl.dataset.wahl;
-      f.schritt = 3;
+      // passt nur eine deiner Karten, gleich zum Bestätigen (ein Schritt weniger)
+      const s = karteVonId(f.will).seltenheit;
+      const passend = tauschKarten().filter((id) => karteVonId(id).seltenheit === s && id !== f.will);
+      if (passend.length === 1) {
+        f.gibt = passend[0];
+        f.schritt = 4;
+      } else {
+        f.schritt = 3;
+      }
     } else if (f.schritt === 3 && wahl && !wahl.disabled) {
       f.gibt = wahl.dataset.wahl;
       f.schritt = 4;
@@ -739,9 +774,15 @@ const Tauschen = (() => {
   }
 
   function zurueck() {
-    if (!fenster) return;
-    if (fenster.schritt === 1) return schliesseFenster();
-    fenster.schritt -= 1;
+    const f = fenster;
+    if (!f) return;
+    if (f.schritt === 1 || (f.direkt && f.schritt === 2)) return schliesseFenster();
+    f.schritt -= 1;
+    // war Schritt 3 übersprungen (nur eine passende Karte), zurück zur Wahl der Karte des Freundes
+    if (f.schritt === 3) {
+      const s = karteVonId(f.will).seltenheit;
+      if (tauschKarten().filter((id) => karteVonId(id).seltenheit === s && id !== f.will).length === 1) f.schritt = 2;
+    }
     zeichneFenster();
   }
 
@@ -801,5 +842,5 @@ const Tauschen = (() => {
     lade();
   }
 
-  return { init, zeichne, etwasBereit, wuensche, lade, verbunden, reserviert };
+  return { init, zeichne, etwasBereit, wuensche, lade, verbunden, reserviert, offenFuerMich, mitFreund: oeffneFenster };
 })();

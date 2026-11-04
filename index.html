@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="css/taeglich.css">
   <link rel="stylesheet" href="css/erfolge.css">
   <link rel="stylesheet" href="css/tauschen.css">
+  <link rel="stylesheet" href="css/freunde.css">
   <link rel="stylesheet" href="css/anmelden.css">
   <link rel="stylesheet" href="css/einfuehrung.css">
   <link rel="stylesheet" href="css/laden.css">
@@ -251,10 +252,11 @@
       <!-- Profil und Name in einem Kasten -->
       <div class="panel profil-name">
         <div class="profil">
-          <span class="avatar gross" id="avatar-gross">K</span>
+          <button class="pb-gross-knopf" type="button" id="avatar-gross" aria-label="Profilbild ändern"></button>
           <div>
             <b id="profil-name">Sammler</b>
-            <span id="profil-level">Sammler-Level 1</span>
+            <span id="profil-level">Level 1</span>
+            <button class="pb-aendern" type="button" id="pb-aendern">Profilbild ändern</button>
           </div>
         </div>
         <form id="konto-form" autocomplete="off">
@@ -313,16 +315,22 @@
   <section class="view" id="v-freunde" data-view="freunde" hidden>
     <div class="titel-block links">
       <h1>Freunde</h1>
-      <p>Teile deine ID und füge Freunde mit ihrer ID hinzu.</p>
+      <p>Schick eine Anfrage mit der ID deines Freundes. Nimmt er an, könnt ihr tauschen und schenken.</p>
     </div>
     <div class="seite">
-      <!-- jede Sammlerin und jeder Sammler hat eine eigene ID -->
+      <!-- Anfragen an dich (js/freunde.js): Annehmen oder Ablehnen -->
+      <div class="panel freunde freund-anfragen-box" id="freund-anfragen-box" hidden>
+        <b>Anfragen an dich</b>
+        <ul class="freund-liste" id="freund-anfragen"></ul>
+      </div>
+      <!-- Deine Freunde: Profilbild, Name, Level und Titel, dazu direkt Tauschen -->
       <div class="panel freunde">
-        <b>Deine ID</b>
-        <div class="id-zeile">
-          <code id="spieler-id"></code>
-          <button class="btn ghost" type="button" id="id-teilen"><svg width="18" height="18" aria-hidden="true"><use href="#i-teilen"/></svg>Teilen</button>
+        <div class="freund-kopf">
+          <b>Deine Freunde</b>
+          <a class="freund-tausch-link" href="#tauschen">Tausch-Anfragen <b class="erf-zahl" id="freund-tausch-zahl" hidden></b><svg width="16" height="16" aria-hidden="true"><use href="#i-rechts"/></svg></a>
         </div>
+        <ul class="freund-liste" id="freund-liste"></ul>
+        <p class="freund-leer" id="freund-leer">Noch keine Freunde. Füge unten jemanden mit seiner ID hinzu.</p>
       </div>
       <div class="panel freunde">
         <b>Freund hinzufügen</b>
@@ -331,14 +339,21 @@
             <span class="sr-only">ID deines Freundes</span>
             <input type="text" id="freund-id" maxlength="16" placeholder="Freunde-ID, z. B. RB-ABCD-EFGH">
           </label>
-          <button class="btn" type="submit">Hinzufügen</button>
+          <button class="btn" type="submit">Anfrage senden</button>
         </form>
       </div>
+      <!-- gesendete Anfragen, die noch auf eine Antwort warten -->
+      <div class="panel freunde" id="freund-gesendet-box" hidden>
+        <b>Gesendete Anfragen</b>
+        <ul class="freund-liste" id="freund-gesendet"></ul>
+      </div>
+      <!-- jede Sammlerin und jeder Sammler hat eine eigene ID -->
       <div class="panel freunde">
-        <b>Deine Freunde</b>
-        <ul class="freund-liste" id="freund-liste"></ul>
-        <p class="freund-leer" id="freund-leer">Noch keine Freunde.</p>
-        <p>Freunde werden vorerst nur auf diesem Gerät gespeichert.</p>
+        <b>Deine ID</b>
+        <div class="id-zeile">
+          <code id="spieler-id"></code>
+          <button class="btn ghost" type="button" id="id-teilen"><svg width="18" height="18" aria-hidden="true"><use href="#i-teilen"/></svg>Teilen</button>
+        </div>
       </div>
     </div>
   </section>
@@ -433,7 +448,8 @@
       </div>
       <ul class="menu-list">
         <li><a href="#konto"><span>Konto und Design</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
-        <li><a href="#freunde"><span>Freunde</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
+        <!-- Freunde (#freunde, js/freunde.js): rote Zahl = Freundes-Anfragen an dich -->
+        <li><a href="#freunde"><span>Freunde</span><b class="erf-zahl" id="freund-zahl" hidden></b><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <li><a href="#mehr" id="bild-info-knopf" role="button" aria-haspopup="dialog"><span>Bildnachweise</span><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
         <!-- Tauschen (#tauschen, js/tauschen.js): rote Zahl = Anfragen an dich -->
         <li><a href="#tauschen" id="tausch-oeffnen"><span>Tauschen</span><b class="erf-zahl" id="tausch-zahl" hidden></b><svg width="18" height="18" aria-hidden="true"><use href="#i-rechts"/></svg></a></li>
@@ -675,6 +691,19 @@
   </div>
 </div>
 
+<!-- ===== PROFILBILD WÄHLEN (js/freunde.js): beim ersten Start und im Konto. Aussehen in css/freunde.css ===== -->
+<div class="info-fenster profilbild" id="profilbild" hidden role="dialog" aria-modal="true" aria-labelledby="pb-titel">
+  <div class="info-box">
+    <h2 id="pb-titel">Wähle dein Profilbild</h2>
+    <p class="pb-text" id="pb-text"></p>
+    <ul class="pb-raster" id="pb-raster"></ul>
+    <div class="tausch-knoepfe">
+      <button class="btn ghost" type="button" id="pb-abbrechen">Abbrechen</button>
+      <button class="btn" type="button" id="pb-fertig" disabled>Fertig</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== ANMELDEN (js/online.js): beim Start Pflicht, mit E-Mail und Passwort oder mit Google.
      Aussehen in css/anmelden.css ===== -->
 <div class="anmelden" id="anmelden" hidden role="dialog" aria-modal="true" aria-labelledby="am-titel">
@@ -809,6 +838,7 @@
 <script src="js/spielgefuehl.js"></script>
 <script src="js/taeglich.js"></script>
 <script src="js/erfolge.js"></script>
+<script src="js/freunde.js"></script>
 <script src="js/tauschen.js"></script>
 <script src="js/online.js"></script>
 <script src="js/einfuehrung.js"></script>

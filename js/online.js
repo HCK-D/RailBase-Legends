@@ -23,7 +23,11 @@ const Online = (() => {
   let kette = Promise.resolve(); // Hochladen nacheinander, damit nie ein älterer Stand einen neueren überschreibt
   let artAnmelden = 'anmelden';  // oder 'registrieren'
   let regelmaessig = false;
-  const profile = new Map();     // Freunde-ID → { name, titel, level }
+  let ungesichert = false;       // seit dem letzten Hochladen etwas geändert?
+  let kanal = null;              // Sofort-Meldungen (Supabase Realtime)
+  let sofort = false;            // Sofort-Meldungen laufen: dann reicht seltenes Nachschauen
+  let takt = 0;
+  const profile = new Map();     // Freunde-ID → { name, titel, level, bild }
 
   const imArtefakt = () => location.hostname.includes('claude');
 
@@ -80,7 +84,9 @@ const Online = (() => {
 
   async function start() {
     // Im Claude-Artefakt geht kein Anmelden: dort spielt man nur auf dem Gerät
-    if (imArtefakt()) {
+    // ebenso in der lokalen Vorschau auf dem eigenen Computer (localhost): zum Testen ohne Anmelden.
+    // Auf der echten Website bleibt das Anmelden Pflicht.
+    if (imArtefakt() || ['localhost', '127.0.0.1'].includes(location.hostname)) {
       setzeStatus('aus');
       spielen();
       return;
@@ -124,7 +130,9 @@ const Online = (() => {
     if (gespielt) return;
     gespielt = true;
     aktualisiereAlles();
-    Laden.fertig().then(() => {
+    Laden.fertig().then(async () => {
+      // beim ersten Start (und für alle, die noch keines haben): zuerst das Profilbild wählen
+      if (!app.daten.bild) await Freunde.waehleBild(true);
       if (!app.daten.bonusMuenzen) willkommenPruefen();
       else if (!app.daten.einfuehrung) setTimeout(() => Einfuehrung.starte(Taeglich.vielleichtZeigen), 400);
       else setTimeout(Taeglich.vielleichtZeigen, 400);
@@ -155,16 +163,17 @@ const Online = (() => {
     schliesseAnmelden();
     spielen();
     aktualisiereAlles();
-    await ladeProfile(app.daten.freunde);
+    await Freunde.verbunden();
     Tauschen.verbunden();
+    hoereZu();
     await holeGeschenke();
     aktualisiereAlles();
     if (!regelmaessig) {
       regelmaessig = true;
-      setInterval(pruefe, 30000);
+      setInterval(pruefe, 10000);
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) sichere();
-        else pruefe();
+        else pruefe(true);
       });
     }
   }
@@ -349,10 +358,12 @@ const Online = (() => {
 
   async function hochladen() {
     const d = app.daten;
+    const level = levelVon(d.xp).level;
     const { error } = await db.from('spieler').update({
       name: (d.name || '').slice(0, 30),
-      titel: (d.titel || '').slice(0, 40),
-      level: levelVon(d.xp).level,
+      titel: titelFuerLevel(level),
+      level,
+      bild: profilbildVon(d.bild) ? d.bild : '',
       stand: d,
       geaendert: new Date().toISOString(),
     }).eq('id', nutzer.id);
@@ -362,15 +373,22 @@ const Online = (() => {
   // Nach jeder Änderung (speichern() in js/app.js) kurz warten, dann den ganzen Spielstand hochladen
   function merke() {
     if (!bereit) return;
+    ungesichert = true;
     clearTimeout(uhr);
     uhr = setTimeout(sichere, 1500);
   }
 
-  // Jetzt hochladen; das Promise ist erst nach dem Hochladen fertig
+  // Jetzt hochladen; das Promise ist erst nach dem Hochladen fertig.
+  // Hat sich seit dem letzten Hochladen nichts geändert, nur auf ein laufendes Hochladen warten (schneller beim Tauschen).
   function sichere() {
     clearTimeout(uhr);
     if (!bereit) return Promise.resolve();
-    kette = kette.then(hochladen).then(() => setzeStatus('ok'), () => setzeStatus('fehler'));
+    if (!ungesichert) return kette;
+    ungesichert = false;
+    kette = kette.then(hochladen).then(() => setzeStatus('ok'), () => {
+      ungesichert = true;
+      setzeStatus('fehler');
+    });
     return kette;
   }
 
@@ -387,6 +405,47 @@ const Online = (() => {
 
   const nameVon = (id) => (profile.get(id) && profile.get(id).name) || '';
   const gibtEs = (id) => profile.has(id);
+  const profilVon = (id) => profile.get(id) || null;
+
+  // Freundesliste (js/freunde.js) bringt Name, Titel, Level und Bild schon mit
+  function merkeProfile(liste) {
+    liste.forEach((f) => profile.set(f.id, { spieler_id: f.id, name: f.name, titel: f.titel, level: f.level, bild: f.bild }));
+  }
+
+  // ---------- Sofort-Meldungen (Supabase Realtime) ----------
+  // Neue oder geänderte Tausch-Anfragen, Freundes-Anfragen und Geschenke kommen sofort an, ohne Warten.
+  // Klappt das nicht (z. B. Realtime in der Datenbank nicht eingeschaltet), schaut pruefe() alle 10 Sekunden nach.
+  function hoereZu() {
+    if (kanal || !db.channel) return;
+    const id = nutzer.id;
+    const bald = (fn) => {
+      let warte = null;
+      return () => {
+        clearTimeout(warte);
+        warte = setTimeout(fn, 200);
+      };
+    };
+    const tausch = bald(() => Tauschen.lade());
+    const freunde = bald(() => Freunde.lade());
+    const geschenke = bald(holeGeschenke);
+    const auf = (tabelle, spalte, fn) => kanal.on('postgres_changes',
+      { event: '*', schema: 'public', table: tabelle, filter: `${spalte}=eq.${id}` }, fn);
+    kanal = db.channel(`rb-${id}`);
+    auf('tausch_anfragen', 'an', tausch);
+    auf('tausch_anfragen', 'von', tausch);
+    auf('freundschaften', 'an', freunde);
+    auf('freundschaften', 'von', freunde);
+    auf('geschenke', 'an', geschenke);
+    kanal.subscribe((zustand) => {
+      const vorher = sofort;
+      sofort = zustand === 'SUBSCRIBED';
+      // nach einer Unterbrechung gleich nachschauen, was in der Zwischenzeit kam
+      if (sofort && !vorher) {
+        Tauschen.lade();
+        Freunde.lade();
+      }
+    });
+  }
 
   // ---------- Geschenke ----------
 
@@ -438,11 +497,15 @@ const Online = (() => {
     return data;
   }
 
-  // Regelmässig und beim Zurückkommen in die App: Geschenke und Tausch-Anfragen
-  function pruefe() {
+  // Regelmässig und beim Zurückkommen in die App: Geschenke, Tausch- und Freundes-Anfragen.
+  // Mit Sofort-Meldungen nur jede Minute zur Sicherheit, sonst alle 10 Sekunden.
+  function pruefe(e) {
     if (!bereit || document.hidden) return;
+    takt += 1;
+    if (sofort && !e && takt % 6) return;
     holeGeschenke();
     Tauschen.lade();
+    Freunde.lade();
   }
 
   function init() {
@@ -465,7 +528,7 @@ const Online = (() => {
   }
 
   return {
-    init, merke, sichere, ladeProfile, nameVon, gibtEs, schenke, rpc, tauschAnfragen,
+    init, merke, sichere, ladeProfile, nameVon, gibtEs, profilVon, merkeProfile, schenke, rpc, tauschAnfragen,
     bereit: () => bereit,
     freigegeben: () => gespielt,
     status: () => status,

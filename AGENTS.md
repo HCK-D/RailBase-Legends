@@ -186,8 +186,16 @@ Sonstiges: `app`, `hinweis`
 
 ## Freunde und Geschenke
 
-- Freunde-Seite (`#freunde`): eigene ID mit Teilen-Knopf (`id-teilen`, Teilen-Menü des Handys, sonst Kopieren),
-  Freund hinzufügen, Liste der Freunde. Geschenk einlösen (`geschenk-form`, `geschenk-eingabe`) steht im Konto unter Design.
+- Freunde-Seite (`#freunde`, `js/freunde.js`, `css/freunde.css`): Anfragen an dich (Annehmen/Ablehnen), deine Freunde mit
+  Profilbild, Name, Level und Titel und Knopf «Tauschen» (`Tauschen.mitFreund(id)`, startet bei Schritt 2), Anfrage senden
+  per ID, gesendete Anfragen, eigene ID mit Teilen-Knopf (`id-teilen`). Freund sein heisst: der andere hat angenommen
+  (Tabelle `freundschaften`, Funktionen `freunde_liste`, `freund_anfragen`, `freund_antworten`, `freund_entfernen`).
+  `app.daten.freunde` enthält nur bestätigte Freunde. In der Vorschau ohne Anmelden: Test-Freund im Browser (`sk-freunde-test`).
+- Profilbild: `app.daten.bild` (Kürzel aus `PROFILBILDER`), wird beim ersten Start gewählt (Fenster `profilbild`), im Konto
+  änderbar. Titel kommt aus dem Level (`titelFuerLevel`). Beides geht beim Hochladen in `spieler.bild` und `spieler.titel`.
+- Sofort-Meldungen: `js/online.js` hört per Supabase Realtime auf `tausch_anfragen`, `freundschaften` und `geschenke`;
+  ohne Realtime schaut es alle 10 Sekunden nach.
+- Geschenk einlösen (`geschenk-form`, `geschenk-eingabe`) steht im Konto unter Design.
 - Schenken: im Kauf-Fenster des Shops «Einem Freund schenken» (`frage-extra`), nur alle 48 Stunden (`app.daten.geschenkZeit`).
   Ohne Server entsteht ein Geschenk-Code `RBG-…` (Pack, Empfänger-ID, Absender-ID, Prüfzeichen), den man teilt.
   Nur der Empfänger kann ihn einlösen, jeden Code nur einmal (`app.daten.eingeloest`). Fenster: `geschenk`, `geschenk-text`,

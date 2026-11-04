@@ -330,7 +330,10 @@ function blinkeMuenzstand() {
 function zeichneKopf() {
   const { level, aktuell, noetig } = levelVon(app.daten.xp);
   const buchstabe = (app.daten.name || 'K').trim().charAt(0).toUpperCase() || 'K';
-  $('avatar').textContent = buchstabe;
+  // Profilbild (js/freunde.js), sonst der Anfangsbuchstabe
+  const bild = profilbildVon(app.daten.bild);
+  $('avatar').textContent = bild ? bild.zeichen : buchstabe;
+  $('avatar').classList.toggle('mit-bild', !!bild);
   $('muenz-zahl').textContent = tausender(app.daten.muenzen);
   if (letzteMuenzen !== null && letzteMuenzen !== app.daten.muenzen) blinkeMuenzstand();
   letzteMuenzen = app.daten.muenzen;
@@ -394,7 +397,7 @@ function zeichnePunkte() {
   document.querySelector('[data-tab="rad"]').classList.toggle('punkt', Rad.bereit());
   document.querySelector('[data-tab="album"]').classList.toggle('punkt', app.daten.ungesehen.length > 0);
   document.querySelector('[data-tab="mehr"]').classList.toggle('punkt',
-    Taeglich.etwasBereit() || Erfolge.etwasBereit() || Tauschen.etwasBereit());
+    Taeglich.etwasBereit() || Erfolge.etwasBereit() || Tauschen.etwasBereit() || Freunde.etwasBereit());
 }
 
 // ---------- Packs: Reiter, Karussell, Ticket ----------
@@ -765,46 +768,10 @@ async function kaufeRubin() {
   zeigeHinweis('Du hast 1 Rubin-Coin dazubekommen.');
 }
 
-// ---------- Freunde ----------
-
-function fuegeFreundHinzu(e) {
-  e.preventDefault();
-  const id = $('freund-id').value.trim().toUpperCase();
-  if (!ID_MUSTER.test(id)) {
-    zeigeHinweis('Die ID sieht so aus: RB-XXXX-XXXX');
-    return;
-  }
-  if (id === app.daten.spielerId) {
-    zeigeHinweis('Das ist deine eigene ID.');
-    return;
-  }
-  if (app.daten.freunde.includes(id)) {
-    zeigeHinweis('Diese ID ist schon in deiner Liste.');
-    return;
-  }
-  app.daten.freunde.push(id);
-  speichern();
-  $('freund-id').value = '';
-  aktualisiereAlles();
-  zeigeHinweis('Freund hinzugefügt.');
-  // online: Namen holen; gibt es die ID noch nicht, muss der Freund das Spiel zuerst einmal öffnen
-  if (Online.bereit()) {
-    Online.ladeProfile([id]).then(() => {
-      aktualisiereAlles();
-      if (Online.gibtEs(id)) zeigeHinweis(`${Online.nameVon(id) || id} ist jetzt dein Freund.`);
-      else zeigeHinweis('Diese ID ist noch nicht online. Dein Freund muss das Spiel zuerst einmal öffnen.');
-    });
-  }
-}
+// ---------- Freunde (Anfragen, Liste und Profilbild: js/freunde.js) ----------
 
 // Name eines Freundes (online), sonst seine ID
 const freundName = (id) => Online.nameVon(id) || id;
-
-function entferneFreund(id) {
-  app.daten.freunde = app.daten.freunde.filter((f) => f !== id);
-  speichern();
-  aktualisiereAlles();
-}
 
 // Teilen: zuerst das Teilen-Menü des Handys (alle Chats und Apps). Das gibt es nur auf einer echten https-Seite;
 // im Artefakt und in der Vorschau übers WLAN ist es gesperrt. Dann öffnet sich «Teilen über …» mit WhatsApp & Co.
@@ -1016,27 +983,16 @@ function holeTestPaket() {
   zeigeHinweis('Test-Paket: +500 RB Coins und 10 Packs von jeder Sorte.');
 }
 
-function zeichneFreunde() {
-  $('spieler-id').textContent = app.daten.spielerId;
-  // online mit Namen (js/online.js), sonst nur die ID
-  $('freund-liste').innerHTML = app.daten.freunde.map((id) => {
-    const name = Online.nameVon(id);
-    return `<li><span class="freund-wer">${name ? `<b>${esc(name)}</b>` : ''}<code>${esc(id)}</code></span>
-      <button class="btn ghost" type="button" data-entfernen="${esc(id)}">Entfernen</button></li>`;
-  }).join('');
-  $('freund-leer').hidden = app.daten.freunde.length > 0;
-}
-
 // ---------- Konto ----------
 
 function zeichneKonto() {
   const feld = $('konto-name');
   if (document.activeElement !== feld) feld.value = app.daten.name || '';
-  $('avatar-gross').textContent = $('avatar').textContent;
+  $('avatar-gross').innerHTML = profilbildHtml(app.daten.bild, app.daten.name || 'K', 'gross');
   $('profil-name').textContent = app.daten.name || 'Sammler';
   const { level } = levelVon(app.daten.xp);
-  $('profil-level').textContent = `Sammler-Level ${level} · ${tausender(app.daten.xp)} XP gesamt`;
-  zeichneFreunde();
+  $('profil-level').textContent = `Level ${level} · ${titelFuerLevel(level)} · ${tausender(app.daten.xp)} XP gesamt`;
+  Freunde.zeichne();
   const theme = document.documentElement.getAttribute('data-theme');
   document.querySelectorAll('[data-design]').forEach((b) => b.setAttribute('aria-checked', b.dataset.design === theme));
   $('ton-an').checked = app.daten.ton !== false;
@@ -1053,10 +1009,10 @@ function speichereName(e) {
 async function setzeAlleZurueck() {
   if (!(await frage('Wirklich alles löschen? Packs, Karten, Level und Coins gehen verloren, auch online.', 'Alles löschen'))) return;
   // Freunde-ID und Konto bleiben: sie gehören zum Online-Konto, Freunde kennen die ID schon
-  const { spielerId, konto } = app.daten;
+  const { spielerId, konto, bild, freunde } = app.daten;
   Store.zuruecksetzen();
   app.daten = Store.laden();
-  Object.assign(app.daten, { spielerId, konto });
+  Object.assign(app.daten, { spielerId, konto, bild, freunde });
   sichereSpielerId();
   speichern();
   app.filter = null;
@@ -1110,16 +1066,14 @@ document.addEventListener('DOMContentLoaded', () => {
   Gefuehl.init();
   Taeglich.init();
   Erfolge.init();
+  Freunde.init();
   Tauschen.init();
 
   $('start-badge').addEventListener('click', startKnopf);
   $('konto-form').addEventListener('submit', speichereName);
-  $('freund-form').addEventListener('submit', fuegeFreundHinzu);
-  $('freund-liste').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-entfernen]');
-    if (btn) entferneFreund(btn.dataset.entfernen);
-  });
-  $('id-teilen').addEventListener('click', teileId);
+  // Konto: Profilbild antippen oder «Profilbild ändern»
+  $('avatar-gross').addEventListener('click', () => Freunde.waehleBild());
+  $('pb-aendern').addEventListener('click', () => Freunde.waehleBild());
   $('geschenk-form').addEventListener('submit', loeseGeschenkEin);
   $('sam-karten').addEventListener('click', (e) => {
     const verwerten = e.target.closest('[data-verwerten]');

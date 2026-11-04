@@ -121,7 +121,8 @@ Alle 30 Drehungen gibt es zusätzlich ein Gold-Pack.
 | `js/taeglich.js`, `css/taeglich.css` | Tagesbelohnung (Login-Serie) und Tagesaufgaben |
 | `js/erfolge.js`, `css/erfolge.css` | Erfolge mit Belohnungen (Liste `ERFOLGE` am Anfang der Datei) |
 | `js/tauschen.js`, `css/tauschen.css` | Tauschen und Wunschliste; online prüft und entscheidet der Server (`onlineServer`) |
-| `js/online.js`, `css/anmelden.css` | Anmelden, Spielstand online, Freunde-Namen, Geschenke (Supabase) |
+| `js/online.js`, `css/anmelden.css` | Anmelden, Spielstand online, Sofort-Meldungen, Geschenke (Supabase) |
+| `js/freunde.js`, `css/freunde.css` | Freundes-Anfragen, Freundesliste mit Profilbild, Level und Titel, Profilbild wählen |
 | `werkzeuge/datenbank.sql` | Tabellen, Regeln und Server-Funktionen der Datenbank (im Supabase SQL Editor ausführen) |
 | `js/einfuehrung.js`, `css/einfuehrung.css` | kurze Einführung für neue Spieler |
 | `js/laden.js`, `css/laden.css` | Ladebildschirm beim Start (Tipps in `LADE_TIPPS`) |

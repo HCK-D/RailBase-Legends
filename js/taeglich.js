@@ -296,7 +296,7 @@ const Taeglich = (() => {
     // nicht über einem anderen Fenster (Pack, Glücksrad, Anmelden, Willkommen);
     // nach dem Anmelden und nach «Annehmen» wird es nochmals aufgerufen
     if (!$('opener').hidden || !$('gewinn').hidden || !$('willkommen').hidden || !$('anmelden').hidden
-      || !$('einfuehrung').hidden) return;
+      || !$('einfuehrung').hidden || !$('profilbild').hidden) return;
     zeige();
   }
 

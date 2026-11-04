@@ -9,6 +9,7 @@ const Store = (() => {
 
   const STANDARD = {
     name: '',
+    bild: '',          // Profilbild, Kürzel aus PROFILBILDER in js/freunde.js (leer = noch nicht gewählt)
     vorrat: {},        // Anzahl Packs pro Design, z. B. { 'standard': 2, 'gold-1': 1 }
     geoeffnet: 0,
     radDrehungen: 0,   // Gratisdrehungen für den Gold-Fortschritt; verfällt nicht
