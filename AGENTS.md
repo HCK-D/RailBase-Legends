@@ -19,7 +19,8 @@ Das Design soll neu und schöner werden. Vorlage sind die Mockups in `design/moc
 
 Nicht übernehmen aus den Mockups: «Tagesaufgabe», «Letzter Fund», «Dein Kartenalbum» und den Menüpunkt «Aufgaben».
 
-Zuerst die **Webseite für den Computer** gestalten. Das Handy-Layout kommt später.
+Das Spiel ist **in erster Linie für das Handy**. Jede Änderung zuerst auf Handy-Grösse (375 × 812) gestalten und
+prüfen: Tippflächen mindestens 44 px, mit dem Daumen erreichbar, Ränder (Notch) beachten. Der Computer kommt danach.
 
 ## Was beim Design geändert werden darf
 
