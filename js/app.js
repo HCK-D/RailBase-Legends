@@ -415,8 +415,10 @@ function baueKarussell() {
     `<button type="button" role="tab" data-stufe="${s.id}" aria-selected="false">${s.titel}</button>`).join('');
   // pk-bild: Rahmen um das Pack-Bild für Glanz und Leuchten. --bild ist die Form für den Glanz (volle Adresse,
   // sonst sucht CSS das Bild im Ordner css/)
+  // tabindex, role: auch mit der Tastatur bedienbar (Enter öffnet, Pfeiltasten wechseln das Pack)
   $('pk-karussell').innerHTML = PACKS.map((p, i) => `
-    <li data-index="${i}" data-stufe="${p.stufe}">
+    <li data-index="${i}" data-stufe="${p.stufe}" tabindex="${i === 0 ? 0 : -1}" role="button"
+      aria-label="${p.titel} Pack ${p.name}">
       <span class="pk-bild" style="--bild:url('${new URL(bildKlein(p), location.href).href}')">
         <img src="${bildKlein(p)}" alt="${p.titel} Pack ${p.name}" draggable="false">
       </span>
@@ -450,7 +452,10 @@ function setzePackIndex(i) {
   const p = PACKS[i];
   $('pk-stelle').textContent = `${i + 1} / ${PACKS.length}`;
   [...$('pk-punkte').children].forEach((el, j) => el.classList.toggle('an', j === i));
-  [...$('pk-karussell').children].forEach((li, j) => li.classList.toggle('aktiv', j === i));
+  [...$('pk-karussell').children].forEach((li, j) => {
+    li.classList.toggle('aktiv', j === i);
+    li.tabIndex = j === i ? 0 : -1; // mit Tab kommt man nur auf das Pack in der Mitte
+  });
   $('pk-reiter').querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', b.dataset.stufe === p.stufe));
   zeichneTicket();
 }
@@ -460,6 +465,8 @@ function setzePackIndex(i) {
 // Helligkeit, Höhe (weiter hinten), Leuchten und Schatten ab. Am Podest: --podest (wie genau ein Pack darauf steht)
 function karussellBeimScrollen() {
   const liste = $('pk-karussell');
+  // Seite noch versteckt (z. B. im Hintergrund geladen): nichts messen, sonst entstehen NaN-Werte
+  if (!liste.clientWidth || !liste.children[0]?.clientWidth) return;
   const mitte = liste.scrollLeft + liste.clientWidth / 2;
   // Erst alle Masse lesen, dann schreiben: sonst berechnet der Browser bei jedem Schreiben das Layout neu
   const messung = [...liste.children].map((li) => ({
@@ -590,6 +597,11 @@ function zeichneAlbum() {
         : '';
       li.innerHTML = karteHtml(k.id, { anzahl: n, fehlt: n === 0 }) + knopf;
       li.dataset.n = schluessel;
+      // Mit der Tastatur erreichbar: Enter öffnet die Karte gross (fehlende: Wunschliste)
+      const art = li.querySelector('.karte');
+      art.tabIndex = 0;
+      art.setAttribute('role', 'button');
+      if (!n) art.setAttribute('aria-label', `${art.getAttribute('aria-label')}, noch nicht gefunden. Auf die Wunschliste setzen oder entfernen`);
     }
     li.hidden = !passt(k);
     if (!li.hidden) {
@@ -1097,6 +1109,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fehlt = !e.target.closest('button') && e.target.closest('.karte.fehlt');
     if (fehlt) Tauschen.wuensche(fehlt.dataset.karte);
   });
+  $('sam-karten').addEventListener('keydown', (e) => {
+    if ((e.key !== 'Enter' && e.key !== ' ') || !e.target.matches('.karte')) return;
+    e.preventDefault();
+    e.target.click();
+  });
   // Grossansicht: Knopf «Verwerten» (ab 2 gleichen Karten, sonst nur ein Hinweis)
   $('kv-verwerten').addEventListener('click', async (e) => {
     const knopf = e.currentTarget;
@@ -1190,6 +1207,28 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (vorratVon(id) > 0) Oeffnen.oeffne(id);
     else zeigeHinweis('Keins im Vorrat. Im Shop gibt es Packs.');
   });
+  // Tastatur: Pfeiltasten wechseln das Pack, Enter oder Leertaste öffnet es (wie Antippen)
+  karussell.addEventListener('keydown', (e) => {
+    const schritt = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (schritt) {
+      e.preventDefault();
+      const i = Math.min(PACKS.length - 1, Math.max(0, app.packIndex + schritt));
+      if (i === app.packIndex) return;
+      zeigePack(i);
+      karussell.children[i].focus({ preventScroll: true });
+    } else if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('li[data-index]')) {
+      e.preventDefault();
+      e.target.closest('li[data-index]').click();
+    }
+  });
+  // Wird das Karussell erst später sichtbar oder ändert seine Breite: Pack wieder in die Mitte, Werte neu messen
+  let karussellBreite = karussell.clientWidth;
+  new ResizeObserver(() => {
+    if (!karussell.clientWidth || karussell.clientWidth === karussellBreite) return;
+    karussellBreite = karussell.clientWidth;
+    zeigePack(app.packIndex, false);
+    karussellBeimScrollen();
+  }).observe(karussell);
 
   $('rar-liste').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-filter]');

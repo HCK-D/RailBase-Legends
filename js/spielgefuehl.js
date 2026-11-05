@@ -320,9 +320,12 @@ const Gefuehl = (() => {
 
   // ---------- Gross-Ansicht einer Karte ----------
 
+  let fokusVorher = null; // nach dem Schliessen geht der Tastatur-Fokus dorthin zurück
+
   function zeigeKarte(id, anzahl) {
     const k = karteVonId(id);
     if (!k) return;
+    fokusVorher = document.activeElement;
     const s = seltenheitVon(k.seltenheit);
     $('kv-karte').innerHTML = karteHtml(id);
     $('kv-karte').className = `kv-karte ruht rar-${s.id}`;
@@ -349,6 +352,8 @@ const Gefuehl = (() => {
     $('kv').hidden = true;
     // Das Pack-Fenster darunter kann noch offen sein
     if ($('opener').hidden && $('gewinn').hidden) document.body.classList.remove('op-offen');
+    if (fokusVorher?.isConnected) fokusVorher.focus({ preventScroll: true });
+    fokusVorher = null;
   }
 
   function bindeGrossAnsicht() {

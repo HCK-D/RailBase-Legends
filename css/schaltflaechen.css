@@ -11,6 +11,12 @@
 /* Fokus-Rahmen nur bei Tastatur-Bedienung (js/effekte.js setzt .tastatur), sonst nie: auf Handys erschien
    sonst ein roter Rahmen um das Pack und ein weisser um die Karte, weil das Spiel den Fokus selbst setzt */
 :root:not(.tastatur) :focus-visible,:root:not(.tastatur) :focus-visible *{outline:none!important}
+/* Tastatur: Pack in der Mitte und Album-Karten. Der Rahmen sitzt aussen, weil die Karte schräge Ecken hat (clip-path) */
+.karussell li:focus-visible{outline:none}
+.karussell li:focus-visible .pk-bild img{outline:3px solid var(--accent);outline-offset:6px;border-radius:6px}
+#sam-karten .karte:focus-visible{outline:none}
+#sam-karten li:has(>.karte:focus-visible){outline:3px solid var(--accent);outline-offset:4px;border-radius:10px}
+:root:not(.tastatur) #sam-karten li{outline:none!important}
 
 /* ---------- Rote Haupt-Knöpfe: Glanz läuft beim Drüberfahren drüber ---------- */
 .btn-haupt::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
