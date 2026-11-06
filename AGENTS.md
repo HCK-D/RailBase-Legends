@@ -141,9 +141,11 @@ Sonstiges: `app`, `hinweis`
 ## Shop: Chancen und Käufe mit echtem Geld
 
 - `js/shop-echtgeld.js` (`Echtgeld`, Produkte in `ECHTGELD_PRODUKTE`), Aussehen `css/shop-echtgeld.css`.
-- Chancen stehen auf Wunsch des Besitzers **nicht im Shop**, sondern unter Mehr → «Regeln und Chancen»
-  (`chancen-knopf`, aus `KARTEN_CHANCEN`) und als kleiner Link «Chancen» in der Rückfrage vor einem Pack-Kauf mit
-  Geld. Nicht entfernen: Apple und Google verlangen, dass die Chancen von Zufalls-Packs vor dem Kauf einsehbar sind.
+- Chancen der Packs sind auf Wunsch des Besitzers **überall ausgeblendet** (06.11.2026): Schalter
+  `CHANCEN_ZEIGEN = false` in `js/shop-echtgeld.js`. Mit `true` gibt es wieder Mehr → «Regeln und Chancen»
+  (`chancen-knopf`, aus `KARTEN_CHANCEN`) und den kleinen Link «Chancen» in der Rückfrage vor einem Pack-Kauf.
+  Achtung: Apple und Google verlangen, dass die Chancen von Zufalls-Packs vor einem Kauf mit Geld einsehbar sind;
+  vor dem Einreichen der App mit dem Besitzer klären. Den Code dafür nicht löschen.
 - Echtes Geld nur in der Handy-App (Ordner `../railbase-legends-app`, Expo): Die App stellt `window.RailBaseApp`
   bereit (`kaufe(id)`, `preise([ids])`, `plattform`) und setzt die Klasse `in-app` auf `<html>`. Dann:
   Packs mit zwei Knöpfen nebeneinander («Kaufen» = Coins, grün `[data-echtgeld-pack]` = Geld, mit Rückfrage);

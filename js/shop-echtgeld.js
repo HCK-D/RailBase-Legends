@@ -6,10 +6,13 @@
  * Auf der Webseite gibt es kein window.RailBaseApp: dann bleibt der Shop wie bisher (nur RB Coins und Rubine).
  *
  * In der App:
- *  - Packs: neben «Kaufen» (Coins) ein grüner Knopf mit dem Preis in Geld. Vor dem Kauf eine kurze Rückfrage
- *    mit einem kleinen Link «Chancen» (Apple und Google verlangen, dass die Chancen vor dem Kauf einsehbar sind).
- *  - Rubin-Coins und RB Coins: grüner Knopf öffnet ein Fenster, dort wählt man das Paket.
- * Chancen stehen sonst nicht im Shop, sondern unter Mehr → «Regeln und Chancen».
+ *  - Packs: neben «Kaufen» (Coins) ein grüner Knopf mit dem Preis in Geld. Vor dem Kauf eine kurze Rückfrage.
+ *  - Rubin-Coins und RB Coins: grüner Knopf «Kaufen» öffnet ein Fenster, dort wählt man das Paket.
+ *
+ * CHANCEN_ZEIGEN: Der Besitzer will die Chancen nirgends zeigen (06.11.2026), darum aus.
+ * Achtung: Apple und Google verlangen, dass die Chancen von Zufalls-Packs vor einem Kauf mit Geld einsehbar sind.
+ * Vor dem Einreichen im App Store / Play Store auf true stellen, dann gibt es wieder Mehr → «Regeln und Chancen»
+ * und den kleinen Link «Chancen» in der Rückfrage.
  *
  * ECHTGELD_PRODUKTE: Produkt-IDs wie im App Store / Google Play / RevenueCat und was man dafür bekommt.
  * Mengen und Preise legt der Besitzer fest (Stand 06.11.2026). Der echte Preis kommt aus dem Store;
@@ -31,6 +34,8 @@ const ECHTGELD_PRODUKTE = [
   { id: 'rbl_coins_1500', art: 'muenzen', menge: 1500, preis: 'CHF 19.99' },
   { id: 'rbl_coins_4000', art: 'muenzen', menge: 4000, preis: 'CHF 24.99' },
 ];
+
+const CHANCEN_ZEIGEN = false;
 
 const Echtgeld = (() => {
   let preise = {};       // { produkt-id: 'CHF 2.00' } aus dem Store
@@ -126,15 +131,15 @@ const Echtgeld = (() => {
       knopf.insertAdjacentHTML('afterend', `<button class="btn btn-echtgeld" type="button" data-echtgeld-pack="${p.id}">Kaufen</button>`);
     });
     // Rubin-Coins: Geld-Knopf neben «1 kaufen»
-    $('rubin-kaufen').insertAdjacentHTML('afterend', '<button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="rubine">Mit Geld</button>');
+    $('rubin-kaufen').insertAdjacentHTML('afterend', '<button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="rubine" aria-label="Rubin-Coins mit echtem Geld kaufen">Kaufen</button>');
     // RB Coins: eigene Zeile unter den Rubin-Coins (gibt es nur mit Geld)
     $('rubin-liste').insertAdjacentHTML('beforeend', `
       <li class="shop-rubin se-coins">
         <img class="muenze" src="${MUENZ_BILD.muenzen}" alt="" draggable="false">
         <div class="shop-text">
           <b>RB Coins</b>
-          <div class="shop-kauf"><span class="shop-preis"><span><small>Pakete mit Geld</small></span></span>
-            <button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="muenzen">Mit Geld</button></div>
+          <div class="shop-kauf"><span class="shop-preis"><span><small>3 Pakete zur Auswahl</small></span></span>
+            <button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="muenzen" aria-label="RB Coins mit echtem Geld kaufen">Kaufen</button></div>
         </div>
       </li>`);
     document.addEventListener('click', (e) => {
@@ -155,16 +160,17 @@ const Echtgeld = (() => {
     zeichne();
   }
 
-  // Pack mit Geld: kurze Rückfrage, darin klein der Link «Chancen»
+  // Pack mit Geld: kurze Rückfrage (mit CHANCEN_ZEIGEN darin klein der Link «Chancen»)
   function frageNachPack(id) {
     const p = produkt(id);
     const pack = packVonId(p.pack);
     const preis = preise[id] && preise[id] !== 'Test' ? ` für ${preise[id]}` : '';
+    const chancen = CHANCEN_ZEIGEN ? `
+      <button class="se-link" type="button" data-se="chancen" aria-expanded="false">Chancen</button>
+      <div class="se-chancen" hidden><p class="se-info">${CHANCEN_REGEL}</p>${chancenListe(pack.stufe)}</div>` : '';
     oeffne(`
       <h2 id="se-titel">${pack.titel} Pack kaufen</h2>
-      <p class="se-info">«${pack.name}»${preis}. Das Pack landet sofort in deinem Vorrat.</p>
-      <button class="se-link" type="button" data-se="chancen" aria-expanded="false">Chancen</button>
-      <div class="se-chancen" hidden><p class="se-info">${CHANCEN_REGEL}</p>${chancenListe(pack.stufe)}</div>
+      <p class="se-info">«${pack.name}»${preis}. Das Pack landet sofort in deinem Vorrat.</p>${chancen}
       <div class="se-knoepfe">
         <button class="btn ghost" type="button" data-se="zu">Abbrechen</button>
         <button class="btn btn-echtgeld" type="button" data-se-kauf="${id}">${preisText(id)}</button>
@@ -256,7 +262,10 @@ const Echtgeld = (() => {
   function init() {
     vorschauTestApp();
     const regeln = $('chancen-knopf');
-    if (regeln) regeln.addEventListener('click', (e) => { e.preventDefault(); zeigeRegeln(); });
+    if (regeln && CHANCEN_ZEIGEN) {
+      regeln.closest('li').hidden = false;
+      regeln.addEventListener('click', (e) => { e.preventDefault(); zeigeRegeln(); });
+    }
     // Die App stellt RailBaseApp vor dem Laden bereit; zur Sicherheit auch auf das Ereignis hören
     if (inApp()) baueEchtgeld();
     else window.addEventListener('railbaseapp', baueEchtgeld, { once: true });
