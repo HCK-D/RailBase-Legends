@@ -33,10 +33,11 @@ const TABS = ['rad', 'album', 'start', 'shop', 'mehr'];
 const TAG_MS = 24 * 60 * 60 * 1000;
 
 // Shop: Preis je Pack und die Währung, in der bezahlt wird. muenzen = RB Coins (gold), rubine = Rubin-Coins.
+// Preise vom Besitzer festgelegt (06.11.2026), Geldpreise dazu in js/shop-echtgeld.js.
 const PACK_PREISE = {
-  standard: { waehrung: 'muenzen', preis: 35 },
-  'silber-1': { waehrung: 'muenzen', preis: 80 },
-  'gold-1': { waehrung: 'muenzen', preis: 200 },
+  standard: { waehrung: 'muenzen', preis: 69 },
+  'silber-1': { waehrung: 'muenzen', preis: 150 },
+  'gold-1': { waehrung: 'muenzen', preis: 350 },
   'platin-1': { waehrung: 'rubine', preis: 25 },
 };
 const WAEHRUNG_NAME = { muenzen: 'RB Coins', rubine: 'Rubin-Coins' };

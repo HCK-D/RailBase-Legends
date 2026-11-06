@@ -23,16 +23,20 @@
 
 const ECHTGELD_PRODUKTE = [
   // ein Pack in den Vorrat (gleiche Packs wie im Shop)
-  { id: 'rbl_pack_standard', art: 'pack', pack: 'standard', menge: 1, preis: 'CHF 0.99' },
-  { id: 'rbl_pack_silber', art: 'pack', pack: 'silber-1', menge: 1, preis: 'CHF 1.99' },
-  { id: 'rbl_pack_gold', art: 'pack', pack: 'gold-1', menge: 1, preis: 'CHF 2.99' },
-  { id: 'rbl_pack_platin', art: 'pack', pack: 'platin-1', menge: 1, preis: 'CHF 4.99' },
+  { id: 'rbl_pack_standard', art: 'pack', pack: 'standard', menge: 1, preis: 'CHF 0.69' },
+  { id: 'rbl_pack_silber', art: 'pack', pack: 'silber-1', menge: 1, preis: 'CHF 1.50' },
+  { id: 'rbl_pack_gold', art: 'pack', pack: 'gold-1', menge: 1, preis: 'CHF 3.50' },
+  { id: 'rbl_pack_platin', art: 'pack', pack: 'platin-1', menge: 1, preis: 'CHF 20.00' },
   // Rubin-Coins
-  { id: 'rbl_rubin_1', art: 'rubine', menge: 1, preis: 'CHF 2.00' },
+  { id: 'rbl_rubin_1', art: 'rubine', menge: 1, preis: 'CHF 0.80' },
+  { id: 'rbl_rubin_5', art: 'rubine', menge: 5, preis: 'CHF 4.00' },
+  { id: 'rbl_rubin_10', art: 'rubine', menge: 10, preis: 'CHF 8.00' },
+  { id: 'rbl_rubin_25', art: 'rubine', menge: 25, preis: 'CHF 20.00' },
+  { id: 'rbl_rubin_50', art: 'rubine', menge: 50, preis: 'CHF 40.00' },
   // RB Coins
-  { id: 'rbl_coins_500', art: 'muenzen', menge: 500, preis: 'CHF 9.99' },
-  { id: 'rbl_coins_1500', art: 'muenzen', menge: 1500, preis: 'CHF 19.99' },
-  { id: 'rbl_coins_4000', art: 'muenzen', menge: 4000, preis: 'CHF 24.99' },
+  { id: 'rbl_coins_500', art: 'muenzen', menge: 500, preis: 'CHF 5.00' },
+  { id: 'rbl_coins_1500', art: 'muenzen', menge: 1500, preis: 'CHF 15.00' },
+  { id: 'rbl_coins_4000', art: 'muenzen', menge: 4000, preis: 'CHF 40.00' },
 ];
 
 const CHANCEN_ZEIGEN = false;

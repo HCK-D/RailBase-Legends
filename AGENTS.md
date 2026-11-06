@@ -152,7 +152,7 @@ Sonstiges: `app`, `hinweis`
   Rubin-Coins und die Zeile RB Coins (`.se-coins`) mit grünem Knopf `[data-echtgeld-wahl]`, der das Fenster
   `se-fenster` mit der Paket-Auswahl öffnet. Auf der Webseite gibt es das nicht. Vorschau am PC: `http://localhost:8770/?app-test#shop` tut so, als liefe
   das Spiel in der App (Test-Käufe ohne Geld; nur auf localhost / 127.0.0.1).
-- Produkt-IDs (`rbl_pack_*`, `rbl_rubin_1`, `rbl_coins_*`) müssen im App Store, bei Google Play und in RevenueCat
+- Produkt-IDs (`rbl_pack_*`, `rbl_rubin_*`, `rbl_coins_*`) müssen im App Store, bei Google Play und in RevenueCat
   gleich heissen. Mengen und geplante Preise hat der Besitzer festgelegt (06.11.2026, `ECHTGELD_PRODUKTE.preis`,
   nicht ohne ihn ändern); angezeigt wird in der App der Preis aus dem Store. Gutschrift in `app.daten`
   (Vorrat, `rubine`, `muenzen`) und `app.daten.kaeufe` (`{ produkt, zeit, test }`). Später: Server-Bestätigung
