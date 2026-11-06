@@ -162,7 +162,20 @@ const Echtgeld = (() => {
     zeigeHinweis(test ? `${text} (Test-Kauf)` : text);
   }
 
+  // Vorschau am PC: mit «?app-test» in der Adresse so tun, als liefe das Spiel in der Handy-App
+  // (Test-Käufe ohne Geld, Test-Preise). Nur auf dem eigenen PC (localhost), nie auf der Webseite.
+  function vorschauTestApp() {
+    const lokal = ['localhost', '127.0.0.1'].includes(location.hostname);
+    if (!lokal || !new URLSearchParams(location.search).has('app-test') || inApp()) return;
+    window.RailBaseApp = {
+      plattform: 'android',
+      preise: async (ids) => Object.fromEntries(ids.map((id) => [id, 'Test'])),
+      kaufe: async (id) => ({ ok: (await frage(`Test-Kauf «${id}» ohne echtes Geld?`, 'Test-Kauf')) === true, produkt: id, test: true, grund: 'abgebrochen' }),
+    };
+  }
+
   function init() {
+    vorschauTestApp();
     baueChancen();
     // Die App stellt RailBaseApp vor dem Laden bereit; zur Sicherheit auch auf das Ereignis hören
     if (inApp()) baueEchtgeld();

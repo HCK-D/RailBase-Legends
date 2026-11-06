@@ -146,7 +146,8 @@ Sonstiges: `app`, `hinweis`
 - Echtes Geld nur in der Handy-App (Ordner `../railbase-legends-app`, Expo): Die App stellt `window.RailBaseApp`
   bereit (`kaufe(id)`, `preise([ids])`, `plattform`) und setzt die Klasse `in-app` auf `<html>`. Dann erscheinen
   grüne Knöpfe `[data-echtgeld]` bei den Packs und der Bereich `.shop-echtgeld` (Rubine, RB Coins).
-  Auf der Webseite gibt es das nicht.
+  Auf der Webseite gibt es das nicht. Vorschau am PC: `http://localhost:8770/?app-test#shop` tut so, als liefe
+  das Spiel in der App (Test-Käufe ohne Geld; nur auf localhost / 127.0.0.1).
 - Produkt-IDs (`rbl_pack_*`, `rbl_rubine_*`, `rbl_coins_*`) müssen im App Store, bei Google Play und in RevenueCat
   gleich heissen. Mengen sind Platzhalter (Besitzer), Preise kommen aus dem Store. Gutschrift in `app.daten`
   (Vorrat, `rubine`, `muenzen`) und `app.daten.kaeufe` (`{ produkt, zeit, test }`). Später: Server-Bestätigung
