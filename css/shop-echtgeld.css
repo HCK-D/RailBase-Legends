@@ -1,0 +1,97 @@
+/* Shop: Chancen der Packs (für alle) und Käufe mit echtem Geld (nur in der Handy-App, js/shop-echtgeld.js).
+   Geld-Knöpfe sind grün, damit man sie nicht mit dem roten Kauf-Knopf für RB Coins / Rubine verwechselt. */
+
+/* ---------- Chancen ---------- */
+.shop-chancen {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.shop-chancen summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: var(--accent-ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shop-chancen p {
+  margin: 2px 0 6px;
+  color: var(--fg-2);
+  line-height: 1.35;
+}
+
+.shop-chancen ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shop-chancen li {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.shop-chancen b {
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-stein {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--rar, #889);
+}
+
+/* ---------- Geld-Knöpfe ---------- */
+.in-app .shop-kauf {
+  flex-wrap: wrap;
+}
+
+.shop-kauf .btn.btn-echtgeld {
+  background: linear-gradient(180deg, #2fbf6e, #178a48);
+  box-shadow: 0 4px 10px rgba(23, 138, 72, .3), inset 0 1px 0 rgba(255, 255, 255, .25);
+  font-variant-numeric: tabular-nums;
+}
+
+/* bei den Packs: eigene Zeile unter Preis und RB-Knopf */
+#shop-liste .shop-kauf .btn-echtgeld {
+  flex: 1 1 100%;
+}
+
+.shop-kauf .btn.btn-echtgeld:disabled {
+  background: rgba(47, 191, 110, .2);
+  color: rgba(23, 138, 72, .8);
+  box-shadow: none;
+}
+
+/* ---------- Bereich «Mit echtem Geld» ---------- */
+.shop-echtgeld {
+  margin-top: 18px;
+}
+
+.shop-echtgeld h2 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.se-info {
+  margin: 0 0 8px;
+  color: var(--fg-2);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.se-paket > .muenze {
+  width: 52px;
+  height: 52px;
+}
+
+.se-paket .shop-kauf {
+  justify-content: flex-start;
+}

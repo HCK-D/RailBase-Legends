@@ -1092,6 +1092,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Erfolge.init();
   Freunde.init();
   Tauschen.init();
+  Echtgeld.init(); // nach baueShop: Chancen in den Shop, in der Handy-App auch Käufe mit echtem Geld
 
   $('start-badge').addEventListener('click', startKnopf);
   $('konto-form').addEventListener('submit', speichereName);

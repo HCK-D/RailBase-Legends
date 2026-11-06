@@ -50,6 +50,8 @@ const Store = (() => {
     zeit: 0,           // Zeitpunkt (ms) der letzten Änderung: beim Verbinden mit der Datenbank gewinnt der neuere Spielstand
     konto: '',         // zu welchem Online-Konto dieser Spielstand gehört (js/online.js), leer = noch keinem
     einfuehrung: false, // kurze Einführung gesehen (js/einfuehrung.js); kommt sonst nach dem Willkommen
+    // Käufe mit echtem Geld in der Handy-App (js/shop-echtgeld.js): { produkt, zeit, test } – die letzten 100
+    kaeufe: [],
   };
 
   const textListe = (liste) => (Array.isArray(liste) ? liste.filter((k) => typeof k === 'string') : []);
@@ -68,6 +70,7 @@ const Store = (() => {
       erfolge: { ...structuredClone(STANDARD.erfolge), ...(daten.erfolge || {}) },
       eingeloest: textListe(daten.eingeloest),
       wunschliste: textListe(daten.wunschliste),
+      kaeufe: Array.isArray(daten.kaeufe) ? daten.kaeufe.filter((k) => k && typeof k.produkt === 'string').slice(-100) : [],
       tauschErledigt: Array.isArray(daten.tauschErledigt) ? daten.tauschErledigt.filter((n) => Number.isInteger(n)) : [],
     };
   }

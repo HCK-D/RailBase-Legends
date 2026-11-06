@@ -138,6 +138,20 @@ Sonstiges: `app`, `hinweis`
   Jeder darf nur seinen eigenen Eintrag lesen und ändern; was zwei Spieler betrifft, geht nur über die Funktionen.
   Änderungen an der Datenbank immer in dieser Datei und dann im Supabase SQL Editor ausführen.
 
+## Shop: Chancen und Käufe mit echtem Geld
+
+- `js/shop-echtgeld.js` (`Echtgeld`, Produkte in `ECHTGELD_PRODUKTE`), Aussehen `css/shop-echtgeld.css`.
+- Chancen: bei jedem Pack im Shop «Chancen ansehen» (`.shop-chancen`, aus `KARTEN_CHANCEN`), für alle sichtbar.
+  Nötig für Käufe mit echtem Geld (Apple und Google verlangen die Chancen bei Zufalls-Packs).
+- Echtes Geld nur in der Handy-App (Ordner `../railbase-legends-app`, Expo): Die App stellt `window.RailBaseApp`
+  bereit (`kaufe(id)`, `preise([ids])`, `plattform`) und setzt die Klasse `in-app` auf `<html>`. Dann erscheinen
+  grüne Knöpfe `[data-echtgeld]` bei den Packs und der Bereich `.shop-echtgeld` (Rubine, RB Coins).
+  Auf der Webseite gibt es das nicht.
+- Produkt-IDs (`rbl_pack_*`, `rbl_rubine_*`, `rbl_coins_*`) müssen im App Store, bei Google Play und in RevenueCat
+  gleich heissen. Mengen sind Platzhalter (Besitzer), Preise kommen aus dem Store. Gutschrift in `app.daten`
+  (Vorrat, `rubine`, `muenzen`) und `app.daten.kaeufe` (`{ produkt, zeit, test }`). Später: Server-Bestätigung
+  über RevenueCat-Webhook → Supabase.
+
 ## Ladebildschirm
 
 - `js/laden.js` (`Laden`, Tipps in `LADE_TIPPS`), Aussehen `css/laden.css`, ganz oben im `<body>` (`laden`, `ld-balken`,
