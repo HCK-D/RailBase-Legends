@@ -1,16 +1,20 @@
 /*
- * Shop: Chancen der Packs (für alle) und Käufe mit echtem Geld (nur in der Handy-App).
+ * Shop: Käufe mit echtem Geld (nur in der Handy-App) und die Seite «Regeln und Chancen» (unter Mehr).
  *
  * Die Handy-App (Ordner railbase-legends-app, Expo) zeigt dieses Spiel in einer WebView und stellt
  * window.RailBaseApp bereit: kaufe(id) und preise([ids]) laufen dort über RevenueCat (App Store / Google Play).
  * Auf der Webseite gibt es kein window.RailBaseApp: dann bleibt der Shop wie bisher (nur RB Coins und Rubine).
  *
- * ECHTGELD_PRODUKTE: Produkt-IDs wie im App Store / Google Play / RevenueCat und was man dafür bekommt.
- * Die Mengen sind PLATZHALTER (legt der Besitzer fest). Die Preise stehen NICHT hier, sie kommen aus dem Store
- * (in der Landeswährung, z. B. «CHF 2.00»).
+ * In der App:
+ *  - Packs: neben «Kaufen» (Coins) ein grüner Knopf mit dem Preis in Geld. Vor dem Kauf eine kurze Rückfrage
+ *    mit einem kleinen Link «Chancen» (Apple und Google verlangen, dass die Chancen vor dem Kauf einsehbar sind).
+ *  - Rubin-Coins und RB Coins: grüner Knopf öffnet ein Fenster, dort wählt man das Paket.
+ * Chancen stehen sonst nicht im Shop, sondern unter Mehr → «Regeln und Chancen».
  *
- * Gutschrift im Spielstand (app.daten): Packs in den Vorrat, Rubine und RB Coins aufs Guthaben, dazu ein
- * Eintrag in app.daten.kaeufe. Später sollte der Server jeden Kauf bestätigen (RevenueCat-Webhook → Supabase).
+ * ECHTGELD_PRODUKTE: Produkt-IDs wie im App Store / Google Play / RevenueCat und was man dafür bekommt.
+ * Die Mengen sind PLATZHALTER (legt der Besitzer fest). Die Preise kommen aus dem Store.
+ * Gutschrift: Packs in den Vorrat, Rubine und RB Coins aufs Guthaben, Eintrag in app.daten.kaeufe.
+ * Später sollte der Server jeden Kauf bestätigen (RevenueCat-Webhook → Supabase).
  */
 
 const ECHTGELD_PRODUKTE = [
@@ -38,28 +42,74 @@ const Echtgeld = (() => {
   const produkt = (id) => ECHTGELD_PRODUKTE.find((p) => p.id === id);
   const MUENZ_BILD = { rubine: 'assets/muenzen/rubin-rund.png', muenzen: 'assets/muenzen/gold-rund.png' };
   const NAME = { rubine: 'Rubin-Coins', muenzen: 'RB Coins' };
+  const preisText = (id) => {
+    const p = preise[id];
+    return p && p !== 'Test' ? p : p === 'Test' ? 'Test-Kauf' : 'Kaufen';
+  };
 
-  // ---------- Chancen (für alle, auch auf der Webseite) ----------
+  // ---------- Fenster (gleicher Aufbau wie die anderen Info-Fenster) ----------
+
+  function fenster() {
+    let f = $('se-fenster');
+    if (f) return f;
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="info-fenster se-fenster" id="se-fenster" hidden role="dialog" aria-modal="true" aria-labelledby="se-titel">
+        <div class="info-box" id="se-box"></div>
+      </div>`);
+    f = $('se-fenster');
+    f.addEventListener('click', (e) => {
+      if (e.target === f || e.target.closest('[data-se="zu"]')) schliesse();
+      const wahl = e.target.closest('[data-se-kauf]');
+      if (wahl && !wahl.disabled) { schliesse(); kaufe(wahl.dataset.seKauf); }
+      const chancen = e.target.closest('[data-se="chancen"]');
+      if (chancen) {
+        const liste = $('se-box').querySelector('.se-chancen');
+        liste.hidden = !liste.hidden;
+        chancen.setAttribute('aria-expanded', String(!liste.hidden));
+      }
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') schliesse(); });
+    return f;
+  }
+
+  function oeffne(html) {
+    const f = fenster();
+    $('se-box').innerHTML = html;
+    f.hidden = false;
+    document.body.classList.add('op-offen');
+    const erster = $('se-box').querySelector('[data-se-kauf], button');
+    if (erster) erster.focus({ preventScroll: true });
+  }
+
+  function schliesse() {
+    const f = $('se-fenster');
+    if (!f || f.hidden) return;
+    f.hidden = true;
+    document.body.classList.remove('op-offen');
+  }
+
+  // ---------- Chancen ----------
 
   // Chancen einer Pack-Stufe pro Karte in Prozent (KARTEN_CHANCEN in js/karten.js)
-  function chancenHtml(stufe) {
+  function chancenListe(stufe) {
     const werte = KARTEN_CHANCEN[stufe] || KARTEN_CHANCEN.standard;
     const summe = werte.reduce((a, b) => a + b, 0) || 1;
-    const zeilen = SELTENHEITEN.map((s, i) => {
+    return `<ul class="se-chancen-liste">${SELTENHEITEN.map((s, i) => {
       const prozent = (werte[i] / summe) * 100;
       return `<li class="rar-${s.id}"><span class="sc-stein" aria-hidden="true"></span><span>${s.name}</span>
         <b>${prozent ? `${prozent.toLocaleString('de-CH', { maximumFractionDigits: 1 })} %` : '–'}</b></li>`;
-    }).join('');
-    return `<details class="shop-chancen"><summary>Chancen ansehen</summary>
-      <p>Pro Karte, ${KARTEN_PRO_PACK} Karten pro Pack. Doppelte Karten sind möglich. Die ersten vier geöffneten Packs haben einen Anfängerbonus.</p>
-      <ul>${zeilen}</ul></details>`;
+    }).join('')}</ul>`;
   }
 
-  function baueChancen() {
-    document.querySelectorAll('#shop-liste li[data-stufe]').forEach((li) => {
-      if (li.querySelector('.shop-chancen')) return;
-      li.querySelector('.shop-text').insertAdjacentHTML('beforeend', chancenHtml(li.dataset.stufe));
-    });
+  const CHANCEN_REGEL = `Chance pro Karte, ${KARTEN_PRO_PACK} Karten pro Pack. Doppelte Karten sind möglich. Die ersten vier geöffneten Packs haben einen Anfängerbonus.`;
+
+  // Mehr → «Regeln und Chancen»: alle Pack-Stufen
+  function zeigeRegeln() {
+    oeffne(`
+      <h2 id="se-titel">Regeln und Chancen</h2>
+      <p class="se-info">${CHANCEN_REGEL}</p>
+      ${STUFEN.map((s) => `<section class="se-stufe"><b>${s.titel} Pack</b>${chancenListe(s.id)}</section>`).join('')}
+      <button class="btn" type="button" data-se="zu">Schliessen</button>`);
   }
 
   // ---------- Käufe mit echtem Geld (nur in der App) ----------
@@ -68,32 +118,29 @@ const Echtgeld = (() => {
     if (gebaut || !inApp()) return;
     gebaut = true;
     document.documentElement.classList.add('in-app');
-    // zweiter Knopf bei jedem Pack
+    // Packs: Geld-Knopf direkt neben «Kaufen»
     ECHTGELD_PRODUKTE.filter((p) => p.art === 'pack').forEach((p) => {
       const knopf = document.querySelector(`#shop-liste [data-kaufen="${p.pack}"]`);
       if (!knopf) return;
-      knopf.insertAdjacentHTML('afterend', `<button class="btn btn-echtgeld" type="button" data-echtgeld="${p.id}" aria-label="Mit Geld kaufen">…</button>`);
+      knopf.insertAdjacentHTML('afterend', `<button class="btn btn-echtgeld" type="button" data-echtgeld-pack="${p.id}">Kaufen</button>`);
     });
-    // eigener Bereich für Rubine und RB Coins
-    const pakete = ECHTGELD_PRODUKTE.filter((p) => p.art !== 'pack');
-    $('shop-liste').insertAdjacentHTML('afterend', `
-      <section class="shop-echtgeld" aria-labelledby="se-titel">
-        <h2 id="se-titel">Mit echtem Geld</h2>
-        <p class="se-info">Bezahlt wird über den ${window.RailBaseApp.plattform === 'ios' ? 'App Store' : 'Google Play Store'}. Der Kauf landet sofort in deinem Spielstand.</p>
-        <ul class="shop-liste se-liste">
-          ${pakete.map((p) => `
-            <li class="se-paket">
-              <img class="muenze" src="${MUENZ_BILD[p.art]}" alt="" draggable="false">
-              <div class="shop-text">
-                <b>${tausender(p.menge)} ${NAME[p.art]}</b>
-                <div class="shop-kauf"><button class="btn btn-echtgeld" type="button" data-echtgeld="${p.id}">…</button></div>
-              </div>
-            </li>`).join('')}
-        </ul>
-      </section>`);
+    // Rubin-Coins: Geld-Knopf neben «1 kaufen»
+    $('rubin-kaufen').insertAdjacentHTML('afterend', '<button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="rubine">Mit Geld</button>');
+    // RB Coins: eigene Zeile unter den Rubin-Coins (gibt es nur mit Geld)
+    $('rubin-liste').insertAdjacentHTML('beforeend', `
+      <li class="shop-rubin se-coins">
+        <img class="muenze" src="${MUENZ_BILD.muenzen}" alt="" draggable="false">
+        <div class="shop-text">
+          <b>RB Coins</b>
+          <div class="shop-kauf"><span class="shop-preis"><span><small>Pakete mit Geld</small></span></span>
+            <button class="btn btn-echtgeld" type="button" data-echtgeld-wahl="muenzen">Mit Geld</button></div>
+        </div>
+      </li>`);
     document.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-echtgeld]');
-      if (b && !b.disabled) kaufe(b.dataset.echtgeld);
+      const pack = e.target.closest('[data-echtgeld-pack]');
+      if (pack && !pack.disabled) frageNachPack(pack.dataset.echtgeldPack);
+      const wahl = e.target.closest('[data-echtgeld-wahl]');
+      if (wahl && !wahl.disabled) zeigeWahl(wahl.dataset.echtgeldWahl);
     });
     ladePreise();
   }
@@ -107,17 +154,47 @@ const Echtgeld = (() => {
     zeichne();
   }
 
-  // Knöpfe: Preis aus dem Store, sonst «Kaufen»; gesperrt, solange ein Kauf läuft
+  // Pack mit Geld: kurze Rückfrage, darin klein der Link «Chancen»
+  function frageNachPack(id) {
+    const p = produkt(id);
+    const pack = packVonId(p.pack);
+    const preis = preise[id] && preise[id] !== 'Test' ? ` für ${preise[id]}` : '';
+    oeffne(`
+      <h2 id="se-titel">${pack.titel} Pack kaufen</h2>
+      <p class="se-info">«${pack.name}»${preis}. Das Pack landet sofort in deinem Vorrat.</p>
+      <button class="se-link" type="button" data-se="chancen" aria-expanded="false">Chancen</button>
+      <div class="se-chancen" hidden><p class="se-info">${CHANCEN_REGEL}</p>${chancenListe(pack.stufe)}</div>
+      <div class="se-knoepfe">
+        <button class="btn ghost" type="button" data-se="zu">Abbrechen</button>
+        <button class="btn btn-echtgeld" type="button" data-se-kauf="${id}">${preisText(id)}</button>
+      </div>`);
+  }
+
+  // Rubin-Coins oder RB Coins: Paket auswählen
+  function zeigeWahl(art) {
+    const pakete = ECHTGELD_PRODUKTE.filter((p) => p.art === art);
+    oeffne(`
+      <h2 id="se-titel">${NAME[art]} kaufen</h2>
+      <p class="se-info">Wähle ein Paket. Bezahlt wird über den ${window.RailBaseApp.plattform === 'ios' ? 'App Store' : 'Google Play Store'}.</p>
+      <ul class="se-pakete">${pakete.map((p) => `
+        <li><button class="se-paket" type="button" data-se-kauf="${p.id}">
+          <img class="muenze" src="${MUENZ_BILD[art]}" alt="" aria-hidden="true">
+          <span class="se-menge"><b>${tausender(p.menge)}</b><small>${NAME[art]}</small></span>
+          <span class="se-preis">${preisText(p.id)}</span>
+        </button></li>`).join('')}</ul>
+      <button class="btn ghost" type="button" data-se="zu">Abbrechen</button>`);
+  }
+
+  // Knöpfe im Shop: Preis aus dem Store; gesperrt, solange ein Kauf läuft
   function zeichne() {
     if (!gebaut) return;
-    document.querySelectorAll('[data-echtgeld]').forEach((b) => {
-      const p = produkt(b.dataset.echtgeld);
-      const preis = preise[b.dataset.echtgeld];
-      b.textContent = preis && preis !== 'Test' ? preis : preis === 'Test' ? 'Test-Kauf' : 'Kaufen';
+    document.querySelectorAll('[data-echtgeld-pack]').forEach((b) => {
+      b.textContent = preisText(b.dataset.echtgeldPack);
       b.disabled = laeuft;
-      const was = p.art === 'pack' ? `1 ${packVonId(p.pack).titel} Pack` : `${tausender(p.menge)} ${NAME[p.art]}`;
-      b.setAttribute('aria-label', `${was} mit Geld kaufen${preis && preis !== 'Test' ? ` für ${preis}` : ''}`);
+      const p = produkt(b.dataset.echtgeldPack);
+      b.setAttribute('aria-label', `1 ${packVonId(p.pack).titel} Pack mit Geld kaufen`);
     });
+    document.querySelectorAll('[data-echtgeld-wahl]').forEach((b) => { b.disabled = laeuft; });
   }
 
   async function kaufe(id) {
@@ -170,13 +247,14 @@ const Echtgeld = (() => {
     window.RailBaseApp = {
       plattform: 'android',
       preise: async (ids) => Object.fromEntries(ids.map((id) => [id, 'Test'])),
-      kaufe: async (id) => ({ ok: (await frage(`Test-Kauf «${id}» ohne echtes Geld?`, 'Test-Kauf')) === true, produkt: id, test: true, grund: 'abgebrochen' }),
+      kaufe: async (id) => ({ ok: true, produkt: id, test: true }),
     };
   }
 
   function init() {
     vorschauTestApp();
-    baueChancen();
+    const regeln = $('chancen-knopf');
+    if (regeln) regeln.addEventListener('click', (e) => { e.preventDefault(); zeigeRegeln(); });
     // Die App stellt RailBaseApp vor dem Laden bereit; zur Sicherheit auch auf das Ereignis hören
     if (inApp()) baueEchtgeld();
     else window.addEventListener('railbaseapp', baueEchtgeld, { once: true });

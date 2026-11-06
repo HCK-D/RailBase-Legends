@@ -141,12 +141,14 @@ Sonstiges: `app`, `hinweis`
 ## Shop: Chancen und Käufe mit echtem Geld
 
 - `js/shop-echtgeld.js` (`Echtgeld`, Produkte in `ECHTGELD_PRODUKTE`), Aussehen `css/shop-echtgeld.css`.
-- Chancen: bei jedem Pack im Shop «Chancen ansehen» (`.shop-chancen`, aus `KARTEN_CHANCEN`), für alle sichtbar.
-  Nötig für Käufe mit echtem Geld (Apple und Google verlangen die Chancen bei Zufalls-Packs).
+- Chancen stehen auf Wunsch des Besitzers **nicht im Shop**, sondern unter Mehr → «Regeln und Chancen»
+  (`chancen-knopf`, aus `KARTEN_CHANCEN`) und als kleiner Link «Chancen» in der Rückfrage vor einem Pack-Kauf mit
+  Geld. Nicht entfernen: Apple und Google verlangen, dass die Chancen von Zufalls-Packs vor dem Kauf einsehbar sind.
 - Echtes Geld nur in der Handy-App (Ordner `../railbase-legends-app`, Expo): Die App stellt `window.RailBaseApp`
-  bereit (`kaufe(id)`, `preise([ids])`, `plattform`) und setzt die Klasse `in-app` auf `<html>`. Dann erscheinen
-  grüne Knöpfe `[data-echtgeld]` bei den Packs und der Bereich `.shop-echtgeld` (Rubine, RB Coins).
-  Auf der Webseite gibt es das nicht. Vorschau am PC: `http://localhost:8770/?app-test#shop` tut so, als liefe
+  bereit (`kaufe(id)`, `preise([ids])`, `plattform`) und setzt die Klasse `in-app` auf `<html>`. Dann:
+  Packs mit zwei Knöpfen nebeneinander («Kaufen» = Coins, grün `[data-echtgeld-pack]` = Geld, mit Rückfrage);
+  Rubin-Coins und die Zeile RB Coins (`.se-coins`) mit grünem Knopf `[data-echtgeld-wahl]`, der das Fenster
+  `se-fenster` mit der Paket-Auswahl öffnet. Auf der Webseite gibt es das nicht. Vorschau am PC: `http://localhost:8770/?app-test#shop` tut so, als liefe
   das Spiel in der App (Test-Käufe ohne Geld; nur auf localhost / 127.0.0.1).
 - Produkt-IDs (`rbl_pack_*`, `rbl_rubine_*`, `rbl_coins_*`) müssen im App Store, bei Google Play und in RevenueCat
   gleich heissen. Mengen sind Platzhalter (Besitzer), Preise kommen aus dem Store. Gutschrift in `app.daten`
