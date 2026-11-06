@@ -218,6 +218,8 @@ const Rad = (() => {
     // Reihenfolge wie in PREISE: erst die Coins, dann die Packs von Basis bis Gold
     $('rad-info-chancen').innerHTML = Object.keys(PREISE).filter((f) => anzahl[f]).map((f) =>
       `<li><span>${name(f)}</span><span>${anzahl[f]} von ${n} Feldern</span></li>`).join('');
+    // Chancen nur zeigen, wenn der Schalter in js/shop-echtgeld.js an ist (Wunsch des Besitzers: aus)
+    $('rad-info-chancen').closest('li').hidden = !(typeof CHANCEN_ZEIGEN !== 'undefined' && CHANCEN_ZEIGEN);
     $('rad-info-fenster').hidden = false;
     document.body.classList.add('op-offen');
     $('rad-info-zu').focus({ preventScroll: true });
