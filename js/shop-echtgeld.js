@@ -12,25 +12,24 @@
  * Chancen stehen sonst nicht im Shop, sondern unter Mehr → «Regeln und Chancen».
  *
  * ECHTGELD_PRODUKTE: Produkt-IDs wie im App Store / Google Play / RevenueCat und was man dafür bekommt.
- * Die Mengen sind PLATZHALTER (legt der Besitzer fest). Die Preise kommen aus dem Store.
+ * Mengen und Preise legt der Besitzer fest (Stand 06.11.2026). Der echte Preis kommt aus dem Store;
+ * `preis` ist nur der geplante Preis zum Einrichten im Store und für den Test-Modus (?app-test).
  * Gutschrift: Packs in den Vorrat, Rubine und RB Coins aufs Guthaben, Eintrag in app.daten.kaeufe.
  * Später sollte der Server jeden Kauf bestätigen (RevenueCat-Webhook → Supabase).
  */
 
 const ECHTGELD_PRODUKTE = [
   // ein Pack in den Vorrat (gleiche Packs wie im Shop)
-  { id: 'rbl_pack_standard', art: 'pack', pack: 'standard', menge: 1 },
-  { id: 'rbl_pack_silber', art: 'pack', pack: 'silber-1', menge: 1 },
-  { id: 'rbl_pack_gold', art: 'pack', pack: 'gold-1', menge: 1 },
-  { id: 'rbl_pack_platin', art: 'pack', pack: 'platin-1', menge: 1 },
-  // Rubin-Coins (Platzhalter-Mengen)
-  { id: 'rbl_rubine_10', art: 'rubine', menge: 10 },
-  { id: 'rbl_rubine_50', art: 'rubine', menge: 50 },
-  { id: 'rbl_rubine_120', art: 'rubine', menge: 120 },
-  // RB Coins (Platzhalter-Mengen)
-  { id: 'rbl_coins_500', art: 'muenzen', menge: 500 },
-  { id: 'rbl_coins_1500', art: 'muenzen', menge: 1500 },
-  { id: 'rbl_coins_4000', art: 'muenzen', menge: 4000 },
+  { id: 'rbl_pack_standard', art: 'pack', pack: 'standard', menge: 1, preis: 'CHF 0.99' },
+  { id: 'rbl_pack_silber', art: 'pack', pack: 'silber-1', menge: 1, preis: 'CHF 1.99' },
+  { id: 'rbl_pack_gold', art: 'pack', pack: 'gold-1', menge: 1, preis: 'CHF 2.99' },
+  { id: 'rbl_pack_platin', art: 'pack', pack: 'platin-1', menge: 1, preis: 'CHF 4.99' },
+  // Rubin-Coins
+  { id: 'rbl_rubin_1', art: 'rubine', menge: 1, preis: 'CHF 2.00' },
+  // RB Coins
+  { id: 'rbl_coins_500', art: 'muenzen', menge: 500, preis: 'CHF 9.99' },
+  { id: 'rbl_coins_1500', art: 'muenzen', menge: 1500, preis: 'CHF 19.99' },
+  { id: 'rbl_coins_4000', art: 'muenzen', menge: 4000, preis: 'CHF 24.99' },
 ];
 
 const Echtgeld = (() => {
@@ -42,6 +41,8 @@ const Echtgeld = (() => {
   const produkt = (id) => ECHTGELD_PRODUKTE.find((p) => p.id === id);
   const MUENZ_BILD = { rubine: 'assets/muenzen/rubin-rund.png', muenzen: 'assets/muenzen/gold-rund.png' };
   const NAME = { rubine: 'Rubin-Coins', muenzen: 'RB Coins' };
+  // Einzahl/Mehrzahl: «1 Rubin-Coin», «2 Rubin-Coins»
+  const mengeName = (art, menge) => (art === 'rubine' && menge === 1 ? 'Rubin-Coin' : NAME[art]);
   const preisText = (id) => {
     const p = preise[id];
     return p && p !== 'Test' ? p : p === 'Test' ? 'Test-Kauf' : 'Kaufen';
@@ -179,7 +180,7 @@ const Echtgeld = (() => {
       <ul class="se-pakete">${pakete.map((p) => `
         <li><button class="se-paket" type="button" data-se-kauf="${p.id}">
           <img class="muenze" src="${MUENZ_BILD[art]}" alt="" aria-hidden="true">
-          <span class="se-menge"><b>${tausender(p.menge)}</b><small>${NAME[art]}</small></span>
+          <span class="se-menge"><b>${tausender(p.menge)}</b><small>${mengeName(art, p.menge)}</small></span>
           <span class="se-preis">${preisText(p.id)}</span>
         </button></li>`).join('')}</ul>
       <button class="btn ghost" type="button" data-se="zu">Abbrechen</button>`);
@@ -226,7 +227,7 @@ const Echtgeld = (() => {
       text = `${packVonId(p.pack).titel} Pack ist in deinem Vorrat.`;
     } else {
       app.daten[p.art] = (app.daten[p.art] || 0) + p.menge;
-      text = `+${tausender(p.menge)} ${NAME[p.art]}`;
+      text = `+${tausender(p.menge)} ${mengeName(p.art, p.menge)}`;
     }
     app.daten.kaeufe = [...(Array.isArray(app.daten.kaeufe) ? app.daten.kaeufe : []),
       { produkt: p.id, zeit: Date.now(), test }].slice(-100);
@@ -246,7 +247,8 @@ const Echtgeld = (() => {
     if (!lokal || !new URLSearchParams(location.search).has('app-test') || inApp()) return;
     window.RailBaseApp = {
       plattform: 'android',
-      preise: async (ids) => Object.fromEntries(ids.map((id) => [id, 'Test'])),
+      // geplante Preise aus ECHTGELD_PRODUKTE (in der echten App kommen sie aus dem Store)
+      preise: async (ids) => Object.fromEntries(ids.map((id) => [id, (produkt(id) || {}).preis || 'Test'])),
       kaufe: async (id) => ({ ok: true, produkt: id, test: true }),
     };
   }
