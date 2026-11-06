@@ -39,7 +39,7 @@ const Rad = (() => {
       const mitte = ((i + 0.5) / n) * 360;
       const p = PREISE[preis];
       html += `<path d="M100 100 L${x1.toFixed(2)} ${y1.toFixed(2)} A${r} ${r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z" style="fill:${p.farbe};stroke:var(--surface)" stroke-width="1.5"/>`;
-      const icon = p.coins ? 'assets/muenzen/gold-rund.png' : bildKlein(PACKS.find(p => p.stufe === preis));
+      const icon = p.coins ? 'assets/muenzen/gold-rund.webp' : bildKlein(PACKS.find(p => p.stufe === preis));
       html += `<g transform="rotate(${mitte} 100 100)"><image href="${icon}" x="91" y="14" width="18" height="23" preserveAspectRatio="xMidYMid meet"/><text x="100" y="47" text-anchor="middle" style="fill:${p.schrift}" font-weight="800">${p.text}</text></g>`;
     });
     svg.innerHTML = html;
@@ -183,7 +183,7 @@ const Rad = (() => {
       $('gw-spaeter').textContent = 'Später öffnen';
     } else {
       $('gw-img').hidden = false;
-      $('gw-img').src = 'assets/muenzen/gold-rund.png';
+      $('gw-img').src = 'assets/muenzen/gold-rund.webp';
       $('gw-img').alt = 'Goldene RB Coins';
       $('gw-leer').hidden = true;
       $('gw-kicker').textContent = 'Gewonnen!';

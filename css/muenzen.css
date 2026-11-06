@@ -245,7 +245,7 @@
   pointer-events: none;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .45) 55%, rgba(255, 255, 255, 0) 85%),
-    url('../assets/welt/alpenpanorama.png') 78% 30% / cover no-repeat;
+    url('../assets/welt/alpenpanorama.webp') 78% 30% / cover no-repeat;
   -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
   mask-image: linear-gradient(to bottom, #000 45%, transparent);
 }
@@ -258,7 +258,7 @@
 :root[data-theme="dark"] #v-shop::before {
   background:
     linear-gradient(90deg, rgba(12, 15, 19, .85), rgba(12, 15, 19, .45) 55%, rgba(12, 15, 19, .15) 85%),
-    url('../assets/welt/alpenpanorama.png') 78% 30% / cover no-repeat;
+    url('../assets/welt/alpenpanorama.webp') 78% 30% / cover no-repeat;
   filter: brightness(.8) saturate(.85);
 }
 

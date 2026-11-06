@@ -380,14 +380,16 @@ body.pack-offen > .handy ::after {
 
 /* ---------- Start: Packs im Karussell ---------- */
 /* Fokus auf das Pack in der Mitte: --f kommt aus js/app.js (1 = Mitte, 0 = daneben).
-   Nachbarn sind kleiner (--s), dunkler, leicht unscharf und stehen etwas höher, also weiter hinten. */
+   Nachbarn sind kleiner (--s), dunkler und stehen etwas höher, also weiter hinten.
+   Ohne Unschärfe (blur): Sie war kaum zu sehen, musste beim Wischen aber für jedes Pack in jedem Bild neu
+   berechnet werden und hat das Wischen auf dem Handy ruckelig gemacht. */
 #v-start .karussell .pk-bild {
   position: relative;
   display: block;
   max-width: 92%;
   line-height: 0;
   transform: translateY(calc((1 - var(--f, 1)) * -22px));
-  filter: brightness(calc(.42 + .58 * var(--f, 1))) saturate(calc(.55 + .45 * var(--f, 1))) blur(calc((1 - var(--f, 1)) * 1.2px));
+  filter: brightness(calc(.42 + .58 * var(--f, 1))) saturate(calc(.55 + .45 * var(--f, 1)));
   transition: transform .12s linear, filter .12s linear;
 }
 
@@ -906,7 +908,7 @@ body.pack-offen > .handy ::after {
   z-index: -2;
   height: min(75vh, 620px);
   pointer-events: none;
-  background: url('../assets/welt/alpenpanorama.png') center 35% / cover no-repeat;
+  background: url('../assets/welt/alpenpanorama.webp') center 35% / cover no-repeat;
   filter: saturate(.3) brightness(1.38) contrast(.62);
   opacity: .62;
   -webkit-mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, .85) 40%, transparent);

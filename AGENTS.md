@@ -255,6 +255,17 @@ oder mit seiner Erlaubnis (`erlaubnis: true`, bisher Domino, Re 460, Re 420, Re 
 - Grundlayout: Handy (bis 1099 px), Menü unten
 - Ab 1100 px: Computer-Layout, Menü oben in der Kopfzeile (`@media (min-width:1100px)` am Ende von `style.css`)
 
+## Tempo auf dem Handy
+
+- Bilder im Spiel als **WebP** einbinden, nicht PNG (z. B. `alpenpanorama.webp` 325 KB statt 3.3 MB als PNG).
+  Die alten PNGs bleiben liegen, werden aber nicht mehr geladen.
+- Dauer-Animationen (`infinite`) nur mit `transform` und `opacity`, nicht mit `background-position`,
+  `box-shadow` oder `filter`: Das Handy muss sonst in jedem Bild neu malen (Beispiel `alpen-licht` in `style.css`).
+- Nichts, was sich beim Wischen ändert, mit `blur()` versehen (Karussell-Packs haben darum keine Unschärfe mehr).
+- `sw.js`: Bilder aus `assets/` kommen sofort aus dem Speicher auf dem Handy und werden im Hintergrund erneuert;
+  Seite, Skripte und Styles kommen weiter zuerst aus dem Netz. Ein Bild mit neuem Inhalt darum besser unter
+  neuem Namen speichern, sonst sieht man es erst beim übernächsten Start.
+
 ## Nach jeder Änderung prüfen
 
 1. Vorschau öffnen, beide Designs prüfen (Konto → Design: Silber / Schwarz)

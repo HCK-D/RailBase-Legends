@@ -48,7 +48,7 @@ const Echtgeld = (() => {
 
   const inApp = () => typeof window.RailBaseApp === 'object' && window.RailBaseApp !== null;
   const produkt = (id) => ECHTGELD_PRODUKTE.find((p) => p.id === id);
-  const MUENZ_BILD = { rubine: 'assets/muenzen/rubin-rund.png', muenzen: 'assets/muenzen/gold-rund.png' };
+  const MUENZ_BILD = { rubine: 'assets/muenzen/rubin-rund.webp', muenzen: 'assets/muenzen/gold-rund.webp' };
   const NAME = { rubine: 'Rubin-Coins', muenzen: 'RB Coins' };
   // Einzahl/Mehrzahl: «1 Rubin-Coin», «2 Rubin-Coins»
   const mengeName = (art, menge) => (art === 'rubine' && menge === 1 ? 'Rubin-Coin' : NAME[art]);

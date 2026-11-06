@@ -643,7 +643,7 @@ async function verwerteDoppelte(id, knopf) {
 
 // ---------- Shop ----------
 
-const MUENZ_BILD = { muenzen: 'assets/muenzen/gold-rund.png', rubine: 'assets/muenzen/rubin-rund.png' };
+const MUENZ_BILD = { muenzen: 'assets/muenzen/gold-rund.webp', rubine: 'assets/muenzen/rubin-rund.webp' };
 const muenzeHtml = (waehrung, klein) => `<img class="muenze${klein ? ' klein' : ''}" src="${MUENZ_BILD[waehrung]}" alt="" aria-hidden="true">`;
 
 // ---------- Willkommen ----------

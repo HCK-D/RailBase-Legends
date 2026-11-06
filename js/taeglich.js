@@ -61,8 +61,8 @@ const Taeglich = (() => {
   }
 
   function belohnungBild(b) {
-    if (b.muenzen) return 'assets/muenzen/gold-rund.png';
-    if (b.rubine) return 'assets/muenzen/rubin-rund.png';
+    if (b.muenzen) return 'assets/muenzen/gold-rund.webp';
+    if (b.rubine) return 'assets/muenzen/rubin-rund.webp';
     return bildKlein(packVonId(b.pack));
   }
 

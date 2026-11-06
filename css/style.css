@@ -598,7 +598,7 @@ body{font-family:"Source Sans 3","Segoe UI",sans-serif}
 
 
 /* Alpine Edition: Spielbühnen, Metall, Licht und Öffnungseffekte. */
-:root{--metall:linear-gradient(125deg,#fafbfc 0%,#b1bbc5 24%,#f7f9fa 48%,#c4ccd3 72%,#fff 100%);--welt:url('../assets/welt/alpenpanorama.png');--spiel-rot:#ed1025}
+:root{--metall:linear-gradient(125deg,#fafbfc 0%,#b1bbc5 24%,#f7f9fa 48%,#c4ccd3 72%,#fff 100%);--welt:url('../assets/welt/alpenpanorama.webp');--spiel-rot:#ed1025}
 input,select{font-family:inherit}
 .handy{background:linear-gradient(#e5eaf0,#c9d2db)}
 :root[data-theme="dark"] .handy{background:radial-gradient(ellipse at 50% 0,#303840,#0d1218 80%)}
@@ -608,10 +608,12 @@ input,select{font-family:inherit}
 .tabbar a[aria-current="page"]{box-shadow:inset 0 1px #ffffff20,0 0 20px #ed102516}
 .buehne{isolation:isolate;background:linear-gradient(180deg,#e8f3ff55,transparent 40%,#07151d99),var(--welt) center/cover;border:1px solid #c5d1d8;box-shadow:inset 0 0 0 5px #ffffff18,0 22px 45px #0003}
 .buehne .szene,.buehne .halle{display:none!important}
-.buehne::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,#fff3,transparent 30%,#ffffff18 45%,transparent 55%);background-size:200% 100%;animation:alpen-licht 16s ease-in-out infinite alternate;pointer-events:none}
+.buehne::before{content:"";position:absolute;inset:0 auto 0 0;width:200%;z-index:-1;background:linear-gradient(105deg,#fff3,transparent 30%,#ffffff18 45%,transparent 55%);animation:alpen-licht 16s ease-in-out infinite alternate;pointer-events:none;will-change:transform}
 .buehne::after{display:none}
 :root[data-theme="dark"] .buehne{background:linear-gradient(180deg,#05152650,transparent 50%,#07121fbb),var(--welt) center/cover;border-color:#8293a466}
-@keyframes alpen-licht{from{background-position:0 0}to{background-position:100% 0}}
+/* Lichtstreif über die Alpen: verschoben wird die doppelt breite Ebene (transform), nicht der Hintergrund.
+   So muss das Handy nur verschieben statt jedes Bild neu zu malen. Sieht gleich aus wie vorher. */
+@keyframes alpen-licht{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .buehne-txt{text-align:center;pointer-events:none}
 .buehne-txt h1{color:#101c29;text-shadow:0 2px 0 #ffffffaa,0 0 35px #fff8}
 :root[data-theme="dark"] .buehne-txt h1{color:#fff;text-shadow:0 3px 0 #142335,0 4px 22px #0008}

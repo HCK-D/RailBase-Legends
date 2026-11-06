@@ -56,7 +56,7 @@ const ERFOLGE = [
       stufen: [{ ziel: KARTEN_NACH_SELTENHEIT[s].length, belohnung }],
     })),
   {
-    id: 'verwerter', gruppe: 'sammeln', name: 'Verwerter', bild: 'assets/muenzen/gold-rund.png', album: {},
+    id: 'verwerter', gruppe: 'sammeln', name: 'Verwerter', bild: 'assets/muenzen/gold-rund.webp', album: {},
     text: (z) => (z === 1 ? 'Verwerte eine doppelte Karte' : `Verwerte ${z} doppelte Karten`),
     wert: (l) => l.z.verwertet || 0,
     stufen: [
